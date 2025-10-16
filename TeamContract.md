@@ -61,3 +61,4 @@ Team Member Signatures:
 Ellie Chang
 Sophia Ning
 Yuliia Levadina
+Skye Mah-Madjar
