@@ -59,6 +59,9 @@ By signing below, we acknowledge that we have read, discussed, and agreed to the
 Team Member Signatures:
 
 Ellie Chang
+
 Sophia Ning
+
 Yuliia Levadina
+
 Skye Mah-Madjar
