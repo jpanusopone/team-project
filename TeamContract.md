@@ -48,7 +48,7 @@ This contract sets out shared expectations and commitments for how our team will
 
 ## Accountability
 
-* Reliability and accountability are also important aspects of teamwork. What are the responsibilities of each team member? Complete your work by the ddeadline
+* Reliability and accountability are also important aspects of teamwork. What are the responsibilities of each team member? Complete your work by the deadline
 
 ---
 
@@ -59,3 +59,4 @@ By signing below, we acknowledge that we have read, discussed, and agreed to the
 Team Member Signatures:
 
 Ellie Chang
+Sophia Ning
