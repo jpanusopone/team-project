@@ -18,7 +18,7 @@ public class UseCaseTest {
         System.out.println("   USE CASE TEST: ExplainPhishingEmail");
         System.out.println("========================================\n");
 
-        // Your OpenRouter API Keys
+        // OpenRouter API Keys
         String openaiKey = "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";
         String deepseekKey = "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";
         String deepseekR1Key = "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";
