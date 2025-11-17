@@ -4,7 +4,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
-public class DashboardView extends JFrame {
+public class DashboardView extends JPanel {
+    private final String viewName = "dashboard";
 
     private JTable emailTable;
     private JTextField keywordField;
@@ -14,10 +15,13 @@ public class DashboardView extends JFrame {
     private JButton discordButton;
 
     public DashboardView() {
-        setTitle("Phishing Detection Dashboard");
-        setSize(900, 500);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        super();
         setLayout(new BorderLayout());
+
+        // Optional: add a title label at the top instead of using JFrame.setTitle(...)
+        JLabel title = new JLabel("Phishing Detection Dashboard", SwingConstants.CENTER);
+        title.setFont(title.getFont().deriveFont(Font.BOLD, 24f));
+        add(title, BorderLayout.NORTH);
 
         // ----- LEFT FILTER PANEL -----
         JPanel filterPanel = new JPanel();
@@ -55,6 +59,8 @@ public class DashboardView extends JFrame {
 
         setVisible(true);
     }
+
+    public String getViewName() { return viewName;}
 
     // Expose widgets to controller
     public JButton getFilterButton() { return filterButton; }
