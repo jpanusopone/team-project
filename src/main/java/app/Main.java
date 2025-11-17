@@ -7,8 +7,8 @@ import view.DashboardView;
 
 public class Main {
     public static void main(String[] args) {
-        DashboardView view = new DashboardView();
-        new FilterController(view);
+
     }
 }
+
 
