@@ -1,36 +1,89 @@
 package view;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
+import java.awt.event.ActionListener;
+
 public class LoginView extends JPanel {
-    private final String viewName = "Login:";
-    public static void main(String[] args) {
-        JFrame frame = new  JFrame();
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        JPanel itPanel = new JPanel();
-        itPanel.setLayout(new GridLayout(2, 2));
-        itPanel.add(new JLabel("Username:"));
-        JTextField username = new JTextField(15);
-        itPanel.add(username);
-        itPanel.add(new JLabel("Password:"));
-        JPasswordField password = new JPasswordField(15);
-        itPanel.add(password);
+    private final String viewName = "login";
+
+    private final JTextField usernameField = new JTextField(20);
+    private final JPasswordField passwordField = new JPasswordField(20);
+    private final JButton loginButton = new JButton("Login");
+    private final JButton cancelButton = new JButton("Cancel");
+
+    public LoginView() {
+        setLayout(new GridBagLayout()); // center everything
+        setBorder(new EmptyBorder(40, 40, 40, 40));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(10, 10, 25, 10);
+
+        // Title
+        JLabel title = new JLabel("IT Login");
+        title.setFont(new Font("SansSerif", Font.BOLD, 26));
+        add(title, gbc);
+
+        // --- Username Label ---
+        gbc.gridy++;
+        gbc.gridwidth = 1;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(10, 10, 10, 10);
+        add(new JLabel("Username:"), gbc);
+
+        // --- Username Field ---
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        add(usernameField, gbc);
+
+        // --- Password Label ---
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.anchor = GridBagConstraints.EAST;
+        add(new JLabel("Password:"), gbc);
+
+        // --- Password Field ---
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        add(passwordField, gbc);
+
+        // --- Buttons ---
         JPanel buttonPanel = new JPanel();
-        buttonPanel.add(new JButton("Login"));
-        buttonPanel.add(new JButton("Cancel"));
+        buttonPanel.add(loginButton);
+        buttonPanel.add(cancelButton);
 
-        mainPanel.add(itPanel);
-        mainPanel.add(buttonPanel);
-        frame.add(mainPanel);
-        frame.pack();
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
-
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(20, 10, 10, 10);
+        add(buttonPanel, gbc);
     }
+
+    // Optional getters so controllers can add listeners / read fields
+    public JTextField getUsernameField() {
+        return usernameField;
+    }
+
+    public JPasswordField getPasswordField() {
+        return passwordField;
+    }
+
+    public JButton getLoginButton() {
+        return loginButton;
+    }
+
+    public JButton getCancelButton() {
+        return cancelButton;
+    }
+
+
 
     public String getViewName() { return viewName;}
 }
