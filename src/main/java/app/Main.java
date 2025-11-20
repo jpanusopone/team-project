@@ -1,10 +1,5 @@
 package app;
 
-import javax.swing.*;
-
-import interface_adapter.filter.FilterController;
-import view.DashboardView;
-
 public class Main {
     public static void main(String[] args) {
 //        DashboardView view = new DashboardView();
@@ -23,4 +18,5 @@ public class Main {
         application.setVisible(true);
     }
 }
+
 

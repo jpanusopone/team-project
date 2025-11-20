@@ -1,18 +1,18 @@
 package view;
 
+import interface_adapter.filter.FilterController;
+import interface_adapter.view_dashboard.DashboardViewModel;
+import interface_adapter.view_dashboard.GetPinnedEmailsController;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 public class DashboardView extends JPanel {
     private final String viewName = "dashboard";
 
-    private JTable emailTable;
-    private JTextField keywordField;
-    private JTextField senderField;
-    private JComboBox<String> sortBox;
-    private JButton filterButton;
-    private JButton discordButton;
+public class DashboardView extends JPanel implements PropertyChangeListener {
 
     public DashboardView() {
         super();
@@ -28,36 +28,18 @@ public class DashboardView extends JPanel {
         filterPanel.setLayout(new GridLayout(0,1,5,5));
         filterPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
 
-        keywordField = new JTextField();
-        senderField = new JTextField();
-        sortBox = new JComboBox<>(new String[]{"Date", "Sender", "Suspicion Score"});
-        filterButton = new JButton("Apply Filter");
+    public DashboardView(DashboardViewModel dashboardViewModel,
+                         FilterController filterController,
+                         GetPinnedEmailsController getPinnedEmailsController) {
+        this.dashboardViewModel = dashboardViewModel;
+        this.dashboardViewModel.addPropertyChangeListener(this);
 
-        filterPanel.add(new JLabel("Keyword:"));
-        filterPanel.add(keywordField);
-        filterPanel.add(new JLabel("Sender:"));
-        filterPanel.add(senderField);
-        filterPanel.add(new JLabel("Sort by:"));
-        filterPanel.add(sortBox);
-        filterPanel.add(filterButton);
+        // define swing components
+    }
 
-        add(filterPanel, BorderLayout.WEST);
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
 
-        // ----- TABLE FOR PINNED EMAILS -----
-        String[] columns = {"Sender", "Title", "Suspicion Score", "Date"};
-        DefaultTableModel model = new DefaultTableModel(columns, 0);
-        emailTable = new JTable(model);
-
-        JScrollPane scrollPane = new JScrollPane(emailTable);
-        add(scrollPane, BorderLayout.CENTER);
-
-        // ----- DISCORD BUTTON -----
-        discordButton = new JButton("Join Discord Webhook");
-        JPanel bottomPanel = new JPanel();
-        bottomPanel.add(discordButton);
-        add(bottomPanel, BorderLayout.SOUTH);
-
-        setVisible(true);
     }
 
     public String getViewName() { return viewName;}
@@ -70,4 +52,3 @@ public class DashboardView extends JPanel {
     public String getSender() { return senderField.getText(); }
     public String getSort() { return (String) sortBox.getSelectedItem(); }
 }
-
