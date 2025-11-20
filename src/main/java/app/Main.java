@@ -14,6 +14,7 @@ public class Main {
                 //add submit view later
                 .addLoginView()
                 .addDashBoardView()
+                .addDashboardControllers()
                 .addStartView()
                 .build();
 

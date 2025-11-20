@@ -1,6 +1,7 @@
 package app;
 
 import interface_adapter.ViewManagerModel;
+import interface_adapter.filter.FilterController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,6 +35,12 @@ public class AppBuilder {
     public AppBuilder addDashBoardView(){
         dashboardView = new DashboardView();
         cardPanel.add(dashboardView, dashboardView.getViewName());
+        return this;
+    }
+
+    public AppBuilder addDashboardControllers() {
+        // make sure addDashBoardView() is called before this
+        new FilterController(dashboardView);  // its constructor should add listeners
         return this;
     }
 
