@@ -9,24 +9,19 @@ import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-public class DashboardView extends JPanel {
-    private final String viewName = "dashboard";
+/**
+ * The View for when the user selects to go to the dashboard.
+ */
 
 public class DashboardView extends JPanel implements PropertyChangeListener {
 
-    public DashboardView() {
-        super();
-        setLayout(new BorderLayout());
+    private final String viewName = "dashboard";
+    private final DashboardViewModel dashboardViewModel;
+    private final FilterController filterController = null;
+    private final GetPinnedEmailsController getPinnedEmailsController = null;
+    // add your use case controllers here
 
-        // Optional: add a title label at the top instead of using JFrame.setTitle(...)
-        JLabel title = new JLabel("Phishing Detection Dashboard", SwingConstants.CENTER);
-        title.setFont(title.getFont().deriveFont(Font.BOLD, 24f));
-        add(title, BorderLayout.NORTH);
-
-        // ----- LEFT FILTER PANEL -----
-        JPanel filterPanel = new JPanel();
-        filterPanel.setLayout(new GridLayout(0,1,5,5));
-        filterPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+    // add swing components here later
 
     public DashboardView(DashboardViewModel dashboardViewModel,
                          FilterController filterController,
@@ -41,14 +36,4 @@ public class DashboardView extends JPanel implements PropertyChangeListener {
     public void propertyChange(PropertyChangeEvent evt) {
 
     }
-
-    public String getViewName() { return viewName;}
-
-    // Expose widgets to controller
-    public JButton getFilterButton() { return filterButton; }
-    public JButton getDiscordButton() { return discordButton; }
-    public JTable getEmailTable() { return emailTable; }
-    public String getKeyword() { return keywordField.getText(); }
-    public String getSender() { return senderField.getText(); }
-    public String getSort() { return (String) sortBox.getSelectedItem(); }
 }
