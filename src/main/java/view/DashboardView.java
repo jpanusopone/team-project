@@ -12,7 +12,12 @@ import java.beans.PropertyChangeListener;
 public class DashboardView extends JPanel {
     private final String viewName = "dashboard";
 
-public class DashboardView extends JPanel implements PropertyChangeListener {
+    private JTable emailTable;
+    private JTextField keywordField;
+    private JTextField senderField;
+    private JComboBox<String> sortBox;
+    private JButton filterButton;
+    private JButton discordButton;
 
     public DashboardView() {
         super();
@@ -28,18 +33,36 @@ public class DashboardView extends JPanel implements PropertyChangeListener {
         filterPanel.setLayout(new GridLayout(0,1,5,5));
         filterPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
 
-    public DashboardView(DashboardViewModel dashboardViewModel,
-                         FilterController filterController,
-                         GetPinnedEmailsController getPinnedEmailsController) {
-        this.dashboardViewModel = dashboardViewModel;
-        this.dashboardViewModel.addPropertyChangeListener(this);
+        keywordField = new JTextField();
+        senderField = new JTextField();
+        sortBox = new JComboBox<>(new String[]{"Date", "Sender", "Suspicion Score"});
+        filterButton = new JButton("Apply Filter");
 
-        // define swing components
-    }
+        filterPanel.add(new JLabel("Keyword:"));
+        filterPanel.add(keywordField);
+        filterPanel.add(new JLabel("Sender:"));
+        filterPanel.add(senderField);
+        filterPanel.add(new JLabel("Sort by:"));
+        filterPanel.add(sortBox);
+        filterPanel.add(filterButton);
 
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
+        add(filterPanel, BorderLayout.WEST);
 
+        // ----- TABLE FOR PINNED EMAILS -----
+        String[] columns = {"Sender", "Title", "Suspicion Score", "Date"};
+        DefaultTableModel model = new DefaultTableModel(columns, 0);
+        emailTable = new JTable(model);
+
+        JScrollPane scrollPane = new JScrollPane(emailTable);
+        add(scrollPane, BorderLayout.CENTER);
+
+        // ----- DISCORD BUTTON -----
+        discordButton = new JButton("Join Discord Webhook");
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.add(discordButton);
+        add(bottomPanel, BorderLayout.SOUTH);
+
+        setVisible(true);
     }
 
     public String getViewName() { return viewName;}
