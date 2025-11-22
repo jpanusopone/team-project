@@ -1,5 +1,9 @@
 package use_case.get_pinned_emails;
 
+import entity.Email;
+
+import java.util.List;
+
 /**
  * The Get Pinned Emails Interactor
  */
@@ -14,7 +18,14 @@ public class GetPinnedEmailsInteractor implements GetPinnedEmailsInputBoundary {
     }
     @Override
     public void execute(GetPinnedEmailsInputData getPinnedEmailsInputData) {
-        //TODO implement execute
+
+        try {
+            List<Email> pinnedEmails = userDataAccessObject.getPinnedEmails(getPinnedEmailsInputData);
+            GetPinnedEmailsOutputData outputData = new GetPinnedEmailsOutputData(pinnedEmails);
+            getPinnedEmailsPresenter.prepareSuccessView(outputData);
+        } catch (Exception e) {
+            getPinnedEmailsPresenter.prepareFailView("Failed to get pinned emails: " + e.getMessage());
+        }
 
 
     }
