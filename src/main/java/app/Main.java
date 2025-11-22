@@ -1,5 +1,7 @@
 package app;
 
+import view.SubmitEmailView;
+
 import javax.swing.*;
 
 public class Main {
@@ -22,3 +24,6 @@ public class Main {
 }
 
 
+        SwingUtilities.invokeLater(() -> new SubmitEmailView().setVisible(true));
+    }
+}
