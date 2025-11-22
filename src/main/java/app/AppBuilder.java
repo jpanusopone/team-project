@@ -1,11 +1,20 @@
 package app;
 
+import data_access.FilterDataAccessObject;
+import entity.Email;
+import entity.EmailBuilder;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.filter.FilterController;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import interface_adapter.filter.FilterPresenter;
+import interface_adapter.filter.FilteredViewModel;
+import use_case.filter.FilterInteractor;
 import view.LoginView;
 import view.StartView;
 import view.DashboardView;
@@ -40,7 +49,12 @@ public class AppBuilder {
 
     public AppBuilder addDashboardControllers() {
         // make sure addDashBoardView() is called before this
-        new FilterController(dashboardView);  // its constructor should add listeners
+        FilterDataAccessObject dao = new FilterDataAccessObject(createSampleEmails());
+        FilteredViewModel viewModel = new FilteredViewModel();
+        FilterPresenter presenter = new FilterPresenter(viewManagerModel, viewModel);
+        FilterInteractor filterInteractor = new FilterInteractor(dao, presenter);
+        FilterController filterController = new FilterController(filterInteractor);  // its constructor should add listeners
+        dashboardView.setFilterController(filterController);
         return this;
     }
 
@@ -79,4 +93,28 @@ public class AppBuilder {
 
         return application;
     }
+
+    // temporary method to create list of emails (DAO not available yet)
+    private List<Email> createSampleEmails() {
+        List<Email> emails = new ArrayList<>();
+
+        Email email = new EmailBuilder()
+                .id(1)
+                .title("Your PayPal Account is Suspended")
+                .sender("support@paypal.com")
+                .body("")
+                .pinned(true)
+                .pinnedDate(LocalDateTime.now())
+                .suspicionScore(0.92)
+                .dateReceived(LocalDateTime.now().minusDays(1))
+                .explanation("blah blah blah")
+                .links(new ArrayList<String>())
+                .verifiedStatus("verified")
+                .build();
+
+        emails.add(email);
+
+        return emails;
+    }
+
 }

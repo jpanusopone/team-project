@@ -1,16 +1,23 @@
 package view;
 
+import entity.Email;
 import interface_adapter.filter.FilterController;
+import interface_adapter.filter.FilteredViewModel;
 import interface_adapter.view_dashboard.DashboardViewModel;
 import interface_adapter.view_dashboard.GetPinnedEmailsController;
+import use_case.filter.SortBy;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-public class DashboardView extends JPanel {
+public class DashboardView extends JPanel implements PropertyChangeListener{
     private final String viewName = "dashboard";
+
+    private FilterController filterController;
+    private FilteredViewModel filteredViewModel;
 
     private JTable emailTable;
     private JTextField keywordField;
@@ -74,4 +81,24 @@ public class DashboardView extends JPanel {
     public String getKeyword() { return keywordField.getText(); }
     public String getSender() { return senderField.getText(); }
     public String getSort() { return (String) sortBox.getSelectedItem(); }
+
+    public void setFilterController(FilterController controller) {
+        this.filterController = controller;
+    }
+
+    private void onFilterButton() {
+        String keyword = keywordField.getText();
+        String sender = senderField.getText();
+        SortBy sortBy = (SortBy) sortBox.getSelectedItem();
+
+        filterController.execute(keyword, sender, sortBy);
+    }
+
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals("filtered")) {
+            // TODO
+        }
+    }
 }
