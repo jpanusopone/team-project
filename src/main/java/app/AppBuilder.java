@@ -49,12 +49,15 @@ public class AppBuilder {
 
     public AppBuilder addDashboardControllers() {
         // make sure addDashBoardView() is called before this
+
+        // filter
         FilterDataAccessObject dao = new FilterDataAccessObject(createSampleEmails());
         FilteredViewModel viewModel = new FilteredViewModel();
         FilterPresenter presenter = new FilterPresenter(viewManagerModel, viewModel);
         FilterInteractor filterInteractor = new FilterInteractor(dao, presenter);
         FilterController filterController = new FilterController(filterInteractor);  // its constructor should add listeners
         dashboardView.setFilterController(filterController);
+        dashboardView.setFilteredViewModel(viewModel);
         return this;
     }
 
@@ -98,7 +101,7 @@ public class AppBuilder {
     private List<Email> createSampleEmails() {
         List<Email> emails = new ArrayList<>();
 
-        Email email = new EmailBuilder()
+        Email email1 = new EmailBuilder()
                 .id(1)
                 .title("Your PayPal Account is Suspended")
                 .sender("support@paypal.com")
@@ -112,7 +115,37 @@ public class AppBuilder {
                 .verifiedStatus("verified")
                 .build();
 
-        emails.add(email);
+        Email email2 = new EmailBuilder()
+                .id(2)
+                .title("Urgent: Update Your Bank Information")
+                .sender("security@bankofamerica.com")
+                .body("Please click the link below to update your account information immediately.")
+                .pinned(false)
+                .pinnedDate(null)
+                .suspicionScore(0.85)
+                .dateReceived(LocalDateTime.now().minusDays(2))
+                .explanation("The email asks for sensitive info via a suspicious link.")
+                .links(List.of("http://fakebank.com/update"))
+                .verifiedStatus("unverified")
+                .build();
+
+        Email email3 = new EmailBuilder()
+                .id(3)
+                .title("You've Won a Free iPhone!")
+                .sender("promotions@fakestore.com")
+                .body("Click here to claim your free iPhone now.")
+                .pinned(true)
+                .pinnedDate(LocalDateTime.now().minusHours(5))
+                .suspicionScore(0.95)
+                .dateReceived(LocalDateTime.now().minusDays(1))
+                .explanation("Too good to be true offer; likely phishing.")
+                .links(List.of("http://scamwebsite.com/claim"))
+                .verifiedStatus("unverified")
+                .build();
+
+        emails.add(email1);
+        emails.add(email2);
+        emails.add(email3);
 
         return emails;
     }

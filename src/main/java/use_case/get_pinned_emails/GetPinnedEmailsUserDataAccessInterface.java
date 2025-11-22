@@ -11,8 +11,7 @@ public interface GetPinnedEmailsUserDataAccessInterface {
 
     /**
      * Updates the system to display the pinned emails.
-     * @param inputData the emails to
-     * @return
+     * @return all pinned emails
      */
-    List<Email> getPinnedEmails(GetPinnedEmailsInputData inputData);
+    List<Email> getPinnedEmails();
 }

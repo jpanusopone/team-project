@@ -17,10 +17,10 @@ public class GetPinnedEmailsInteractor implements GetPinnedEmailsInputBoundary {
         this.getPinnedEmailsPresenter = pinnedEmailsOutputBoundary;
     }
     @Override
-    public void execute(GetPinnedEmailsInputData getPinnedEmailsInputData) {
+    public void execute() {
 
         try {
-            List<Email> pinnedEmails = userDataAccessObject.getPinnedEmails(getPinnedEmailsInputData);
+            List<Email> pinnedEmails = userDataAccessObject.getPinnedEmails();
             GetPinnedEmailsOutputData outputData = new GetPinnedEmailsOutputData(pinnedEmails);
             getPinnedEmailsPresenter.prepareSuccessView(outputData);
         } catch (Exception e) {

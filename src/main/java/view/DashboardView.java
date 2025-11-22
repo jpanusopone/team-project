@@ -2,8 +2,10 @@ package view;
 
 import entity.Email;
 import interface_adapter.filter.FilterController;
+import interface_adapter.filter.FilteredState;
 import interface_adapter.filter.FilteredViewModel;
 import interface_adapter.view_dashboard.DashboardViewModel;
+import interface_adapter.view_dashboard.EmailTableModel;
 import interface_adapter.view_dashboard.GetPinnedEmailsController;
 import use_case.filter.SortBy;
 
@@ -22,6 +24,7 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
     private FilteredViewModel filteredViewModel;
 
     private JTable emailTable;
+    private EmailTableModel emailTableModel;
     private JTextField keywordField;
     private JTextField senderField;
     private JComboBox<String> sortBox;
@@ -60,9 +63,9 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
         add(filterPanel, BorderLayout.WEST);
 
         // ----- TABLE FOR PINNED EMAILS -----
-        String[] columns = {"Sender", "Title", "Suspicion Score", "Date"};
-        DefaultTableModel model = new DefaultTableModel(columns, 0);
-        emailTable = new JTable(model);
+        String[] columnNames = {"Sender", "Title", "Suspicion Score", "Date"};
+        emailTableModel = new EmailTableModel(new ArrayList<>()); // this will be a list of all pinned emails
+        emailTable = new JTable(emailTableModel);
 
         JScrollPane scrollPane = new JScrollPane(emailTable);
         add(scrollPane, BorderLayout.CENTER);
@@ -122,9 +125,17 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals("filtered")) {
-            // TODO
-            List<Email> emails = filteredViewModel.getState().getEmails();
+            FilteredState state = (FilteredState) evt.getNewValue();
+            List<Email> emails = state.getEmails();
+
+            emailTableModel.setEmails(emails);
 
         }
     }
+
+    public void setFilteredViewModel(FilteredViewModel vm) {
+        this.filteredViewModel = vm;
+        vm.addPropertyChangeListener(this);
+    }
+
 }
