@@ -28,6 +28,51 @@ public class Email {
     void setLinks(List<String> links) { this.links = links; }
     void setVerifiedStatus(String verifiedStatus) { this.verifiedStatus = verifiedStatus; }
 
+    public int getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getSender() {
+        return sender;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public Boolean getPinned() {
+        return pinned;
+    }
+
+    public LocalDateTime getPinnedDate() {
+        return pinnedDate;
+    }
+
+    public LocalDateTime getDateReceived() {
+        return dateReceived;
+    }
+
+    public Double getSuspicionScore() {
+        return suspicionScore;
+    }
+
+    public String getExplanation() {
+        return explanation;
+    }
+
+    public List<String> getLinks() {
+        return links;
+    }
+
+    public String getVerifiedStatus() {
+        return verifiedStatus;
+    }
+
+
     public Email() {}
 
 }
