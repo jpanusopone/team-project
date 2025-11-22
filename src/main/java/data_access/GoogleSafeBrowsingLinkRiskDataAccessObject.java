@@ -76,6 +76,7 @@ public class GoogleSafeBrowsingLinkRiskDataAccessObject implements LinkRiskUserD
     }
 
     private JsonObject callSafeBrowsingApi(List<String> urls) throws IOException, URISyntaxException {
+        // This implementation uses the Safe Browsing v4 Lookup API (endpoint: threatMatches.find).
         String apiUrl = "https://safebrowsing.googleapis.com/v4/threatMatches:find?key=" + apiKey;
         URI uri = new URI(apiUrl);
         URL url = uri.toURL();
