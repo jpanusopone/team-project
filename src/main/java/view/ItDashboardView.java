@@ -56,15 +56,13 @@ public class ItDashboardView extends JPanel {
         JPanel bottomPanel = new JPanel();
         bottomPanel.add(discordButton);
         add(bottomPanel, BorderLayout.SOUTH);
-
-        setVisible(true);
     }
 
     public String getViewName() { return viewName;}
 
     // Expose widgets to controller
-    public JButton getFilterButton() { return filterButton; }
-    public JButton getDiscordButton() { return discordButton; }
+    public JButton getItFilterButton() { return filterButton; }
+    public JButton getItDiscordButton() { return discordButton; }
     public JTable getEmailTable() { return emailTable; }
     public String getKeyword() { return keywordField.getText(); }
     public String getSender() { return senderField.getText(); }

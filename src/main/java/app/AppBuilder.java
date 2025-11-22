@@ -2,6 +2,7 @@ package app;
 
 import interface_adapter.ViewManagerModel;
 import interface_adapter.filter.FilterController;
+import interface_adapter.filter.itFilterController;
 import interface_adapter.login.loginController;
 
 import javax.swing.*;
@@ -46,6 +47,11 @@ public class AppBuilder {
     public AppBuilder addItDashboardView() {
         itDashboardView = new ItDashboardView();
         cardPanel.add(itDashboardView, itDashboardView.getViewName());
+        return this;
+    }
+
+    public AppBuilder addItDashboardControllers() {
+        new itFilterController(itDashboardView);
         return this;
     }
 

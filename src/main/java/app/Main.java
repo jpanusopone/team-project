@@ -16,6 +16,7 @@ public class Main {
                 .addDashBoardView()
                 .addItDashboardView()
                 .addDashboardControllers()
+                .addItDashboardControllers()
                 .addStartView()
                 .addLoginController()
                 .build();
