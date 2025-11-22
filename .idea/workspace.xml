@@ -5,25 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="473100e1-1f90-4cde-97b2-d9ffbe4f4287" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/app/AppBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/AppBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/app/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/config/ApplicationConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/config/ApplicationConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/entity/PhishingExplanation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/entity/PhishingExplanation.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/entity/PhishingIndicators.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/entity/PhishingIndicators.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/entity/RiskLevel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/entity/RiskLevel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/infrastructure/services/DeepSeekExplanationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/infrastructure/services/DeepSeekExplanationService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/infrastructure/services/LLMExplanationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/infrastructure/services/LLMExplanationService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/infrastructure/services/OpenAIExplanationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/infrastructure/services/OpenAIExplanationService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/presentation/ExplanationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/presentation/ExplanationController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/presentation/ExplanationResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/presentation/ExplanationResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/use_case/ExplainPhishingEmailUseCase.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/use_case/ExplainPhishingEmailUseCase.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/use_case/interfaces/ExplanationException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/use_case/interfaces/ExplanationException.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/use_case/interfaces/ExplanationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/use_case/interfaces/ExplanationService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/infrastructure/services/DeepSeekExplanationServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/infrastructure/services/DeepSeekExplanationServiceTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/infrastructure/services/OpenAIExplanationServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/infrastructure/services/OpenAIExplanationServiceTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/presentation/ExplanationControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/presentation/ExplanationControllerTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/usecase/ExplainPhishingEmailUseCaseTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/usecase/ExplainPhishingEmailUseCaseTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/interface_adapter/filter/FilterController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/interface_adapter/filter/FilterController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/view/DashboardView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/view/DashboardView.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -64,6 +49,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Application.IntegrationTest.executor": "Run",
+    "Application.Main.executor": "Run",
     "Application.OpenRouterIntegrationTest.executor": "Run",
     "Application.TestMyEmail.executor": "Run",
     "JUnit.ExplainPhishingEmailUseCaseTest.executor": "Run",
@@ -74,6 +60,19 @@
     "kotlin-language-version-configured": "true"
   }
 }]]></component>
+  <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="TeamProject" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="TeamProject" />
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>

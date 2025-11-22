@@ -4,21 +4,25 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import use_case.filter.FilterInputBoundary;
 import use_case.filter.FilterInputData;
+import use_case.filter.SortBy;
 import view.DashboardView;
 
+/**
+ * Controller for the Filter User Case.
+ */
 
 public class FilterController {
-
     private DashboardView view;
 
     public FilterController(DashboardView view) {
-        this.view = view;
+        this.view =  view;
 
         view.getFilterButton().addActionListener(e -> applyFilter());
         view.getDiscordButton().addActionListener(e ->
                 JOptionPane.showMessageDialog(view, "Pretend this opens the Discord server!"));
     }
 
+    // temporary method, replace with execute
     private void applyFilter() {
         // eventually call your real use case here
 
@@ -34,6 +38,26 @@ public class FilterController {
 
         for (Object[] row : mockEmails)
             model.addRow(row);
+
+    /**
+     * Executes the Filter Use Case
+     * @param keyword the keyword the user wishes to filter by
+     * @param sender the sender the user wishes to filter by
+     * @param sortBy sorts by title, sender, date received, or suspicion score
+     * @param minSuspicion the minimum suspicion the user filters by
+     * @param maxSuspicion the maximum suspicion the user filters by
+     */
+//    public void execute(String keyword, String sender, SortBy sortBy,
+//                        Double minSuspicion, Double maxSuspicion) {
+//        FilterInputData inputData = new FilterInputData(
+//                keyword,
+//                sender,
+//                sortBy,
+//                minSuspicion,
+//                maxSuspicion
+//        );
+//
+//        userFilterUseCaseInteractor.execute(inputData);
     }
 }
 
