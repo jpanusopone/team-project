@@ -83,6 +83,12 @@ public class LoginView extends JPanel {
         return cancelButton;
     }
 
+    // Adding Listeners
+    public void addCancelListener(ActionListener listener) {
+        cancelButton.addActionListener(listener);
+    }
+
+    public void addLoginListener(ActionListener listener){loginButton.addActionListener(listener);}
 
 
     public String getViewName() { return viewName;}

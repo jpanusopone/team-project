@@ -14,8 +14,10 @@ public class Main {
                 //add submit view later
                 .addLoginView()
                 .addDashBoardView()
+                .addItDashboardView()
                 .addDashboardControllers()
                 .addStartView()
+                .addLoginController()
                 .build();
 
         application.pack();

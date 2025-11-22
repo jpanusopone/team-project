@@ -2,14 +2,12 @@ package app;
 
 import interface_adapter.ViewManagerModel;
 import interface_adapter.filter.FilterController;
+import interface_adapter.login.loginController;
 
 import javax.swing.*;
 import java.awt.*;
 
-import view.LoginView;
-import view.StartView;
-import view.DashboardView;
-import view.ViewManager;
+import view.*;
 
 public class AppBuilder {
     private final JPanel cardPanel = new JPanel();
@@ -20,6 +18,7 @@ public class AppBuilder {
 
     private LoginView loginView;
     private DashboardView dashboardView;
+    private ItDashboardView itDashboardView;
     private StartView startView;
 
     public AppBuilder() {
@@ -29,6 +28,24 @@ public class AppBuilder {
     public AppBuilder addLoginView() {
         loginView = new LoginView();
         cardPanel.add(loginView, loginView.getViewName());
+
+//        // When user presses cancel
+//        loginView.addCancelListener(e -> {
+//            viewManagerModel.setState(startView.getViewName());  // whatever the viewName is
+//            viewManagerModel.firePropertyChange();
+//        });
+
+//        // When user presses login
+//        loginView.addLoginListener(e -> {
+//            viewManagerModel.setState(itDashboardView.getViewName());  // whatever the viewName is
+//            viewManagerModel.firePropertyChange();
+//        });
+        return this;
+    }
+
+    public AppBuilder addItDashboardView() {
+        itDashboardView = new ItDashboardView();
+        cardPanel.add(itDashboardView, itDashboardView.getViewName());
         return this;
     }
 
@@ -41,6 +58,12 @@ public class AppBuilder {
     public AppBuilder addDashboardControllers() {
         // make sure addDashBoardView() is called before this
         new FilterController(dashboardView);  // its constructor should add listeners
+        return this;
+    }
+
+    public AppBuilder addLoginController() {
+        // Make sure addLoginView() and addItDashboardView() and addStartView() were called first
+        new loginController(loginView, viewManagerModel);
         return this;
     }
 
