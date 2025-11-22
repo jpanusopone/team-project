@@ -10,6 +10,8 @@ import use_case.filter.SortBy;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -44,6 +46,8 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
         senderField = new JTextField();
         sortBox = new JComboBox<>(new String[]{"Date", "Sender", "Suspicion Score"});
         filterButton = new JButton("Apply Filter");
+
+        filterButton.addActionListener(e -> onFilterButton());
 
         filterPanel.add(new JLabel("Keyword:"));
         filterPanel.add(keywordField);
@@ -89,7 +93,27 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
     private void onFilterButton() {
         String keyword = keywordField.getText();
         String sender = senderField.getText();
-        SortBy sortBy = (SortBy) sortBox.getSelectedItem();
+        String sortValue = (String) sortBox.getSelectedItem();
+
+        SortBy sortBy;
+
+        switch (sortValue) {
+            case "Title":
+                sortBy = SortBy.TITLE;
+                break;
+            case "Sender":
+                sortBy = SortBy.SENDER;
+                break;
+            case "Date Received":
+                sortBy = SortBy.DATE_RECEIVED;
+                break;
+            case "Suspicion Score":
+                sortBy = SortBy.SUSPICION_SCORE;
+                break;
+            default:
+                sortBy = null;
+                break;
+        }
 
         filterController.execute(keyword, sender, sortBy);
     }
@@ -99,6 +123,8 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals("filtered")) {
             // TODO
+            List<Email> emails = filteredViewModel.getState().getEmails();
+
         }
     }
 }
