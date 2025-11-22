@@ -89,8 +89,8 @@ public class UrlExtractor {
     }
 
     private static boolean isInsideAnyRange(int start, int end, List<Range> ranges) {
-        for (Range r : ranges) {
-            if (start >= r.start && end <= r.end) {
+        for (Range range : ranges) {
+            if (start >= range.start && end <= range.end) {
                 return true;
             }
         }
