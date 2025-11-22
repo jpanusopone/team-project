@@ -13,7 +13,7 @@ public class GetPinnedEmailsInteractor implements GetPinnedEmailsInputBoundary {
         this.getPinnedEmailsPresenter = pinnedEmailsOutputBoundary;
     }
     @Override
-    public void execute(GetPinnedEmailsInputData viewDashboardInputData) {
+    public void execute(GetPinnedEmailsInputData getPinnedEmailsInputData) {
         //TODO implement execute
 
 
