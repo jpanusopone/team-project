@@ -6,19 +6,27 @@ import interface_adapter.filter.FilteredState;
 import interface_adapter.filter.FilteredViewModel;
 import interface_adapter.view_dashboard.DashboardState;
 import interface_adapter.view_dashboard.DashboardViewModel;
+import interface_adapter.view_dashboard.EmailTableModel;
 import interface_adapter.view_dashboard.GetPinnedEmailsController;
+import use_case.filter.SortBy;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 
-public class DashboardView extends JPanel implements PropertyChangeListener {
+public class DashboardView extends JPanel implements PropertyChangeListener{
     private final String viewName = "dashboard";
 
+    private FilterController filterController;
+
     private JTable emailTable;
+    private EmailTableModel emailTableModel;
     private JTextField keywordField;
     private JTextField senderField;
     private JTextField minScoreField;
@@ -53,6 +61,8 @@ public class DashboardView extends JPanel implements PropertyChangeListener {
         sortBox = new JComboBox<>(new String[]{"Date", "Sender", "Suspicion Score"});
         filterButton = new JButton("Apply Filter");
 
+        filterButton.addActionListener(e -> onFilterButton());
+
         filterPanel.add(new JLabel("Keyword:"));
         filterPanel.add(keywordField);
         filterPanel.add(new JLabel("Sender:"));
@@ -68,14 +78,9 @@ public class DashboardView extends JPanel implements PropertyChangeListener {
         add(filterPanel, BorderLayout.WEST);
 
         // ----- TABLE FOR PINNED EMAILS -----
-        String[] columns = {"Sender", "Title", "Suspicion Score", "Status", "Date"};
-        DefaultTableModel model = new DefaultTableModel(columns, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false; // Make table read-only
-            }
-        };
-        emailTable = new JTable(model);
+        String[] columnNames = {"Sender", "Title", "Suspicion Score", "Date"};
+        emailTableModel = new EmailTableModel(new ArrayList<>()); // this will be a list of all pinned emails
+        emailTable = new JTable(emailTableModel);
 
         // Add custom renderer for status column
         emailTable.getColumnModel().getColumn(3).setCellRenderer(new javax.swing.table.DefaultTableCellRenderer() {
@@ -235,4 +240,37 @@ public class DashboardView extends JPanel implements PropertyChangeListener {
     public void addBackToStartListener(ActionListener listener) {
         backToStartButton.addActionListener(listener);
     }
+
+    public void setFilterController(FilterController controller) {
+        this.filterController = controller;
+    }
+
+    private void onFilterButton() {
+        String keyword = keywordField.getText();
+        String sender = senderField.getText();
+        String sortValue = (String) sortBox.getSelectedItem();
+
+        SortBy sortBy;
+
+        switch (sortValue) {
+            case "Title":
+                sortBy = SortBy.TITLE;
+                break;
+            case "Sender":
+                sortBy = SortBy.SENDER;
+                break;
+            case "Date Received":
+                sortBy = SortBy.DATE_RECEIVED;
+                break;
+            case "Suspicion Score":
+                sortBy = SortBy.SUSPICION_SCORE;
+                break;
+            default:
+                sortBy = null;
+                break;
+        }
+
+        filterController.execute(keyword, sender, sortBy);
+    }
+
 }

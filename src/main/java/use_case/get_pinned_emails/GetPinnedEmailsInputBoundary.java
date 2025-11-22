@@ -7,7 +7,6 @@ public interface GetPinnedEmailsInputBoundary {
 
     /**
      * Executes the View Dashboard Use Case.
-     * @param getPinnedEmailsInputData the input data
      */
-    void execute(GetPinnedEmailsInputData getPinnedEmailsInputData);
+    void execute();
 }

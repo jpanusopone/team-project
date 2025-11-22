@@ -1,14 +1,14 @@
 package use_case.filter;
 
 /**
- * the Input Data for the Filter Use Case.
+ * The Input Data for the Filter Use Case.
  */
 public class FilterInputData {
     private final String keyword;
     private final String sender;
+    private final SortBy sortBy;
     private final Double minScore;
     private final Double maxScore;
-    private final SortBy sortBy;
 
     public FilterInputData(String keyword,
                            String sender,
@@ -43,4 +43,3 @@ public class FilterInputData {
     }
 
 }
-

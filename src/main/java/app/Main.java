@@ -19,5 +19,9 @@ public class Main {
                 .addStartView()
                 .build();
 
+        application.pack();
+        application.setLocationRelativeTo(null);
+        application.setVisible(true);
+
     }
 }

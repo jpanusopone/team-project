@@ -20,14 +20,20 @@ public class FilterPresenter implements FilterOutputBoundary {
 
     @Override
     public void prepareSuccessView(FilterOutputData outputData) {
-        List<Email> filteredEmails = outputData.getEmails();
-        filteredViewModel.getState().setEmails(filteredEmails);
+        FilteredState state = filteredViewModel.getState();
+        state.setEmails(outputData.getEmails());
+        state.setError(null);
+
+        filteredViewModel.setState(state);
         filteredViewModel.firePropertyChange();
     }
 
     @Override
     public void prepareFailView(String error) {
-        filteredViewModel.getState().setError(error);
+        FilteredState state = filteredViewModel.getState();
+        state.setError(error);
+
+        filteredViewModel.setState(state);
         filteredViewModel.firePropertyChange();
     }
 }

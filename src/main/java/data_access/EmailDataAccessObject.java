@@ -12,7 +12,7 @@ public class EmailDataAccessObject implements GetPinnedEmailsUserDataAccessInter
     private final List<Email> database = new ArrayList<>();
 
     @Override
-    public List<Email> getPinnedEmails(GetPinnedEmailsInputData inputData) {
+    public List<Email> getPinnedEmails() {
         return null;
     }
 }
