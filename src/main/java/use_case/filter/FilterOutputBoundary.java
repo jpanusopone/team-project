@@ -12,7 +12,7 @@ public interface FilterOutputBoundary {
 
     /**
      * Prepares the failure view for the Filter Use Case
-     * @param errorMessage the explanation of the failure
+     * @param error the explanation of the failure
      */
-    void prepareFailView(String errorMessage);
+    void prepareFailView(String error);
 }

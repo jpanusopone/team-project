@@ -7,11 +7,9 @@ import interface_adapter.filter.FilteredViewModel;
 import interface_adapter.view_dashboard.DashboardState;
 import interface_adapter.view_dashboard.DashboardViewModel;
 import interface_adapter.view_dashboard.EmailTableModel;
-import interface_adapter.view_dashboard.GetPinnedEmailsController;
 import use_case.filter.SortBy;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -22,8 +20,11 @@ import java.util.List;
 
 public class DashboardView extends JPanel implements PropertyChangeListener{
     private final String viewName = "dashboard";
+    private boolean userAppliedFilter = false;
 
     private FilterController filterController;
+    private FilteredViewModel filteredViewModel;
+    private DashboardViewModel dashboardViewModel;
 
     private JTable emailTable;
     private EmailTableModel emailTableModel;
@@ -35,9 +36,6 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
     private JButton filterButton;
     private JButton discordButton;
     private JButton backToStartButton;
-    private FilteredViewModel filteredViewModel;
-    private DashboardViewModel dashboardViewModel;
-    private GetPinnedEmailsController getPinnedEmailsController;
     private List<Email> currentEmails; // Store current emails for row access
 
     public DashboardView() {
@@ -58,7 +56,7 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
         senderField = new JTextField();
         minScoreField = new JTextField();
         maxScoreField = new JTextField();
-        sortBox = new JComboBox<>(new String[]{"Date", "Sender", "Suspicion Score"});
+        sortBox = new JComboBox<>(new String[]{"Title", "Sender", "Date Received", "Suspicion Score"});
         filterButton = new JButton("Apply Filter");
 
         filterButton.addActionListener(e -> onFilterButton());
@@ -78,7 +76,6 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
         add(filterPanel, BorderLayout.WEST);
 
         // ----- TABLE FOR PINNED EMAILS -----
-        String[] columnNames = {"Sender", "Title", "Suspicion Score", "Date"};
         emailTableModel = new EmailTableModel(new ArrayList<>()); // this will be a list of all pinned emails
         emailTable = new JTable(emailTableModel);
 
@@ -147,83 +144,6 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
         this.dashboardViewModel.addPropertyChangeListener(this);
     }
 
-    /**
-     * Set the controller for loading pinned emails
-     */
-    public void setGetPinnedEmailsController(GetPinnedEmailsController controller) {
-        this.getPinnedEmailsController = controller;
-    }
-
-    /**
-     * Load pinned emails from Firebase
-     */
-    public void loadPinnedEmails() {
-        if (getPinnedEmailsController != null) {
-            getPinnedEmailsController.execute();
-        }
-    }
-
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        Object newValue = evt.getNewValue();
-
-        // Handle filtered emails update (from filter use case)
-        if (newValue instanceof FilteredState) {
-            FilteredState state = (FilteredState) newValue;
-
-            if (state.getError() != null) {
-                // Show error message
-                JOptionPane.showMessageDialog(this, state.getError(), "Filter Error", JOptionPane.ERROR_MESSAGE);
-            } else if (state.getEmails() != null) {
-                // Update table with filtered emails
-                updateTable(state.getEmails());
-            }
-        }
-
-        // Handle dashboard state update (from get pinned emails use case)
-        if (newValue instanceof DashboardState) {
-            DashboardState state = (DashboardState) newValue;
-
-            if (state.getError() != null) {
-                // Show error message
-                JOptionPane.showMessageDialog(this, state.getError(), "Dashboard Error", JOptionPane.ERROR_MESSAGE);
-            } else if (state.getPinnedEmails() != null) {
-                // Update table with pinned emails
-                updateTable(state.getPinnedEmails());
-            }
-        }
-    }
-
-    /**
-     * Update the table with the list of emails
-     */
-    private void updateTable(List<Email> emails) {
-        this.currentEmails = emails; // Store emails for later access
-        DefaultTableModel model = (DefaultTableModel) emailTable.getModel();
-        model.setRowCount(0); // Clear existing rows
-
-        for (Email email : emails) {
-            String status = email.getVerifiedStatus() != null ? email.getVerifiedStatus() : "Pending";
-            model.addRow(new Object[]{
-                    email.getSender(),
-                    email.getTitle(),
-                    email.getSuspicionScore(),
-                    status,
-                    email.getDateReceived()
-            });
-        }
-    }
-
-    /**
-     * Get email at specific row index
-     */
-    public Email getEmailAtRow(int row) {
-        if (currentEmails != null && row >= 0 && row < currentEmails.size()) {
-            return currentEmails.get(row);
-        }
-        return null;
-    }
-
     public String getViewName() { return viewName;}
 
     // Expose widgets to controller
@@ -244,6 +164,8 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
     public void setFilterController(FilterController controller) {
         this.filterController = controller;
     }
+
+//    public void setPinnedEmailsController(GetPinnedEmailsController controller) {this.pinnedEmailsController = controller; }
 
     private void onFilterButton() {
         String keyword = keywordField.getText();
@@ -270,7 +192,42 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
                 break;
         }
 
+        userAppliedFilter = true;
+
         filterController.execute(keyword, sender, sortBy);
     }
 
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        System.out.println("PropertyChange received: " + evt.getPropertyName());
+
+        if (evt.getPropertyName().equals("state")) {
+            Object newValue = evt.getNewValue();
+
+            if (newValue instanceof FilteredState) {
+                FilteredState state = (FilteredState) newValue;
+                List<Email> emails = state.getEmails();
+                System.out.println("Filtered emails count: " + emails.size());
+
+                emailTableModel.setEmails(emails);
+
+                if (emails.isEmpty() && userAppliedFilter) {
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "No emails match your filter criteria.",
+                            "No Results",
+                            JOptionPane.INFORMATION_MESSAGE
+                    );
+                }
+
+                userAppliedFilter = false;
+
+            } else if (newValue instanceof DashboardState) {
+                DashboardState state = (DashboardState) newValue;
+                List<Email> emails = state.getEmails();
+                System.out.println("Dashboard emails count: " + emails.size());
+                emailTableModel.setEmails(emails);
+            }
+        }
+    }
 }

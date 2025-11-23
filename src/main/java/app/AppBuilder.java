@@ -1,5 +1,6 @@
 package app;
 
+//import data_access.EmailDataAccessObject;
 import data_access.FilterDataAccessObject;
 import data_access.GetPinnedEmailsDataAccessObject;
 import entity.Email;
@@ -22,7 +23,9 @@ import java.util.List;
 
 import interface_adapter.filter.FilterPresenter;
 import interface_adapter.filter.FilteredViewModel;
+import interface_adapter.view_dashboard.DashboardViewModel;
 import use_case.filter.FilterInteractor;
+//import use_case.get_pinned_emails.GetPinnedEmailsInteractor;
 import view.LoginView;
 import view.StartView;
 import view.DashboardView;
@@ -48,6 +51,9 @@ public class AppBuilder {
     private StartView startView;
     private ItDashboardView itDashboardView;
     private EmailDecisionView emailDecisionView;
+
+//    private GetPinnedEmailsController pinnedEmailsController;
+    private FilterController filterController;
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
@@ -110,18 +116,8 @@ public class AppBuilder {
         // Create the get pinned emails data access object
         GetPinnedEmailsDataAccessObject getPinnedEmailsDataAccessObject = new GetPinnedEmailsDataAccessObject();
 
-        // Create the get pinned emails interactor
-        GetPinnedEmailsInteractor getPinnedEmailsInteractor = new GetPinnedEmailsInteractor(
-                getPinnedEmailsDataAccessObject,
-                getPinnedEmailsPresenter
-        );
-
-        // Create the get pinned emails controller
-        GetPinnedEmailsController getPinnedEmailsController = new GetPinnedEmailsController(getPinnedEmailsInteractor);
-
         // Connect the dashboard view model and controller to the dashboard view
         dashboardView.setDashboardViewModel(dashboardViewModel);
-        dashboardView.setGetPinnedEmailsController(getPinnedEmailsController);
 
         return this;
     }
@@ -182,6 +178,9 @@ public class AppBuilder {
 
             viewManagerModel.setState(dashboardView.getViewName());
             viewManagerModel.firePropertyChange();
+
+//            pinnedEmailsController.execute();
+
         });
 
         // When user presses IT login

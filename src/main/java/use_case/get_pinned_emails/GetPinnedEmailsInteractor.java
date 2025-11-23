@@ -1,9 +1,5 @@
 package use_case.get_pinned_emails;
 
-import entity.Email;
-
-import java.util.List;
-
 /**
  * The Get Pinned Emails Interactor
  */
