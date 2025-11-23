@@ -4,9 +4,6 @@ import entity.Email;
 import interface_adapter.filter.FilterController;
 import interface_adapter.filter.FilteredState;
 import interface_adapter.filter.FilteredViewModel;
-import interface_adapter.view_dashboard.DashboardState;
-import interface_adapter.view_dashboard.DashboardViewModel;
-import interface_adapter.view_dashboard.EmailTableModel;
 import use_case.filter.SortBy;
 
 import javax.swing.*;
