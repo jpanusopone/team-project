@@ -67,18 +67,19 @@ public class AppBuilder {
 
         // pinned emails
 //        EmailDataAccessObject emailDAO = new EmailDataAccessObject(createSampleEmails());
-        DashboardViewModel dashboardViewModel = new DashboardViewModel();
+//        DashboardViewModel dashboardViewModel = new DashboardViewModel();
 //        GetPinnedEmailsPresenter pinnedEmailsPresenter = new GetPinnedEmailsPresenter(viewManagerModel, dashboardViewModel);
 //        GetPinnedEmailsInteractor pinnedEmailsInteractor = new GetPinnedEmailsInteractor(emailDAO, pinnedEmailsPresenter);
 //        pinnedEmailsController = new GetPinnedEmailsController(pinnedEmailsInteractor);
 //        dashboardView.setPinnedEmailsController(pinnedEmailsController);
-        dashboardView.setDashboardViewModel(dashboardViewModel);
+//        dashboardView.setDashboardViewModel(dashboardViewModel);
 
-        dashboardView.setFilteredViewModel(filteredViewModel);
+//        dashboardView.setFilteredViewModel(filteredViewModel);
 //        dashboardView.setPinnedEmailsController(pinnedEmailsController);
-        dashboardView.setDashboardViewModel(dashboardViewModel);
-
+//        dashboardView.setDashboardViewModel(dashboardViewModel);
+//
 //        pinnedEmailsController.execute();
+        filterController.execute("", "", null);
 
         return this;
     }

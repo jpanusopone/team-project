@@ -22,8 +22,6 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
 
     private FilterController filterController;
     private FilteredViewModel filteredViewModel;
-//    private GetPinnedEmailsController pinnedEmailsController;
-    private DashboardViewModel dashboardViewModel;
 
     private JTable emailTable;
     private EmailTableModel emailTableModel;
@@ -129,7 +127,6 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        System.out.println("PropertyChange received: " + evt.getPropertyName());
 
         if (evt.getPropertyName().equals("state")) {
             Object newValue = evt.getNewValue();
@@ -137,14 +134,13 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
             if (newValue instanceof FilteredState) {
                 FilteredState state = (FilteredState) newValue;
                 List<Email> emails = state.getEmails();
-                System.out.println("Filtered emails count: " + emails.size());
 
                 emailTableModel.setEmails(emails);
 
                 if (emails.isEmpty() && userAppliedFilter) {
                     JOptionPane.showMessageDialog(
                             this,
-                            "No emails match your filter criteria.",
+                            "No emails matched your filter criteria.",
                             "No Results",
                             JOptionPane.INFORMATION_MESSAGE
                     );
@@ -152,11 +148,6 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
 
                 userAppliedFilter = false;
 
-            } else if (newValue instanceof DashboardState) {
-                DashboardState state = (DashboardState) newValue;
-                List<Email> emails = state.getEmails();
-                System.out.println("Dashboard emails count: " + emails.size());
-                emailTableModel.setEmails(emails);
             }
         }
     }
@@ -164,11 +155,5 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
         this.filteredViewModel = vm;
         vm.addPropertyChangeListener(this);
     }
-
-    public void setDashboardViewModel(DashboardViewModel vm) {
-        this.dashboardViewModel = vm;
-        vm.addPropertyChangeListener(this);
-    }
-
 
 }
