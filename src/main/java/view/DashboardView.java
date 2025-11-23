@@ -4,9 +4,6 @@ import entity.Email;
 import interface_adapter.filter.FilterController;
 import interface_adapter.filter.FilteredState;
 import interface_adapter.filter.FilteredViewModel;
-import interface_adapter.view_dashboard.DashboardViewModel;
-import interface_adapter.view_dashboard.EmailTableModel;
-import interface_adapter.view_dashboard.GetPinnedEmailsController;
 import use_case.filter.SortBy;
 
 import javax.swing.*;
@@ -23,8 +20,6 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
 
     private FilterController filterController;
     private FilteredViewModel filteredViewModel;
-    private DashboardViewModel dashboardViewModel;
-    private GetPinnedEmailsController getPinnedEmailsController;
 
     private JTable emailTable;
     private EmailTableModel emailTableModel;
@@ -136,14 +131,6 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
         this.filteredViewModel.addPropertyChangeListener(this);
     }
 
-    /**
-     * Set the dashboard view model and register as listener
-     */
-    public void setDashboardViewModel(DashboardViewModel viewModel) {
-        this.dashboardViewModel = viewModel;
-        this.dashboardViewModel.addPropertyChangeListener(this);
-    }
-
     public String getViewName() { return viewName;}
 
     // Expose widgets to controller
@@ -221,15 +208,6 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
                 userAppliedFilter = false;
 
             }
-        }
-    }
-
-    /**
-     * Load pinned emails from Firebase
-     */
-    public void loadPinnedEmails() {
-        if (getPinnedEmailsController != null) {
-            getPinnedEmailsController.execute();
         }
     }
 }

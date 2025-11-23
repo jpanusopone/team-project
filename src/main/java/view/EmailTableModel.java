@@ -1,4 +1,4 @@
-package interface_adapter.view_dashboard;
+package view;
 
 import entity.Email;
 
