@@ -10,6 +10,7 @@ import view.LoginView;
 import view.StartView;
 import view.DashboardView;
 import view.ViewManager;
+import view.SubmitEmailView;
 
 public class AppBuilder {
     private final JPanel cardPanel = new JPanel();
@@ -50,8 +51,12 @@ public class AppBuilder {
 
         // When user presses Submit Phishing Email
         startView.addSubmitPhishingListener(e -> {
-            viewManagerModel.setState("submit-phish");  // whatever the viewName is
-            viewManagerModel.firePropertyChange();
+            // Open the Submit Email window as a separate JFrame
+            SwingUtilities.invokeLater(() -> {
+                SubmitEmailView submitView = new SubmitEmailView();
+                submitView.setLocationRelativeTo(null);
+                submitView.setVisible(true);
+            });
         });
 
         // When user presses Dashboard
