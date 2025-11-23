@@ -1,5 +1,6 @@
 package app;
 
+//import data_access.EmailDataAccessObject;
 import data_access.FilterDataAccessObject;
 import entity.Email;
 import entity.EmailBuilder;
@@ -14,7 +15,9 @@ import java.util.List;
 
 import interface_adapter.filter.FilterPresenter;
 import interface_adapter.filter.FilteredViewModel;
+import interface_adapter.view_dashboard.DashboardViewModel;
 import use_case.filter.FilterInteractor;
+//import use_case.get_pinned_emails.GetPinnedEmailsInteractor;
 import view.LoginView;
 import view.StartView;
 import view.DashboardView;
@@ -30,6 +33,9 @@ public class AppBuilder {
     private LoginView loginView;
     private DashboardView dashboardView;
     private StartView startView;
+
+//    private GetPinnedEmailsController pinnedEmailsController;
+    private FilterController filterController;
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
@@ -51,13 +57,29 @@ public class AppBuilder {
         // make sure addDashBoardView() is called before this
 
         // filter
-        FilterDataAccessObject dao = new FilterDataAccessObject(createSampleEmails());
-        FilteredViewModel viewModel = new FilteredViewModel();
-        FilterPresenter presenter = new FilterPresenter(viewManagerModel, viewModel);
-        FilterInteractor filterInteractor = new FilterInteractor(dao, presenter);
-        FilterController filterController = new FilterController(filterInteractor);  // its constructor should add listeners
+        FilterDataAccessObject filterDAO = new FilterDataAccessObject(createSampleEmails());
+        FilteredViewModel filteredViewModel = new FilteredViewModel();
+        FilterPresenter filterPresenter = new FilterPresenter(viewManagerModel, filteredViewModel);
+        FilterInteractor filterInteractor = new FilterInteractor(filterDAO, filterPresenter);
+        filterController = new FilterController(filterInteractor);  // its constructor should add listeners
         dashboardView.setFilterController(filterController);
-        dashboardView.setFilteredViewModel(viewModel);
+        dashboardView.setFilteredViewModel(filteredViewModel);
+
+        // pinned emails
+//        EmailDataAccessObject emailDAO = new EmailDataAccessObject(createSampleEmails());
+        DashboardViewModel dashboardViewModel = new DashboardViewModel();
+//        GetPinnedEmailsPresenter pinnedEmailsPresenter = new GetPinnedEmailsPresenter(viewManagerModel, dashboardViewModel);
+//        GetPinnedEmailsInteractor pinnedEmailsInteractor = new GetPinnedEmailsInteractor(emailDAO, pinnedEmailsPresenter);
+//        pinnedEmailsController = new GetPinnedEmailsController(pinnedEmailsInteractor);
+//        dashboardView.setPinnedEmailsController(pinnedEmailsController);
+        dashboardView.setDashboardViewModel(dashboardViewModel);
+
+        dashboardView.setFilteredViewModel(filteredViewModel);
+//        dashboardView.setPinnedEmailsController(pinnedEmailsController);
+        dashboardView.setDashboardViewModel(dashboardViewModel);
+
+//        pinnedEmailsController.execute();
+
         return this;
     }
 
@@ -75,6 +97,9 @@ public class AppBuilder {
         startView.addDashboardListener(e -> {
             viewManagerModel.setState(dashboardView.getViewName());
             viewManagerModel.firePropertyChange();
+
+//            pinnedEmailsController.execute();
+
         });
 
         // When user presses IT login

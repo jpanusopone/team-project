@@ -4,13 +4,12 @@ import entity.Email;
 import interface_adapter.filter.FilterController;
 import interface_adapter.filter.FilteredState;
 import interface_adapter.filter.FilteredViewModel;
+import interface_adapter.view_dashboard.DashboardState;
 import interface_adapter.view_dashboard.DashboardViewModel;
 import interface_adapter.view_dashboard.EmailTableModel;
-import interface_adapter.view_dashboard.GetPinnedEmailsController;
 import use_case.filter.SortBy;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,9 +18,12 @@ import java.beans.PropertyChangeListener;
 
 public class DashboardView extends JPanel implements PropertyChangeListener{
     private final String viewName = "dashboard";
+    private boolean userAppliedFilter = false;
 
     private FilterController filterController;
     private FilteredViewModel filteredViewModel;
+//    private GetPinnedEmailsController pinnedEmailsController;
+    private DashboardViewModel dashboardViewModel;
 
     private JTable emailTable;
     private EmailTableModel emailTableModel;
@@ -47,7 +49,7 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
 
         keywordField = new JTextField();
         senderField = new JTextField();
-        sortBox = new JComboBox<>(new String[]{"Date", "Sender", "Suspicion Score"});
+        sortBox = new JComboBox<>(new String[]{"Title", "Sender", "Date Received", "Suspicion Score"});
         filterButton = new JButton("Apply Filter");
 
         filterButton.addActionListener(e -> onFilterButton());
@@ -63,7 +65,6 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
         add(filterPanel, BorderLayout.WEST);
 
         // ----- TABLE FOR PINNED EMAILS -----
-        String[] columnNames = {"Sender", "Title", "Suspicion Score", "Date"};
         emailTableModel = new EmailTableModel(new ArrayList<>()); // this will be a list of all pinned emails
         emailTable = new JTable(emailTableModel);
 
@@ -93,6 +94,8 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
         this.filterController = controller;
     }
 
+//    public void setPinnedEmailsController(GetPinnedEmailsController controller) {this.pinnedEmailsController = controller; }
+
     private void onFilterButton() {
         String keyword = keywordField.getText();
         String sender = senderField.getText();
@@ -118,24 +121,54 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
                 break;
         }
 
+        userAppliedFilter = true;
+
         filterController.execute(keyword, sender, sortBy);
     }
 
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals("filtered")) {
-            FilteredState state = (FilteredState) evt.getNewValue();
-            List<Email> emails = state.getEmails();
+        System.out.println("PropertyChange received: " + evt.getPropertyName());
 
-            emailTableModel.setEmails(emails);
+        if (evt.getPropertyName().equals("state")) {
+            Object newValue = evt.getNewValue();
 
+            if (newValue instanceof FilteredState) {
+                FilteredState state = (FilteredState) newValue;
+                List<Email> emails = state.getEmails();
+                System.out.println("Filtered emails count: " + emails.size());
+
+                emailTableModel.setEmails(emails);
+
+                if (emails.isEmpty() && userAppliedFilter) {
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "No emails match your filter criteria.",
+                            "No Results",
+                            JOptionPane.INFORMATION_MESSAGE
+                    );
+                }
+
+                userAppliedFilter = false;
+
+            } else if (newValue instanceof DashboardState) {
+                DashboardState state = (DashboardState) newValue;
+                List<Email> emails = state.getEmails();
+                System.out.println("Dashboard emails count: " + emails.size());
+                emailTableModel.setEmails(emails);
+            }
         }
     }
-
     public void setFilteredViewModel(FilteredViewModel vm) {
         this.filteredViewModel = vm;
         vm.addPropertyChangeListener(this);
     }
+
+    public void setDashboardViewModel(DashboardViewModel vm) {
+        this.dashboardViewModel = vm;
+        vm.addPropertyChangeListener(this);
+    }
+
 
 }
