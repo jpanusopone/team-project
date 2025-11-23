@@ -5,6 +5,7 @@ import interface_adapter.ViewManagerModel;
 import use_case.filter.FilterOutputBoundary;
 import use_case.filter.FilterOutputData;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FilterPresenter implements FilterOutputBoundary {
@@ -20,8 +21,7 @@ public class FilterPresenter implements FilterOutputBoundary {
 
     @Override
     public void prepareSuccessView(FilterOutputData outputData) {
-        FilteredState state = filteredViewModel.getState();
-        state.setEmails(outputData.getEmails());
+        FilteredState state = new FilteredState(outputData.getEmails());
         state.setError(null);
 
         filteredViewModel.setState(state);
@@ -30,7 +30,7 @@ public class FilterPresenter implements FilterOutputBoundary {
 
     @Override
     public void prepareFailView(String error) {
-        FilteredState state = filteredViewModel.getState();
+        FilteredState state = new FilteredState(new ArrayList<>());
         state.setError(error);
 
         filteredViewModel.setState(state);

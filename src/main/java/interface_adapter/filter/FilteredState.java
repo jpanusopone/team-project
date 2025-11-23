@@ -11,9 +11,9 @@ public class FilteredState {
     private List<Email> emails;
     private String error;
 
-    public FilteredState(FilteredState copy) {
-        emails = copy.emails;
-        error = copy.error;
+    public FilteredState(List<Email> emails) {
+        this.emails = emails;
+        this.error = null;
     }
 
     public FilteredState() {

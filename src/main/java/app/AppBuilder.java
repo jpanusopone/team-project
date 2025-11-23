@@ -87,8 +87,8 @@ public class AppBuilder {
     public AppBuilder addDashboardControllers() {
         // make sure addDashBoardView() and addDashboardSelectView() are called before this
 
-        // --- Setup Filter Use Case ---
-        // Create the filter view model
+        // filter
+        FilterDataAccessObject filterDAO = new FilterDataAccessObject();
         FilteredViewModel filteredViewModel = new FilteredViewModel();
 
         // Create the filter presenter
@@ -118,6 +118,8 @@ public class AppBuilder {
 
         // Connect the dashboard view model and controller to the dashboard view
         dashboardView.setDashboardViewModel(dashboardViewModel);
+
+        filterController.execute("", "", null);
 
         return this;
     }
@@ -178,8 +180,6 @@ public class AppBuilder {
 
             viewManagerModel.setState(dashboardView.getViewName());
             viewManagerModel.firePropertyChange();
-
-//            pinnedEmailsController.execute();
 
         });
 
@@ -275,5 +275,4 @@ public class AppBuilder {
 
         return emails;
     }
-
 }

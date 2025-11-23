@@ -4,18 +4,17 @@ import entity.Email;
 import interface_adapter.filter.FilterController;
 import interface_adapter.filter.FilteredState;
 import interface_adapter.filter.FilteredViewModel;
-import interface_adapter.view_dashboard.DashboardState;
 import interface_adapter.view_dashboard.DashboardViewModel;
 import interface_adapter.view_dashboard.EmailTableModel;
+import interface_adapter.view_dashboard.GetPinnedEmailsController;
 import use_case.filter.SortBy;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DashboardView extends JPanel implements PropertyChangeListener{
@@ -25,6 +24,7 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
     private FilterController filterController;
     private FilteredViewModel filteredViewModel;
     private DashboardViewModel dashboardViewModel;
+    private GetPinnedEmailsController getPinnedEmailsController;
 
     private JTable emailTable;
     private EmailTableModel emailTableModel;
@@ -199,7 +199,6 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        System.out.println("PropertyChange received: " + evt.getPropertyName());
 
         if (evt.getPropertyName().equals("state")) {
             Object newValue = evt.getNewValue();
@@ -207,14 +206,13 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
             if (newValue instanceof FilteredState) {
                 FilteredState state = (FilteredState) newValue;
                 List<Email> emails = state.getEmails();
-                System.out.println("Filtered emails count: " + emails.size());
 
                 emailTableModel.setEmails(emails);
 
                 if (emails.isEmpty() && userAppliedFilter) {
                     JOptionPane.showMessageDialog(
                             this,
-                            "No emails match your filter criteria.",
+                            "No emails matched your filter criteria.",
                             "No Results",
                             JOptionPane.INFORMATION_MESSAGE
                     );
@@ -222,12 +220,16 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
 
                 userAppliedFilter = false;
 
-            } else if (newValue instanceof DashboardState) {
-                DashboardState state = (DashboardState) newValue;
-                List<Email> emails = state.getEmails();
-                System.out.println("Dashboard emails count: " + emails.size());
-                emailTableModel.setEmails(emails);
             }
+        }
+    }
+
+    /**
+     * Load pinned emails from Firebase
+     */
+    public void loadPinnedEmails() {
+        if (getPinnedEmailsController != null) {
+            getPinnedEmailsController.execute();
         }
     }
 }

@@ -7,6 +7,7 @@
     <list default="true" id="473100e1-1f90-4cde-97b2-d9ffbe4f4287" name="Changes" comment="updated project&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml&#10;#&#9;src/main/java/data_access/FilterDataAccessObject.java">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/app/AppBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/AppBuilder.java" afterDir="false" />
+<<<<<<< HEAD
       <change beforePath="$PROJECT_DIR$/src/main/java/data_access/EmailDataAccessObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/data_access/EmailDataAccessObject.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/interface_adapter/view_dashboard/DashboardState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/interface_adapter/view_dashboard/DashboardState.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/interface_adapter/view_dashboard/GetPinnedEmailsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/interface_adapter/view_dashboard/GetPinnedEmailsController.java" afterDir="false" />
@@ -17,6 +18,11 @@
       <change beforePath="$PROJECT_DIR$/src/main/java/use_case/get_pinned_emails/GetPinnedEmailsInteractor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/use_case/get_pinned_emails/GetPinnedEmailsInteractor.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/use_case/get_pinned_emails/GetPinnedEmailsOutputData.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/use_case/get_pinned_emails/GetPinnedEmailsOutputData.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/use_case/get_pinned_emails/GetPinnedEmailsUserDataAccessInterface.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/use_case/get_pinned_emails/GetPinnedEmailsUserDataAccessInterface.java" afterDir="false" />
+=======
+      <change beforePath="$PROJECT_DIR$/src/main/java/data_access/FilterDataAccessObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/data_access/FilterDataAccessObject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/interface_adapter/filter/FilterPresenter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/interface_adapter/filter/FilterPresenter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/interface_adapter/filter/FilteredState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/interface_adapter/filter/FilteredState.java" afterDir="false" />
+>>>>>>> b258180 (Fixed filter to work when no emails match)
       <change beforePath="$PROJECT_DIR$/src/main/java/view/DashboardView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/view/DashboardView.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

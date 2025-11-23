@@ -6,6 +6,8 @@ package use_case.filter;
 public class FilterInputData {
     private final String keyword;
     private final String sender;
+    private Double minScore;
+    private Double maxScore;
     private final SortBy sortBy;
     private final Double minScore;
     private final Double maxScore;
