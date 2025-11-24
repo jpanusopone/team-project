@@ -19,11 +19,16 @@ public class SubmitEmailInteractor implements SubmitEmailInputBoundary {
     }
 
     private int mapRisk(RiskLevel level) {
-        return switch (level) {
-            case HIGH -> 100;
-            case MEDIUM -> 50;
-            case LOW -> 20;
-        };
+        switch (level) {
+            case HIGH:
+                return 100;
+            case MEDIUM:
+                return 50;
+            case LOW:
+                return 20;
+            default:
+                return 0;
+        }
     }
 
     @Override

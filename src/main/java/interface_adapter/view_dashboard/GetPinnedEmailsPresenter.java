@@ -20,11 +20,22 @@ public class GetPinnedEmailsPresenter implements GetPinnedEmailsOutputBoundary {
 
     @Override
     public void prepareSuccessView(GetPinnedEmailsOutputData outputData) {
-        dashboardViewModel.getState();
+        // Update the dashboard state with the pinned emails
+        DashboardState state = dashboardViewModel.getState();
+        state.setPinnedEmails(outputData.getPinnedEmails());
+        state.setError(null);
+
+        // Notify observers that the state has changed
+        dashboardViewModel.firePropertyChange();
     }
 
     @Override
     public void prepareFailView(String errorMessage) {
+        // Update the dashboard state with the error
+        DashboardState state = dashboardViewModel.getState();
+        state.setError(errorMessage);
 
+        // Notify observers that the state has changed
+        dashboardViewModel.firePropertyChange();
     }
 }

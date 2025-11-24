@@ -1,19 +1,27 @@
 package view;
 
 import config.ApplicationConfig;
+import entity.Email;
+import entity.EmailBuilder;
 import entity.PhishingExplanation;
 import entity.RiskLevel;
 import presentation.ExplanationController;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
 /**
  * Use Case 1 GUI: Submit email for analysis.
  */
 
 public class SubmitEmailView extends JFrame{
-    private final JTextArea emailArea = new JTextArea(18, 40);
+    private final JTextArea emailArea = new JTextArea(15, 40);
+
+    // New fields for email metadata
+    private final JTextField senderField = new JTextField(30);
+    private final JTextField subjectField = new JTextField(30);
+    private final JTextField dateField = new JTextField(30);
 
     private final JLabel warningLabel = new JLabel("Paste the email and click Submit", SwingConstants.CENTER);
     private final JLabel scoreNumberLabel = new JLabel("--", SwingConstants.CENTER);
@@ -22,8 +30,10 @@ public class SubmitEmailView extends JFrame{
 
     private final JButton submitButton = new JButton("Submit");
     private final JButton pinButton = new JButton("Pin to Dashboard");
+    private final JButton backToDashboardButton = new JButton("Back to Dashboard");
 
     private final ExplanationController explanationController;
+    private PhishingExplanation currentExplanation;
 
     public SubmitEmailView() {
         this(ApplicationConfig.createExplanationController());
@@ -57,12 +67,37 @@ public class SubmitEmailView extends JFrame{
     private JComponent buildCenterPanel() {
         JPanel center = new JPanel(new GridLayout(1, 2, 10, 0));
 
+        // LEFT PANEL - Email input with metadata fields
+        JPanel leftPanel = new JPanel(new BorderLayout(5, 5));
+
+        // Metadata fields panel
+        JPanel metadataPanel = new JPanel(new GridLayout(3, 2, 5, 5));
+        metadataPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+        metadataPanel.add(new JLabel("Sender:"));
+        metadataPanel.add(senderField);
+        metadataPanel.add(new JLabel("Subject:"));
+        metadataPanel.add(subjectField);
+        metadataPanel.add(new JLabel("Date:"));
+        metadataPanel.add(dateField);
+
+        // Set placeholder text
+        dateField.setText(java.time.LocalDateTime.now().format(
+            java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+        ));
+
+        leftPanel.add(metadataPanel, BorderLayout.NORTH);
+
+        // Email body area
         emailArea.setLineWrap(true);
         emailArea.setWrapStyleWord(true);
         JScrollPane emailScroll = new JScrollPane(emailArea);
-        JPanel leftPanel = new JPanel(new BorderLayout());
-        leftPanel.add(emailScroll, BorderLayout.CENTER);
-        leftPanel.setBorder(BorderFactory.createTitledBorder("Email"));
+        JPanel emailBodyPanel = new JPanel(new BorderLayout());
+        emailBodyPanel.add(emailScroll, BorderLayout.CENTER);
+        emailBodyPanel.setBorder(BorderFactory.createTitledBorder("Email Body"));
+
+        leftPanel.add(emailBodyPanel, BorderLayout.CENTER);
+        leftPanel.setBorder(BorderFactory.createTitledBorder("Email Information"));
 
         JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new BorderLayout(5,5));
@@ -105,19 +140,24 @@ public class SubmitEmailView extends JFrame{
         JPanel bottom = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 5));
         bottom.add(submitButton);
         bottom.add(pinButton);
+        bottom.add(backToDashboardButton);
+
+        // Initially disable pin button until email is analyzed
+        pinButton.setEnabled(false);
+
         return bottom;
     }
 
     private void attachListeners(){
         submitButton.addActionListener(e -> analyzeEmail());
-        pinButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Pin To Dashboard",
-                    "Pinned to dashboard (stub). This will be handled by Use Case 2.",
-                    JOptionPane.INFORMATION_MESSAGE
-            );
-        });
+        pinButton.addActionListener(e -> pinToDashboard());
+    }
+
+    /**
+     * Allow external components to add a listener to the back to dashboard button
+     */
+    public void addBackToDashboardListener(ActionListener listener) {
+        backToDashboardButton.addActionListener(listener);
     }
 
     private void analyzeEmail() {
@@ -130,6 +170,14 @@ public class SubmitEmailView extends JFrame{
                     JOptionPane.WARNING_MESSAGE
             );
             return;
+        }
+
+        // Auto-populate metadata fields if they're empty
+        if (senderField.getText().trim().isEmpty()) {
+            senderField.setText(extractSender(emailText));
+        }
+        if (subjectField.getText().trim().isEmpty()) {
+            subjectField.setText(extractTitle(emailText));
         }
 
         submitButton.setEnabled(false);
@@ -154,16 +202,174 @@ public class SubmitEmailView extends JFrame{
                 submitButton.setEnabled(true);
                 try {
                     PhishingExplanation explanation = get();
+                    currentExplanation = explanation;
                     updateUIWithExplanation(explanation);
+                    // Enable pin button after successful analysis
+                    pinButton.setEnabled(true);
                 } catch (Exception ex) {
                     warningLabel.setText("Error analyzing email.");
                     warningLabel.setForeground(Color.RED);
                     explanationArea.setText("An error occurred while contacting the analyzing service.\n\n"
                         + ex.getMessage());
+                    pinButton.setEnabled(false);
                 }
             }
         };
         worker.execute();
+    }
+
+    private void pinToDashboard() {
+        if (currentExplanation == null) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Please analyze an email first before pinning.",
+                    "No Analysis",
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        String emailText = emailArea.getText().trim();
+        if (emailText.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "No email content to pin.",
+                    "No Email",
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        // Validate metadata fields
+        String sender = senderField.getText().trim();
+        String subject = subjectField.getText().trim();
+        String dateStr = dateField.getText().trim();
+
+        if (sender.isEmpty() || subject.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Please fill in Sender and Subject fields.",
+                    "Missing Information",
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        pinButton.setEnabled(false);
+
+        SwingWorker<Void, Void> worker = new SwingWorker<>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                // Parse date from field or use current time
+                java.time.LocalDateTime dateReceived;
+                try {
+                    dateReceived = java.time.LocalDateTime.parse(dateStr,
+                        java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                } catch (Exception e) {
+                    // If parsing fails, use current time
+                    dateReceived = java.time.LocalDateTime.now();
+                }
+
+                // Create email entity
+                EmailBuilder builder = new EmailBuilder();
+                Email email = builder
+                        .title(subject)
+                        .sender(sender)
+                        .body(emailText)
+                        .dateReceived(dateReceived)
+                        .suspicionScore(mapRiskLevelToScore(currentExplanation.getRiskLevel()))
+                        .explanation(formatExplanation(currentExplanation))
+                        .links(currentExplanation.getIndicators() != null &&
+                               currentExplanation.getIndicators().getUrls() != null ?
+                               currentExplanation.getIndicators().getUrls() : new java.util.ArrayList<>())
+                        .pinned(true)
+                        .pinnedDate(java.time.LocalDateTime.now())
+                        .verifiedStatus("Pending")
+                        .build();
+
+                // Save to Firebase
+                data_access.FirebaseEmailDataAccessObject emailDAO = new data_access.FirebaseEmailDataAccessObject();
+                emailDAO.saveEmail(email);
+
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                pinButton.setEnabled(true);
+                try {
+                    get();
+                    JOptionPane.showMessageDialog(
+                            SubmitEmailView.this,
+                            "Email successfully pinned to dashboard!",
+                            "Success",
+                            JOptionPane.INFORMATION_MESSAGE
+                    );
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(
+                            SubmitEmailView.this,
+                            "Failed to pin email: " + ex.getMessage(),
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE
+                    );
+                }
+            }
+        };
+        worker.execute();
+    }
+
+    private String extractSender(String emailText) {
+        // Simple extraction - look for "From:" or email pattern
+        String[] lines = emailText.split("\n");
+        for (String line : lines) {
+            if (line.toLowerCase().startsWith("from:")) {
+                return line.substring(5).trim();
+            }
+        }
+        // Try to find email pattern
+        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}");
+        java.util.regex.Matcher matcher = pattern.matcher(emailText);
+        if (matcher.find()) {
+            return matcher.group();
+        }
+        return "Unknown Sender";
+    }
+
+    private String extractTitle(String emailText) {
+        // Look for "Subject:" line
+        String[] lines = emailText.split("\n");
+        for (String line : lines) {
+            if (line.toLowerCase().startsWith("subject:")) {
+                return line.substring(8).trim();
+            }
+        }
+        // Use first line if no subject found
+        if (lines.length > 0) {
+            return lines[0].length() > 50 ? lines[0].substring(0, 50) + "..." : lines[0];
+        }
+        return "Untitled Email";
+    }
+
+    private String formatExplanation(PhishingExplanation explanation) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Risk Level: ").append(explanation.getRiskLevel().name()).append("\n\n");
+
+        if (!explanation.getReasons().isEmpty()) {
+            sb.append("Reasons:\n");
+            for (String reason : explanation.getReasons()) {
+                sb.append("- ").append(reason).append("\n");
+            }
+            sb.append("\n");
+        }
+
+        if (!explanation.getSuggestedActions().isEmpty()) {
+            sb.append("Suggested Actions:\n");
+            for (String action : explanation.getSuggestedActions()) {
+                sb.append("- ").append(action).append("\n");
+            }
+        }
+
+        return sb.toString();
     }
 
     private void updateUIWithExplanation(PhishingExplanation explanation) {
@@ -201,10 +407,15 @@ public class SubmitEmailView extends JFrame{
     }
 
     private int mapRiskLevelToScore(RiskLevel level) {
-        return switch (level) {
-            case HIGH -> 100;
-            case MEDIUM -> 50;
-            case LOW -> 20;
-        };
+        switch (level) {
+            case HIGH:
+                return 100;
+            case MEDIUM:
+                return 50;
+            case LOW:
+                return 20;
+            default:
+                return 0;
+        }
     }
 }

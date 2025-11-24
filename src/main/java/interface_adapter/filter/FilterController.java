@@ -1,63 +1,67 @@
 package interface_adapter.filter;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import use_case.filter.FilterInputBoundary;
 import use_case.filter.FilterInputData;
 import use_case.filter.SortBy;
 import view.DashboardView;
 
 /**
- * Controller for the Filter User Case.
+ * Controller for the Filter Use Case.
  */
-
 public class FilterController {
-    private DashboardView view;
+    private final DashboardView view;
+    private final FilterInputBoundary filterInteractor;
 
-    public FilterController(DashboardView view) {
-        this.view =  view;
+    public FilterController(DashboardView view, FilterInputBoundary filterInteractor) {
+        this.view = view;
+        this.filterInteractor = filterInteractor;
 
+        // Connect button to filter action
         view.getFilterButton().addActionListener(e -> applyFilter());
         view.getDiscordButton().addActionListener(e ->
                 JOptionPane.showMessageDialog(view, "Pretend this opens the Discord server!"));
     }
 
-    // temporary method, replace with execute
+    /**
+     * Apply filter based on user inputs from the dashboard
+     */
     private void applyFilter() {
-        // eventually call your real use case here
+        // Get inputs from view
+        String keyword = view.getKeyword();
+        String sender = view.getSender();
+        String sortSelection = view.getSort();
 
-        DefaultTableModel model = (DefaultTableModel) view.getEmailTable().getModel();
-        model.setRowCount(0);  // clear table
+        // Convert sort string to SortBy enum
+        SortBy sortBy = convertToSortBy(sortSelection);
 
-        // mock email data (you can replace with real)
-        Object[][] mockEmails = {
-                {"Amazon", "Your account is locked", 92, "2025-11-10"},
-                {"University", "Assignment posted", 4, "2025-11-11"},
-                {"Bank", "Unusual login attempt", 88, "2025-11-06"}
-        };
+        // Create input data
+        FilterInputData inputData = new FilterInputData(
+                keyword.isEmpty() ? null : keyword,
+                sender.isEmpty() ? null : sender,
+                sortBy,
+                null,  // minScore - could add input fields for these later
+                null   // maxScore
+        );
 
-        for (Object[] row : mockEmails)
-            model.addRow(row);
+        // Execute the filter use case
+        filterInteractor.execute(inputData);
+    }
 
     /**
-     * Executes the Filter Use Case
-     * @param keyword the keyword the user wishes to filter by
-     * @param sender the sender the user wishes to filter by
-     * @param sortBy sorts by title, sender, date received, or suspicion score
-     * @param minSuspicion the minimum suspicion the user filters by
-     * @param maxSuspicion the maximum suspicion the user filters by
+     * Convert dropdown selection to SortBy enum
      */
-//    public void execute(String keyword, String sender, SortBy sortBy,
-//                        Double minSuspicion, Double maxSuspicion) {
-//        FilterInputData inputData = new FilterInputData(
-//                keyword,
-//                sender,
-//                sortBy,
-//                minSuspicion,
-//                maxSuspicion
-//        );
-//
-//        userFilterUseCaseInteractor.execute(inputData);
+    private SortBy convertToSortBy(String selection) {
+        switch (selection) {
+            case "Sender":
+                return SortBy.SENDER;
+            case "Date":
+                return SortBy.DATE_RECEIVED;
+            case "Suspicion Score":
+                return SortBy.SUSPICION_SCORE;
+            default:
+                return SortBy.DATE_RECEIVED;
+        }
     }
 }
 

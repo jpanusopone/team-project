@@ -13,6 +13,7 @@ public class LoginView extends JPanel {
     private final JPasswordField passwordField = new JPasswordField(20);
     private final JButton loginButton = new JButton("Login");
     private final JButton cancelButton = new JButton("Cancel");
+    private final JButton backToDashboardButton = new JButton("Back to Dashboard");
 
     public LoginView() {
         setLayout(new GridBagLayout()); // center everything
@@ -64,6 +65,11 @@ public class LoginView extends JPanel {
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.insets = new Insets(20, 10, 10, 10);
         add(buttonPanel, gbc);
+
+        // --- Back to Dashboard Button ---
+        gbc.gridy++;
+        gbc.insets = new Insets(10, 10, 10, 10);
+        add(backToDashboardButton, gbc);
     }
 
     // Optional getters so controllers can add listeners / read fields
@@ -83,7 +89,13 @@ public class LoginView extends JPanel {
         return cancelButton;
     }
 
+    public JButton getBackToDashboardButton() {
+        return backToDashboardButton;
+    }
 
+    public void addBackToDashboardListener(ActionListener listener) {
+        backToDashboardButton.addActionListener(listener);
+    }
 
     public String getViewName() { return viewName;}
 }
