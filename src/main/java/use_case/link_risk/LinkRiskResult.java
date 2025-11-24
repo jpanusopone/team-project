@@ -5,12 +5,6 @@ public class LinkRiskResult {
     private final String url;
     private final String riskLevel;   // e.g. "SAFE", "DANGEROUS", "UNKNOWN"
 
-    /**
-     * Constructor.
-     *
-     * @param url the URL being assessed
-     * @param riskLevel the assessed risk level for this URL
-     */
     public LinkRiskResult(String url, String riskLevel) {
         if (url == null || url.isBlank()) {
             throw new IllegalArgumentException("url must not be null or blank");
@@ -23,20 +17,10 @@ public class LinkRiskResult {
         this.riskLevel = riskLevel;
     }
 
-    /**
-     * Gets the URL that was assessed.
-     *
-     * @return the URL string
-     */
     public String getUrl() {
         return url;
     }
 
-    /**
-     * Gets the risk level that was determined for the URL.
-     *
-     * @return the risk level string
-     */
     public String getRiskLevel() {
         return riskLevel;
     }
