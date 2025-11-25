@@ -20,6 +20,7 @@ public class AppBuilder {
     private LoginView loginView;
     private DashboardView dashboardView;
     private ItDashboardView itDashboardView;
+    private EmailDecisionView emailDecisionView;
     private StartView startView;
 
     public AppBuilder() {
@@ -52,6 +53,12 @@ public class AppBuilder {
 
     public AppBuilder addItDashboardControllers() {
         new itFilterController(itDashboardView);
+        return this;
+    }
+
+    public AppBuilder addEmailDecisionView() {
+        emailDecisionView = new EmailDecisionView();
+        cardPanel.add(emailDecisionView, emailDecisionView.getViewName());
         return this;
     }
 
