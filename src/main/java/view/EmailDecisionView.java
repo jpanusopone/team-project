@@ -9,53 +9,77 @@ public class EmailDecisionView extends JPanel {
 
     private final String viewName = "email-decision";
 
-    private final JLabel senderLabel   = new JLabel();
-    private final JLabel titleLabel    = new JLabel();
-    private final JLabel scoreLabel    = new JLabel();
-    private final JLabel dateLabel     = new JLabel();
-
+    private final JTextArea emailArea = new JTextArea();
     private final JButton confirmButton = new JButton("Confirm Phishing");
     private final JButton safeButton    = new JButton("Mark Safe");
     private final JButton pendingButton = new JButton("Pending");
+    private final JButton backButton    = new JButton("Back");
 
     public EmailDecisionView() {
         setLayout(new BorderLayout());
-        setBorder(new EmptyBorder(30, 40, 40, 40));
+        setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        JLabel title = new JLabel("Review Email", SwingConstants.CENTER);
-        title.setFont(title.getFont().deriveFont(Font.BOLD, 24f));
+        // ----- Title -----
+        JLabel title = new JLabel("Phish Detect - IT", SwingConstants.CENTER);
+        title.setFont(title.getFont().deriveFont(Font.BOLD, 26f));
         add(title, BorderLayout.NORTH);
 
-        // Info panel (sender, title, etc.)
-        JPanel infoPanel = new JPanel(new GridLayout(0, 1, 5, 5));
-        infoPanel.add(senderLabel);
-        infoPanel.add(titleLabel);
-        infoPanel.add(scoreLabel);
-        infoPanel.add(dateLabel);
-        add(infoPanel, BorderLayout.CENTER);
+        // ----- Left: email text area -----
+        emailArea.setEditable(false);
+        emailArea.setLineWrap(true);
+        emailArea.setWrapStyleWord(true);
+        emailArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
 
-        // Buttons
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(confirmButton);
-        buttonPanel.add(safeButton);
-        buttonPanel.add(pendingButton);
-        add(buttonPanel, BorderLayout.SOUTH);
+        JScrollPane emailScroll = new JScrollPane(emailArea);
+        emailScroll.setBorder(BorderFactory.createTitledBorder("Email"));
+
+        JPanel emailPanel = new JPanel(new BorderLayout());
+        emailPanel.add(emailScroll, BorderLayout.CENTER);
+        emailPanel.setBorder(new EmptyBorder(10, 0, 10, 20));
+
+        add(emailPanel, BorderLayout.CENTER);
+
+        // ----- Right: vertical button column -----
+        JPanel buttonColumn = new JPanel();
+        buttonColumn.setLayout(new BoxLayout(buttonColumn, BoxLayout.Y_AXIS));
+        buttonColumn.setBorder(new EmptyBorder(40, 20, 40, 0));
+
+        Dimension buttonSize = new Dimension(180, 45);
+        styleButton(confirmButton, buttonSize);
+        styleButton(safeButton, buttonSize);
+        styleButton(pendingButton, buttonSize);
+
+        buttonColumn.add(confirmButton);
+        buttonColumn.add(Box.createRigidArea(new Dimension(0, 20)));
+        buttonColumn.add(safeButton);
+        buttonColumn.add(Box.createRigidArea(new Dimension(0, 20)));
+        buttonColumn.add(pendingButton);
+        buttonColumn.add(Box.createRigidArea(new Dimension(0, 100))); // extra space before back
+        buttonColumn.add(backButton);
+
+        add(buttonColumn, BorderLayout.EAST);
+    }
+
+    private void styleButton(JButton button, Dimension size) {
+        button.setAlignmentX(Component.CENTER_ALIGNMENT);
+        button.setMaximumSize(size);
+        button.setPreferredSize(size);
+        button.setFocusPainted(false);
     }
 
     public String getViewName() {
         return viewName;
     }
 
-    // Called by controller when the user clicks a row
-    public void setEmailDetails(String sender, String title, Object score, String date) {
-        senderLabel.setText("Sender: " + sender);
-        titleLabel.setText("Title: " + title);
-        scoreLabel.setText("Suspicion score: " + score);
-        dateLabel.setText("Date: " + date);
+    // Called by controller to show the clicked email
+    public void setEmailText(String text) {
+        emailArea.setText(text);
+        emailArea.setCaretPosition(0);
     }
 
-    // Listener hooks for the buttons
+    // Listener hooks for controller
     public void addConfirmListener(ActionListener l) { confirmButton.addActionListener(l); }
     public void addSafeListener(ActionListener l)    { safeButton.addActionListener(l); }
     public void addPendingListener(ActionListener l) { pendingButton.addActionListener(l); }
+    public void addBackListener(ActionListener l)    { backButton.addActionListener(l); }
 }

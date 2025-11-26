@@ -4,6 +4,7 @@ import interface_adapter.ViewManagerModel;
 import interface_adapter.filter.FilterController;
 import interface_adapter.filter.itFilterController;
 import interface_adapter.login.loginController;
+import interface_adapter.it_dashboard.ItDashboardController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -53,6 +54,7 @@ public class AppBuilder {
 
     public AppBuilder addItDashboardControllers() {
         new itFilterController(itDashboardView);
+        new ItDashboardController(itDashboardView, emailDecisionView, viewManagerModel);
         return this;
     }
 

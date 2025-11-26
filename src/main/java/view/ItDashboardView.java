@@ -63,9 +63,11 @@ public class ItDashboardView extends JPanel {
     // Expose widgets to controller
     public JButton getItFilterButton() { return filterButton; }
     public JButton getItDiscordButton() { return discordButton; }
-    public JTable getEmailTable() { return emailTable; }
+    public JTable getItEmailTable() { return emailTable; }
     public String getKeyword() { return keywordField.getText(); }
     public String getSender() { return senderField.getText(); }
     public String getSort() { return (String) sortBox.getSelectedItem(); }
+
+
 }
 

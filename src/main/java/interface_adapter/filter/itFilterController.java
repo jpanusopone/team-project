@@ -21,7 +21,7 @@ public class itFilterController {
     private void applyFilter() {
         // eventually call your real use case here
 
-        DefaultTableModel model = (DefaultTableModel) view.getEmailTable().getModel();
+        DefaultTableModel model = (DefaultTableModel) view.getItEmailTable().getModel();
         model.setRowCount(0);  // clear table
 
         // mock email data (you can replace with real)
