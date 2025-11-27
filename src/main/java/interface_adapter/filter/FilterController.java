@@ -1,18 +1,15 @@
 package interface_adapter.filter;
 
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import use_case.filter.FilterInputBoundary;
 import use_case.filter.FilterInputData;
 import use_case.filter.SortBy;
-import view.DashboardView;
 
 /**
  * Controller for the Filter User Case.
  */
 
 public class FilterController {
-    private FilterInputBoundary filterInteractor;
+    private final FilterInputBoundary filterInteractor;
 
     public FilterController(FilterInputBoundary filterInteractor) {
         this.filterInteractor =  filterInteractor;
@@ -20,16 +17,20 @@ public class FilterController {
 
     /**
      * Executes the Filter Use Case
-     * @param keyword the keyword the user wishes to filter by
-     * @param sender the sender the user wishes to filter by
-     * @param sortBy sorts by title, sender, date received, or suspicion score
+     *
+     * @param keyword  the keyword the user wishes to filter by
+     * @param sender   the sender the user wishes to filter by
+     * @param sortBy   sorts by title, sender, date received, or suspicion score
+     * @param minScore the minimum suspicion score
+     * @param maxScore the maximum suspicion score
      */
-    public void execute(String keyword, String sender, SortBy sortBy) {
+    public void execute(String keyword, String sender, SortBy sortBy, Double minScore, Double maxScore) {
         FilterInputData inputData = new FilterInputData(
                 keyword,
                 sender,
-                sortBy
-        );
+                sortBy,
+                minScore,
+                maxScore);
         filterInteractor.execute(inputData);
     }
 

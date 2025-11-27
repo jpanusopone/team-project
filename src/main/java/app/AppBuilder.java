@@ -15,7 +15,6 @@ import java.util.List;
 
 import interface_adapter.filter.FilterPresenter;
 import interface_adapter.filter.FilteredViewModel;
-import interface_adapter.view_dashboard.DashboardViewModel;
 import use_case.filter.FilterInteractor;
 //import use_case.get_pinned_emails.GetPinnedEmailsInteractor;
 import view.LoginView;
@@ -79,7 +78,7 @@ public class AppBuilder {
 //        dashboardView.setDashboardViewModel(dashboardViewModel);
 //
 //        pinnedEmailsController.execute();
-        filterController.execute("", "", null);
+        filterController.execute("", "", null, 0.0, 100.0);
 
         return this;
     }

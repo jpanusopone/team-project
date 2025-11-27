@@ -20,13 +20,15 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
     private FilterController filterController;
     private FilteredViewModel filteredViewModel;
 
-    private JTable emailTable;
-    private EmailTableModel emailTableModel;
-    private JTextField keywordField;
-    private JTextField senderField;
-    private JComboBox<String> sortBox;
-    private JButton filterButton;
-    private JButton discordButton;
+    private final JTable emailTable;
+    private final EmailTableModel emailTableModel;
+    private final JTextField keywordField;
+    private final JTextField senderField;
+    private final JTextField minScoreField;
+    private final JTextField maxScoreField;
+    private final JComboBox<String> sortBox;
+    private final JButton filterButton;
+    private final JButton discordButton;
 
     public DashboardView() {
         super();
@@ -44,6 +46,8 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
 
         keywordField = new JTextField();
         senderField = new JTextField();
+        minScoreField = new JTextField();
+        maxScoreField = new JTextField();
         sortBox = new JComboBox<>(new String[]{"Title", "Sender", "Date Received", "Suspicion Score"});
         filterButton = new JButton("Apply Filter");
 
@@ -53,6 +57,10 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
         filterPanel.add(keywordField);
         filterPanel.add(new JLabel("Sender:"));
         filterPanel.add(senderField);
+        filterPanel.add(new JLabel("Minimum Score:"));
+        filterPanel.add(minScoreField);
+        filterPanel.add(new JLabel("Maximum Score:"));
+        filterPanel.add(maxScoreField);
         filterPanel.add(new JLabel("Sort by:"));
         filterPanel.add(sortBox);
         filterPanel.add(filterButton);
@@ -83,6 +91,8 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
     public JTable getEmailTable() { return emailTable; }
     public String getKeyword() { return keywordField.getText(); }
     public String getSender() { return senderField.getText(); }
+    public Double getMinScore() { return Double.parseDouble(minScoreField.getText()); }
+    public Double getMaxScore() { return Double.parseDouble(maxScoreField.getText()); }
     public String getSort() { return (String) sortBox.getSelectedItem(); }
 
     public void setFilterController(FilterController controller) {
@@ -95,6 +105,20 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
         String keyword = keywordField.getText();
         String sender = senderField.getText();
         String sortValue = (String) sortBox.getSelectedItem();
+        double minScore;
+        double maxScore;
+
+        try {
+            minScore = Double.parseDouble(minScoreField.getText());
+        } catch (NumberFormatException e) {
+            minScore = 0.0;
+        }
+
+        try {
+            maxScore = Double.parseDouble(maxScoreField.getText());
+        } catch (NumberFormatException e) {
+            maxScore = 100.0;
+        }
 
         SortBy sortBy;
 
@@ -118,7 +142,7 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
 
         userAppliedFilter = true;
 
-        filterController.execute(keyword, sender, sortBy);
+        filterController.execute(keyword, sender, sortBy, minScore, maxScore);
     }
 
 
