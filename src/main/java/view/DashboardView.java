@@ -1,8 +1,13 @@
 package view;
 
+import interface_adapter.filter.FilterController;
+import interface_adapter.view_dashboard.DashboardViewModel;
+import interface_adapter.view_dashboard.GetPinnedEmailsController;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 public class DashboardView extends JPanel {
     private final String viewName = "dashboard";
@@ -70,4 +75,3 @@ public class DashboardView extends JPanel {
     public String getSender() { return senderField.getText(); }
     public String getSort() { return (String) sortBox.getSelectedItem(); }
 }
-
