@@ -59,17 +59,17 @@ public class Email {
     }
 
     // Getters
-    public int getId() { return id; }
-    public String getTitle() { return title; }
-    public String getSender() { return sender; }
-    public String getBody() { return body; }
-    public LocalDateTime getDateReceived() { return dateReceived; }
-    public double getSuspicionScore() { return suspicionScore; }
-    public String getExplanation() { return explanation; }
-    public List<String> getLinks() { return links; }
+//    public int getId() { return id; }
+//    public String getTitle() { return title; }
+//    public String getSender() { return sender; }
+//    public String getBody() { return body; }
+//    public LocalDateTime getDateReceived() { return dateReceived; }
+//    public double getSuspicionScore() { return suspicionScore; }
+//    public String getExplanation() { return explanation; }
+//    public List<String> getLinks() { return links; }
     public boolean isPinned() { return pinned; }
-    public LocalDateTime getPinnedDate() { return pinnedDate; }
-    public String getVerifiedStatus() { return verifiedStatus; }
+//    public LocalDateTime getPinnedDate() { return pinnedDate; }
+//    public String getVerifiedStatus() { return verifiedStatus; }
 
     // Setters (if other use cases need to update these)
     public void setId(int id) { this.id = id; }

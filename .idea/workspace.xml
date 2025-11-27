@@ -5,15 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="473100e1-1f90-4cde-97b2-d9ffbe4f4287" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/app/AppBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/AppBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/app/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/data_access/FilterDataAccessObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/data_access/FilterDataAccessObject.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/entity/Email.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/entity/Email.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/use_case/get_pinned_emails/GetPinnedEmailsInteractor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/use_case/get_pinned_emails/GetPinnedEmailsInteractor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/use_case/get_pinned_emails/GetPinnedEmailsOutputData.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/use_case/get_pinned_emails/GetPinnedEmailsOutputData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/use_case/submit_email/SubmitEmailInteractor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/use_case/submit_email/SubmitEmailInteractor.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,6 +53,7 @@
     "Application.Main.executor": "Run",
     "Application.OpenRouterIntegrationTest.executor": "Run",
     "Application.TestMyEmail.executor": "Run",
+    "Application.UseCaseTest.executor": "Run",
     "JUnit.ExplainPhishingEmailUseCaseTest.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
@@ -104,6 +100,17 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <method v="2" />
     </configuration>
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="TeamProject" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="TeamProject" />
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -121,5 +128,16 @@
       <updated>1762803520102</updated>
     </task>
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>
