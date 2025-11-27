@@ -5,100 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="473100e1-1f90-4cde-97b2-d9ffbe4f4287" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/checkstyle-idea.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/gson-2.10.1.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/IntegrationTest.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/OpenRouterIntegrationTest.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/SimpleTest$MockFailService.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/SimpleTest$MockSuccessService.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/SimpleTest.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/TestMyEmail.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/UseCaseTest.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/entity/PhishingExplanation.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/entity/PhishingIndicators.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/entity/RiskLevel.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/infrastructure/services/ClaudeExplanationService.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/infrastructure/services/DeepSeekExplanationService.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/infrastructure/services/LLMExplanationService.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/infrastructure/services/OpenAIExplanationService$ResponseFormat.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/infrastructure/services/OpenAIExplanationService.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/infrastructure/services/OpenRouterExplanationService.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/use_case/ExplainPhishingEmailUseCase.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/use_case/interfaces/ExplanationException.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/use_case/interfaces/ExplanationService.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/app/FirebaseTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/config/ApplicationConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/config/FirebaseConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/data_access/FilterDataAccessObject.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/data_access/FirebaseEmailDataAccessObject.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/data_access/FirebaseITVerificationDataAccessObject.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/data_access/GetPinnedEmailsDataAccessObject.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/entity/PhishingExplanation.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/entity/PhishingIndicators.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/entity/RiskLevel.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/infrastructure/services/DeepSeekExplanationService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/infrastructure/services/LLMExplanationService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/infrastructure/services/OpenAIExplanationService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/infrastructure/services/OpenRouterExplanationService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/interface_adapter/filter/FilterPresenter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/interface_adapter/filter/FilteredState.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/interface_adapter/filter/FilteredViewModel.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/interface_adapter/submit_email/SubmitEmailController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/interface_adapter/submit_email/SubmitEmailPresenter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/interface_adapter/submit_email/SubmitEmailViewModel.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/interface_adapter/view_dashboard/DashboardState.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/interface_adapter/view_dashboard/DashboardViewModel.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/interface_adapter/view_dashboard/GetPinnedEmailsPresenter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/presentation/ExplanationController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/presentation/ExplanationResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/use_case/ExplainPhishingEmailUseCase.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/use_case/filter/SortBy.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/use_case/get_pinned_emails/GetPinnedEmailsInputBoundary.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/use_case/get_pinned_emails/GetPinnedEmailsInputData.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/use_case/get_pinned_emails/GetPinnedEmailsInteractor.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/use_case/get_pinned_emails/GetPinnedEmailsOutputBoundary.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/use_case/get_pinned_emails/GetPinnedEmailsOutputData.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/use_case/get_pinned_emails/GetPinnedEmailsUserDataAccessInterface.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/use_case/interfaces/ExplanationException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/use_case/interfaces/ExplanationService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/use_case/link_risk/LinkRiskInputBoundary.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/use_case/link_risk/LinkRiskInputData.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/use_case/link_risk/LinkRiskInteractor.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/use_case/link_risk/LinkRiskOutputBoundary.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/use_case/link_risk/LinkRiskOutputData.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/use_case/link_risk/LinkRiskUserDataAccessInterface.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/use_case/submit_email/SubmitEmailInputBoundary.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/use_case/submit_email/SubmitEmailInputData.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/use_case/submit_email/SubmitEmailInteractor.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/use_case/submit_email/SubmitEmailOutputBoundary.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/use_case/submit_email/SubmitEmailOutputData.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/view/MenuView.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/view/SubmitEmailView.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/TestMyEmail.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/UseCaseTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/infrastructure/services/DeepSeekExplanationServiceTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/infrastructure/services/OpenAIExplanationServiceTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/presentation/ExplanationControllerTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/usecase/ExplainPhishingEmailUseCaseTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/view/DashboardSelectView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/app/AppBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/AppBuilder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/app/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/interface_adapter/ViewModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/interface_adapter/ViewModel.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/interface_adapter/filter/FilterController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/interface_adapter/filter/FilterController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/interface_adapter/view_dashboard/ViewDashboardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/interface_adapter/view_dashboard/GetPinnedEmailsController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/use_case/filter/FilterInputData.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/use_case/filter/FilterInputData.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/use_case/filter/FilterInteractor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/use_case/filter/FilterInteractor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/use_case/filter/FilterOutputData.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/use_case/filter/FilterOutputData.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/use_case/filter/FilterUserDataAccessInterface.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/use_case/filter/FilterUserDataAccessInterface.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/use_case/view_dashboard/ViewDashboardInputBoundary.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/use_case/view_dashboard/ViewDashboardInputData.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/use_case/view_dashboard/ViewDashboardInteractor.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/use_case/view_dashboard/ViewDashboardOutputBoundary.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/use_case/view_dashboard/ViewDashboardOutputData.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/use_case/view_dashboard/ViewDashboardUserDataAccessInterface.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/view/DashboardView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/view/DashboardView.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -121,12 +32,12 @@
     &quot;assignee&quot;: &quot;0507ellie&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/jpanusopone/team-project.git&quot;,
-    &quot;accountId&quot;: &quot;5bf444da-d0f2-4652-ba4b-f931750baa0a&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/jpanusopone/team-project.git",
+    "accountId": "4ab7395e-7f99-4e8b-87cc-ddcd524e178c"
   }
-}</component>
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 0
@@ -136,25 +47,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.FirebaseTest.executor": "Run",
-    "Application.IntegrationTest.executor": "Run",
-    "Application.Main.executor": "Run",
-    "Application.OpenRouterIntegrationTest.executor": "Run",
-    "Application.TestMyEmail.executor": "Run",
-    "Application.UseCaseTest.executor": "Run",
-    "JUnit.ExplainPhishingEmailUseCaseTest.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "Merging it__signin",
-    "kotlin-language-version-configured": "true",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.2"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.FirebaseTest.executor&quot;: &quot;Run&quot;,
+    &quot;Application.IntegrationTest.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
+    &quot;Application.OpenRouterIntegrationTest.executor&quot;: &quot;Run&quot;,
+    &quot;Application.TestMyEmail.executor&quot;: &quot;Run&quot;,
+    &quot;Application.UseCaseTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ExplainPhishingEmailUseCaseTest.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;it__signin&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="TeamProject" />
@@ -188,17 +99,6 @@
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="JetRunConfigurationType">
-      <module name="TeamProject" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
-      <module name="TeamProject" />
-      <option name="filePath" />
       <method v="2" />
     </configuration>
   </component>

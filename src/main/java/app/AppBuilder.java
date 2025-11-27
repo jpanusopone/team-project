@@ -25,6 +25,7 @@ public class AppBuilder {
 
     private LoginView loginView;
     private DashboardView dashboardView;
+    private DashboardSelectView dashboardSelectView;
     private ItDashboardView itDashboardView;
     private EmailDecisionView emailDecisionView;
     private StartView startView;
@@ -75,9 +76,21 @@ public class AppBuilder {
         return this;
     }
 
+    public AppBuilder addDashboardSelectView() {
+        dashboardSelectView = new DashboardSelectView();
+        cardPanel.add(dashboardSelectView, dashboardSelectView.getViewName());
+
+        dashboardSelectView.addBackListener(e -> {
+            viewManagerModel.setState("dashboard"); // or "itdashboard", depending
+            viewManagerModel.firePropertyChange();
+        });
+
+        return this;
+    }
+
     public AppBuilder addDashboardControllers() {
         // make sure addDashBoardView() is called before this
-        new FilterController(dashboardView);  // its constructor should add listeners
+        new FilterController(dashboardView, dashboardSelectView, viewManagerModel);  // its constructor should add listeners
         return this;
     }
 
@@ -106,6 +119,9 @@ public class AppBuilder {
             viewManagerModel.setState(dashboardView.getViewName());
             viewManagerModel.firePropertyChange();
         });
+
+
+
 
         // When user presses IT login
         startView.addItLoginListener(e -> {
