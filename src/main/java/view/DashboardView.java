@@ -156,19 +156,30 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
         String keyword = keywordField.getText();
         String sender = senderField.getText();
         String sortValue = (String) sortBox.getSelectedItem();
-        double minScore;
-        double maxScore;
+        double minScore = 0.0;
+        double maxScore = 100.0;
 
         try {
             minScore = Double.parseDouble(minScoreField.getText());
-        } catch (NumberFormatException e) {
-            minScore = 0.0;
-        }
-
-        try {
             maxScore = Double.parseDouble(maxScoreField.getText());
         } catch (NumberFormatException e) {
-            maxScore = 100.0;
+            if (!minScoreField.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Only number values are accepted as a Minimum Score",
+                        "Input Error",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+            }
+
+            if (!maxScoreField.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Only number values are accepted as a Maximum Score",
+                        "Input Error",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+            }
         }
 
         SortBy sortBy;
