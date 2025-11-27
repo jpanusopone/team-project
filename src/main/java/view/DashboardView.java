@@ -59,9 +59,49 @@ public class DashboardView extends JPanel implements PropertyChangeListener {
         add(filterPanel, BorderLayout.WEST);
 
         // ----- TABLE FOR PINNED EMAILS -----
-        String[] columns = {"Sender", "Title", "Suspicion Score", "Date"};
-        DefaultTableModel model = new DefaultTableModel(columns, 0);
+        String[] columns = {"Sender", "Title", "Suspicion Score", "Status", "Date"};
+        DefaultTableModel model = new DefaultTableModel(columns, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Make table read-only
+            }
+        };
         emailTable = new JTable(model);
+
+        // Add custom renderer for status column
+        emailTable.getColumnModel().getColumn(3).setCellRenderer(new javax.swing.table.DefaultTableCellRenderer() {
+            @Override
+            public java.awt.Component getTableCellRendererComponent(JTable table, Object value,
+                    boolean isSelected, boolean hasFocus, int row, int column) {
+                java.awt.Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+                if (!isSelected && value != null) {
+                    String status = value.toString();
+                    switch (status) {
+                        case "Confirmed":
+                            c.setBackground(new Color(255, 200, 200)); // Light red for confirmed phishing
+                            c.setForeground(Color.BLACK);
+                            break;
+                        case "Safe":
+                            c.setBackground(new Color(200, 255, 200)); // Light green for safe
+                            c.setForeground(Color.BLACK);
+                            break;
+                        case "Pending":
+                            c.setBackground(new Color(255, 255, 200)); // Light yellow for pending
+                            c.setForeground(Color.BLACK);
+                            break;
+                        default:
+                            c.setBackground(Color.WHITE);
+                            c.setForeground(Color.BLACK);
+                    }
+                } else if (isSelected) {
+                    c.setBackground(table.getSelectionBackground());
+                    c.setForeground(table.getSelectionForeground());
+                }
+
+                return c;
+            }
+        });
 
         JScrollPane scrollPane = new JScrollPane(emailTable);
         add(scrollPane, BorderLayout.CENTER);
@@ -148,10 +188,12 @@ public class DashboardView extends JPanel implements PropertyChangeListener {
         model.setRowCount(0); // Clear existing rows
 
         for (Email email : emails) {
+            String status = email.getVerifiedStatus() != null ? email.getVerifiedStatus() : "Pending";
             model.addRow(new Object[]{
                     email.getSender(),
                     email.getTitle(),
                     email.getSuspicionScore(),
+                    status,
                     email.getDateReceived()
             });
         }

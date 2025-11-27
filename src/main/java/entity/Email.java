@@ -6,6 +6,7 @@ import java.util.List;
 public class Email {
 
     private int id;
+    private String documentId; // Firebase document ID
     private String title;
     private String sender;
     private String body;
@@ -48,6 +49,7 @@ public class Email {
 
     // Getters
     public int getId() { return id; }
+    public String getDocumentId() { return documentId; }
     public String getTitle() { return title; }
     public String getSender() { return sender; }
     public String getBody() { return body; }
@@ -61,6 +63,7 @@ public class Email {
 
     // Setters (if other use cases need to update these)
     public void setId(int id) { this.id = id; }
+    public void setDocumentId(String documentId) { this.documentId = documentId; }
     public void setTitle(String title) { this.title = title; }
     public void setSender(String sender) { this.sender = sender; }
     public void setBody(String body) { this.body = body; }

@@ -20,6 +20,11 @@ import view.StartView;
 import view.DashboardView;
 import view.ViewManager;
 import view.SubmitEmailView;
+import view.ItDashboardView;
+import view.EmailDecisionView;
+import interface_adapter.login.LoginController;
+import interface_adapter.it_dashboard.ItDashboardController;
+import interface_adapter.filter.ItFilterController;
 
 public class AppBuilder {
     private final JPanel cardPanel = new JPanel();
@@ -31,6 +36,8 @@ public class AppBuilder {
     private LoginView loginView;
     private DashboardView dashboardView;
     private StartView startView;
+    private ItDashboardView itDashboardView;
+    private EmailDecisionView emailDecisionView;
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
@@ -96,6 +103,32 @@ public class AppBuilder {
         return this;
     }
 
+    public AppBuilder addItDashboardView() {
+        itDashboardView = new ItDashboardView();
+        cardPanel.add(itDashboardView, itDashboardView.getViewName());
+        return this;
+    }
+
+    public AppBuilder addEmailDecisionView() {
+        emailDecisionView = new EmailDecisionView();
+        cardPanel.add(emailDecisionView, emailDecisionView.getViewName());
+        return this;
+    }
+
+    public AppBuilder addItDashboardControllers() {
+        // Make sure addItDashboardView() and addEmailDecisionView() are called first
+        ItDashboardController itDashboardController = new ItDashboardController(
+                itDashboardView, emailDecisionView, viewManagerModel);
+        new ItFilterController(itDashboardView, itDashboardController);
+        return this;
+    }
+
+    public AppBuilder addLoginController() {
+        // Make sure addLoginView() is called first
+        new LoginController(loginView, viewManagerModel);
+        return this;
+    }
+
     public AppBuilder addStartView(){
         startView = new StartView();
         cardPanel.add(startView, startView.getViewName());
@@ -145,6 +178,12 @@ public class AppBuilder {
             // Load pinned emails when going back to dashboard
             dashboardView.loadPinnedEmails();
             viewManagerModel.setState(dashboardView.getViewName());
+            viewManagerModel.firePropertyChange();
+        });
+
+        // Add back to start listener for IT dashboard
+        itDashboardView.getBackButton().addActionListener(e -> {
+            viewManagerModel.setState(startView.getViewName());
             viewManagerModel.firePropertyChange();
         });
 

@@ -260,6 +260,14 @@ public class SubmitEmailView extends JFrame{
         SwingWorker<Void, Void> worker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() throws Exception {
+                // Save to Firebase - check for duplicates first
+                data_access.FirebaseEmailDataAccessObject emailDAO = new data_access.FirebaseEmailDataAccessObject();
+
+                // Check if email with same content already exists
+                if (emailDAO.emailExistsByContent(emailText)) {
+                    throw new Exception("This email has already been submitted to the system.");
+                }
+
                 // Parse date from field or use current time
                 java.time.LocalDateTime dateReceived;
                 try {
@@ -287,8 +295,6 @@ public class SubmitEmailView extends JFrame{
                         .verifiedStatus("Pending")
                         .build();
 
-                // Save to Firebase
-                data_access.FirebaseEmailDataAccessObject emailDAO = new data_access.FirebaseEmailDataAccessObject();
                 emailDAO.saveEmail(email);
 
                 return null;
@@ -376,12 +382,32 @@ public class SubmitEmailView extends JFrame{
         int score = mapRiskLevelToScore(explanation.getRiskLevel());
         scoreNumberLabel.setText(String.valueOf(score));
 
-        if (explanation.isSuspicious()) {
+        // Analyze links
+        boolean hasDangerousLinks = false;
+        if (explanation.getIndicators() != null &&
+            explanation.getIndicators().getUrls() != null &&
+            !explanation.getIndicators().getUrls().isEmpty()) {
+            for (String url : explanation.getIndicators().getUrls()) {
+                if (isLinkSuspicious(url)) {
+                    hasDangerousLinks = true;
+                    break;
+                }
+            }
+        }
+
+        // Update warning label based on suspicion and link analysis
+        if (hasDangerousLinks) {
+            warningLabel.setText("⚠️ DANGER: DO NOT CLICK ANY LINKS! ⚠️");
+            warningLabel.setForeground(Color.RED);
+            warningLabel.setBackground(new Color(255, 220, 220));
+        } else if (explanation.isSuspicious()) {
             warningLabel.setText("!!! Be careful with links !!!");
             warningLabel.setForeground(Color.RED.darker());
+            warningLabel.setBackground(new Color(255, 240, 240));
         } else {
             warningLabel.setText("No strong phishing signals, but stay cautious.");
             warningLabel.setForeground(new Color(0, 128, 0));
+            warningLabel.setBackground(new Color(240, 255, 240));
         }
 
         StringBuilder sb = new StringBuilder();
@@ -395,6 +421,18 @@ public class SubmitEmailView extends JFrame{
             sb.append("\n");
         }
 
+        // Add link analysis section
+        if (explanation.getIndicators() != null &&
+            explanation.getIndicators().getUrls() != null &&
+            !explanation.getIndicators().getUrls().isEmpty()) {
+            sb.append("Link Analysis:\n");
+            for (String url : explanation.getIndicators().getUrls()) {
+                String analysis = analyzeLinkRisk(url);
+                sb.append(" - ").append(analysis).append("\n");
+            }
+            sb.append("\n");
+        }
+
         if (!explanation.getSuggestedActions().isEmpty()) {
             sb.append("Suggested actions:\n");
             for (String a : explanation.getSuggestedActions()) {
@@ -404,6 +442,86 @@ public class SubmitEmailView extends JFrame{
 
         explanationArea.setText(sb.toString());
         explanationArea.setCaretPosition(0);
+    }
+
+    private boolean isLinkSuspicious(String url) {
+        if (url == null || url.trim().isEmpty()) return false;
+
+        String lowerUrl = url.toLowerCase();
+
+        // Check for suspicious patterns
+        return lowerUrl.contains("bit.ly") ||
+               lowerUrl.contains("tinyurl") ||
+               lowerUrl.contains("@") ||  // URL with @ character
+               lowerUrl.matches(".*\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}.*") || // IP address
+               lowerUrl.contains("-login") ||
+               lowerUrl.contains("verify") ||
+               lowerUrl.contains("secure") ||
+               lowerUrl.contains("update") ||
+               lowerUrl.contains("confirm");
+    }
+
+    private String analyzeLinkRisk(String url) {
+        if (url == null || url.trim().isEmpty()) {
+            return "Empty URL";
+        }
+
+        String lowerUrl = url.toLowerCase();
+        StringBuilder analysis = new StringBuilder();
+        analysis.append(url);
+
+        boolean isSuspicious = false;
+        java.util.List<String> warnings = new java.util.ArrayList<>();
+
+        // Check for URL shorteners
+        if (lowerUrl.contains("bit.ly") || lowerUrl.contains("tinyurl") ||
+            lowerUrl.contains("goo.gl") || lowerUrl.contains("ow.ly")) {
+            warnings.add("URL shortener (hides destination)");
+            isSuspicious = true;
+        }
+
+        // Check for IP address instead of domain
+        if (lowerUrl.matches(".*\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}.*")) {
+            warnings.add("uses IP address instead of domain");
+            isSuspicious = true;
+        }
+
+        // Check for @ symbol (can hide real destination)
+        if (lowerUrl.contains("@")) {
+            warnings.add("contains @ symbol");
+            isSuspicious = true;
+        }
+
+        // Check for suspicious keywords
+        if (lowerUrl.contains("-login") || lowerUrl.contains("_login")) {
+            warnings.add("suspicious login page");
+            isSuspicious = true;
+        }
+        if (lowerUrl.contains("verify") || lowerUrl.contains("confirm")) {
+            warnings.add("verification/confirmation page");
+            isSuspicious = true;
+        }
+        if (lowerUrl.contains("secure") || lowerUrl.contains("account-update")) {
+            warnings.add("fake security page");
+            isSuspicious = true;
+        }
+
+        // Check for misspellings of common domains
+        if (lowerUrl.matches(".*(paypa1|paypai|amazom|gogle|micr0soft|appleid-|bankofamerica-).*")) {
+            warnings.add("TYPOSQUATTING - misspelled domain!");
+            isSuspicious = true;
+        }
+
+        // Build result
+        if (isSuspicious) {
+            analysis.append(" [⚠️ SUSPICIOUS - ");
+            analysis.append(String.join(", ", warnings));
+            analysis.append("]");
+        } else {
+            analysis.append(" [✓ Looks safe]");
+        }
+
+        return analysis.toString();
     }
 
     private int mapRiskLevelToScore(RiskLevel level) {

@@ -11,6 +11,10 @@ public class Main {
                 .addLoginView()
                 .addDashBoardView()
                 .addDashboardControllers()
+                .addItDashboardView()
+                .addEmailDecisionView()
+                .addItDashboardControllers()
+                .addLoginController()
                 .addStartView()
                 .build();
 
