@@ -19,6 +19,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import view.LoginView;
+import view.StartView;
+import view.DashboardView;
+import view.ViewManager;
+import view.SubmitEmailView;
+
 public class AppBuilder {
     private final JPanel cardPanel = new JPanel();
     private final CardLayout cardLayout = new CardLayout();
@@ -33,7 +39,6 @@ public class AppBuilder {
     private ItDashboardView itDashboardView;
     private EmailDecisionView emailDecisionView;
 
-//    private GetPinnedEmailsController pinnedEmailsController;
     private FilterController filterController;
 
     public AppBuilder() {
@@ -87,10 +92,7 @@ public class AppBuilder {
         // Connect the filtered view model to the dashboard view
         dashboardView.setFilteredViewModel(filteredViewModel);
 
-        // --- Setup Get Pinned Emails Use Case ---
-        // Create the dashboard view model
-
-        filterController.execute("", "", null);
+        filterController.execute("", "", null, 0.0, 100.0);
 
         return this;
     }

@@ -8,7 +8,7 @@ import use_case.filter.SortBy;
  * Controller for the Filter Use Case.
  */
 public class FilterController {
-    private FilterInputBoundary filterInteractor;
+    private final FilterInputBoundary filterInteractor;
 
     public FilterController(FilterInputBoundary filterInteractor) {
         this.filterInteractor =  filterInteractor;
@@ -16,18 +16,20 @@ public class FilterController {
 
     /**
      * Executes the Filter Use Case
-     * @param keyword the keyword the user wishes to filter by
-     * @param sender the sender the user wishes to filter by
-     * @param sortBy sorts by title, sender, date received, or suspicion score
+     *
+     * @param keyword  the keyword the user wishes to filter by
+     * @param sender   the sender the user wishes to filter by
+     * @param sortBy   sorts by title, sender, date received, or suspicion score
+     * @param minScore the minimum suspicion score
+     * @param maxScore the maximum suspicion score
      */
-    public void execute(String keyword, String sender, SortBy sortBy) {
+    public void execute(String keyword, String sender, SortBy sortBy, Double minScore, Double maxScore) {
         FilterInputData inputData = new FilterInputData(
                 keyword,
                 sender,
                 sortBy,
-                null,
-                null
-        );
+                minScore,
+                maxScore);
         filterInteractor.execute(inputData);
     }
 

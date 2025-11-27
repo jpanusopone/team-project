@@ -60,9 +60,9 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
         filterPanel.add(keywordField);
         filterPanel.add(new JLabel("Sender:"));
         filterPanel.add(senderField);
-        filterPanel.add(new JLabel("Min Score:"));
+        filterPanel.add(new JLabel("Minimum Score:"));
         filterPanel.add(minScoreField);
-        filterPanel.add(new JLabel("Max Score:"));
+        filterPanel.add(new JLabel("Maximum Score:"));
         filterPanel.add(maxScoreField);
         filterPanel.add(new JLabel("Sort by:"));
         filterPanel.add(sortBox);
@@ -140,8 +140,8 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
     public JTable getEmailTable() { return emailTable; }
     public String getKeyword() { return keywordField.getText(); }
     public String getSender() { return senderField.getText(); }
-    public String getMinScore() { return minScoreField.getText(); }
-    public String getMaxScore() { return maxScoreField.getText(); }
+    public Double getMinScore() { return Double.parseDouble(minScoreField.getText()); }
+    public Double getMaxScore() { return Double.parseDouble(maxScoreField.getText()); }
     public String getSort() { return (String) sortBox.getSelectedItem(); }
 
     public void addBackToStartListener(ActionListener listener) {
@@ -152,12 +152,24 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
         this.filterController = controller;
     }
 
-//    public void setPinnedEmailsController(GetPinnedEmailsController controller) {this.pinnedEmailsController = controller; }
-
     private void onFilterButton() {
         String keyword = keywordField.getText();
         String sender = senderField.getText();
         String sortValue = (String) sortBox.getSelectedItem();
+        double minScore;
+        double maxScore;
+
+        try {
+            minScore = Double.parseDouble(minScoreField.getText());
+        } catch (NumberFormatException e) {
+            minScore = 0.0;
+        }
+
+        try {
+            maxScore = Double.parseDouble(maxScoreField.getText());
+        } catch (NumberFormatException e) {
+            maxScore = 100.0;
+        }
 
         SortBy sortBy;
 
@@ -181,7 +193,7 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
 
         userAppliedFilter = true;
 
-        filterController.execute(keyword, sender, sortBy);
+        filterController.execute(keyword, sender, sortBy, minScore, maxScore);
     }
 
     @Override

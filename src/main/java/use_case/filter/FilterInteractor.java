@@ -21,12 +21,13 @@ public class FilterInteractor implements FilterInputBoundary {
             filterPresenter.prepareFailView("Filter cannot be null.");
         }
 
-//        if (filterInputData.getMinScore() != null && filterInputData.getMaxScore() != null) {
-//            if (filterInputData.getMinScore() > filterInputData.getMaxScore()) {
-//                filterPresenter.prepareFailView("Minimum score cannot be greater than maximum score.");
-//                return;
-//            }
-//        }
+        assert filterInputData != null;
+        if (filterInputData.getMinScore() != null && filterInputData.getMaxScore() != null) {
+            if (filterInputData.getMinScore() > filterInputData.getMaxScore()) {
+                filterPresenter.prepareFailView("Minimum score cannot be greater than maximum score.");
+                return;
+            }
+        }
 
         List<Email> filteredEmails;
         try {
