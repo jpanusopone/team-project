@@ -1,7 +1,8 @@
 package use_case.filter;
 
-import entity.Email;
 import java.util.List;
+
+import entity.Email;
 
 /**
  * The Filter Interactor.
@@ -15,35 +16,34 @@ public class FilterInteractor implements FilterInputBoundary {
         this.filterUserDataAccessObject = filterDataAccessInterface;
         this.filterPresenter = filterOutputBoundary;
     }
+
     @Override
     public void execute(FilterInputData filterInputData) {
         if (filterInputData == null) {
             filterPresenter.prepareFailView("Filter cannot be null.");
-            return;
         }
-
-        if (filterInputData.getMinScore() != null && filterInputData.getMaxScore() != null) {
-            if (filterInputData.getMinScore() > filterInputData.getMaxScore()) {
-                filterPresenter.prepareFailView("Minimum score cannot be greater than maximum score.");
-                return;
+        else if (filterInputData.getMinScore() != null && filterInputData.getMaxScore() != null
+                && (filterInputData.getMinScore() > filterInputData.getMaxScore())) {
+            filterPresenter.prepareFailView("Minimum score cannot be greater than maximum score.");
+        }
+        else {
+            final List<Email> filteredEmails;
+            try {
+                filteredEmails = filterUserDataAccessObject.filter(filterInputData);
+                if (filteredEmails == null || filteredEmails.isEmpty()) {
+                    filterPresenter.prepareFailView("No emails matched.");
+                }
+                else {
+                    final FilterOutputData filterOutputData = new FilterOutputData(filteredEmails);
+                    filterPresenter.prepareSuccessView(filterOutputData);
+                }
             }
+            catch (RuntimeException exception) {
+                filterPresenter.prepareFailView("Failed to load filtered emails.");
+            }
+
         }
 
-        List<Email> filteredEmails;
-        try {
-            filteredEmails = filterUserDataAccessObject.filter(filterInputData);
-        } catch (Exception E) {
-            filterPresenter.prepareFailView("Failed to load filtered emails.");
-            return;
-        }
-
-        if (filteredEmails == null || filteredEmails.isEmpty()) {
-            filterPresenter.prepareFailView("No emails matched.");
-            return;
-        }
-
-        FilterOutputData filterOutputData = new FilterOutputData(filteredEmails);
-        filterPresenter.prepareSuccessView(filterOutputData);
     }
 
 }

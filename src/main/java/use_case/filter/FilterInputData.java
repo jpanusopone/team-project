@@ -1,7 +1,7 @@
 package use_case.filter;
 
 /**
- * the Input Data for the Filter Use Case.
+ * The Input Data for the Filter Use Case.
  */
 public class FilterInputData {
     private final String keyword;
@@ -18,7 +18,7 @@ public class FilterInputData {
         this.keyword = keyword;
         this.sender = sender;
         this.sortBy = sortBy;
-        this.minScore =  minScore;
+        this.minScore = minScore;
         this.maxScore = maxScore;
     }
 
@@ -34,9 +34,13 @@ public class FilterInputData {
         return sortBy;
     }
 
-    public Double getMinScore() { return minScore; }
+    public Double getMinScore() {
+        return minScore;
+    }
 
-    public Double getMaxScore() { return maxScore; }
+    public Double getMaxScore() {
+        return maxScore;
+    }
 
 }
 
