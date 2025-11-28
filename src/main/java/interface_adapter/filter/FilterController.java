@@ -1,5 +1,6 @@
 package interface_adapter.filter;
 
+import use_case.filter.FilterConstants;
 import use_case.filter.FilterInputBoundary;
 import use_case.filter.FilterInputData;
 import use_case.filter.SortBy;
@@ -30,8 +31,8 @@ public class FilterController {
                         String maxScoreStr,
                         String sortValue) {
 
-        final double minScore = 0.0;
-        final double maxScore = 100.0;
+        double minScore = FilterConstants.MIN_SCORE;
+        double maxScore = FilterConstants.MAX_SCORE;
 
         try {
             if (!minScoreStr.isBlank()) {
@@ -62,6 +63,6 @@ public class FilterController {
         );
 
         filterInteractor.execute(data);
-        }
+    }
 }
 
