@@ -1,13 +1,14 @@
 package use_case.filter;
 
-import entity.Email;
 import java.util.List;
+
+import entity.Email;
 
 /**
  * Output Data for the Filter Use Case.
  */
 public class FilterOutputData {
-    List<Email> emails;
+    private final List<Email> emails;
 
     public FilterOutputData(List<Email> emails) {
         this.emails = emails;

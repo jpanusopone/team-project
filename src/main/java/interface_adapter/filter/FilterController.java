@@ -10,32 +10,42 @@ import use_case.filter.SortBy;
 public class FilterController {
     private final FilterInputBoundary filterInteractor;
 
-    /**
-     * Executes the Filter Use Case
-     *
-     * @param filterInteractor the Filter Interactor
-     */
-
     public FilterController(FilterInputBoundary filterInteractor) {
         this.filterInteractor = filterInteractor;
     }
+
+    /**
+     * Executes the Filter Use Case.
+     *
+     * @param keyword the string to search for in the titles of the emails
+     * @param sender the sender to search for
+     * @param minScoreStr the minimum suspicion score
+     * @param maxScoreStr the maximum suspicion score
+     * @param sortValue the chosen sort value
+     * @throws RuntimeException if min/max score are in invalid format
+     */
     public void execute(String keyword,
                         String sender,
                         String minScoreStr,
                         String maxScoreStr,
                         String sortValue) {
 
-        double minScore = 0.0;
-        double maxScore = 100.0;
+        final double minScore = 0.0;
+        final double maxScore = 100.0;
 
         try {
-            if (!minScoreStr.isBlank()) minScore = Double.parseDouble(minScoreStr);
-            if (!maxScoreStr.isBlank()) maxScore = Double.parseDouble(maxScoreStr);
-        } catch (NumberFormatException e) {
+            if (!minScoreStr.isBlank()) {
+                minScore = Double.parseDouble(minScoreStr);
+            }
+            if (!maxScoreStr.isBlank()) {
+                maxScore = Double.parseDouble(maxScoreStr);
+            }
+        }
+        catch (NumberFormatException exception) {
             throw new RuntimeException("Invalid score format");
         }
 
-        SortBy sortBy = switch (sortValue) {
+        final SortBy sortBy = switch (sortValue) {
             case "Title" -> SortBy.TITLE;
             case "Sender" -> SortBy.SENDER;
             case "Date Received" -> SortBy.DATE_RECEIVED;
@@ -43,7 +53,7 @@ public class FilterController {
             default -> SortBy.TITLE;
         };
 
-        FilterInputData data = new FilterInputData(
+        final FilterInputData data = new FilterInputData(
                 keyword,
                 sender,
                 sortBy,
@@ -53,8 +63,5 @@ public class FilterController {
 
         filterInteractor.execute(data);
         }
-    }
-
-
-
+}
 

@@ -1,7 +1,8 @@
 package use_case.filter;
 
-import entity.Email;
 import java.util.List;
+
+import entity.Email;
 
 /**
  * The DAO interface for the Filter Use Case.

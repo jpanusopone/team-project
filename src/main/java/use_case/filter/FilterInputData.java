@@ -18,7 +18,7 @@ public class FilterInputData {
         this.keyword = keyword;
         this.sender = sender;
         this.sortBy = sortBy;
-        this.minScore =  minScore;
+        this.minScore = minScore;
         this.maxScore = maxScore;
     }
 
