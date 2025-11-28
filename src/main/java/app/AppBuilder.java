@@ -92,7 +92,7 @@ public class AppBuilder {
         // Connect the filtered view model to the dashboard view
         dashboardView.setFilteredViewModel(filteredViewModel);
 
-        filterController.execute("", "", null, 0.0, 100.0);
+        filterController.execute("", "", "0.0", "100.0", "Title");
 
         return this;
     }
