@@ -51,7 +51,27 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
         sortBox = new JComboBox<>(new String[]{"Title", "Sender", "Date Received", "Suspicion Score"});
         filterButton = new JButton("Apply Filter");
 
-        filterButton.addActionListener(e -> onFilterButton());
+        filterButton.addActionListener(e -> {
+            try {
+                filterController.execute(
+                        keywordField.getText(),
+                        senderField.getText(),
+                        minScoreField.getText(),
+                        maxScoreField.getText(),
+                        (String) sortBox.getSelectedItem()
+                );
+                userAppliedFilter = true;
+
+            } catch (RuntimeException ex) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        ex.getMessage(),
+                        "Input Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
+            }
+        });
+
 
         filterPanel.add(new JLabel("Keyword:"));
         filterPanel.add(keywordField);
@@ -101,88 +121,43 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
 
 //    public void setPinnedEmailsController(GetPinnedEmailsController controller) {this.pinnedEmailsController = controller; }
 
-    private void onFilterButton() {
-        String keyword = keywordField.getText();
-        String sender = senderField.getText();
-        String sortValue = (String) sortBox.getSelectedItem();
-        double minScore = 0.0;
-        double maxScore = 100.0;
-
-        try {
-            minScore = Double.parseDouble(minScoreField.getText());
-            maxScore = Double.parseDouble(maxScoreField.getText());
-        } catch (NumberFormatException e) {
-            if (!minScoreField.getText().isEmpty()) {
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Only number values are accepted as a Minimum Score",
-                        "Input Error",
-                        JOptionPane.INFORMATION_MESSAGE
-                );
-            }
-
-            if (!maxScoreField.getText().isEmpty()) {
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Only number values are accepted as a Maximum Score",
-                        "Input Error",
-                        JOptionPane.INFORMATION_MESSAGE
-                );
-            }
-        }
-
-        SortBy sortBy;
-
-        switch (sortValue) {
-            case "Title":
-                sortBy = SortBy.TITLE;
-                break;
-            case "Sender":
-                sortBy = SortBy.SENDER;
-                break;
-            case "Date Received":
-                sortBy = SortBy.DATE_RECEIVED;
-                break;
-            case "Suspicion Score":
-                sortBy = SortBy.SUSPICION_SCORE;
-                break;
-            default:
-                sortBy = null;
-                break;
-        }
-
-        userAppliedFilter = true;
-
-        filterController.execute(keyword, sender, sortBy, minScore, maxScore);
-    }
-
-
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
 
-        if (evt.getPropertyName().equals("state")) {
-            Object newValue = evt.getNewValue();
+        if (!evt.getPropertyName().equals("state")) return;
+        FilteredState state = (FilteredState) evt.getNewValue();
 
-            if (newValue instanceof FilteredState) {
-                FilteredState state = (FilteredState) newValue;
-                List<Email> emails = state.getEmails();
+        // 1. SHOW POPUP IF THERE'S AN ERROR
+        if (state.getError() != null) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    state.getError(),
+                    "Input Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
 
-                emailTableModel.setEmails(emails);
-
-                if (emails.isEmpty() && userAppliedFilter) {
-                    JOptionPane.showMessageDialog(
-                            this,
-                            "No emails matched your filter criteria.",
-                            "No Results",
-                            JOptionPane.INFORMATION_MESSAGE
-                    );
-                }
-
-                userAppliedFilter = false;
-
-            }
+            // clear the error so it doesn’t trigger again
+            state.setError(null);
+            return;
         }
+
+        // 2. NORMAL FLOW: update table
+        List<Email> emails = state.getEmails();
+        emailTableModel.setEmails(emails);
+
+        if (emails.isEmpty() && userAppliedFilter) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "No emails matched your filter criteria.",
+                    "No Results",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+        }
+
+        userAppliedFilter = false;
     }
+
+
     public void setFilteredViewModel(FilteredViewModel vm) {
         this.filteredViewModel = vm;
         vm.addPropertyChangeListener(this);

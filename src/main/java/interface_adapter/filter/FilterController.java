@@ -11,28 +11,51 @@ import use_case.filter.SortBy;
 public class FilterController {
     private final FilterInputBoundary filterInteractor;
 
-    public FilterController(FilterInputBoundary filterInteractor) {
-        this.filterInteractor =  filterInteractor;
-    }
-
     /**
      * Executes the Filter Use Case
      *
-     * @param keyword  the keyword the user wishes to filter by
-     * @param sender   the sender the user wishes to filter by
-     * @param sortBy   sorts by title, sender, date received, or suspicion score
-     * @param minScore the minimum suspicion score
-     * @param maxScore the maximum suspicion score
+     * @param filterInteractor the Filter Interactor
      */
-    public void execute(String keyword, String sender, SortBy sortBy, Double minScore, Double maxScore) {
-        FilterInputData inputData = new FilterInputData(
+
+    public FilterController(FilterInputBoundary filterInteractor) {
+        this.filterInteractor = filterInteractor;
+    }
+    public void execute(String keyword,
+                        String sender,
+                        String minScoreStr,
+                        String maxScoreStr,
+                        String sortValue) {
+
+        double minScore = 0.0;
+        double maxScore = 100.0;
+
+        try {
+            if (!minScoreStr.isBlank()) minScore = Double.parseDouble(minScoreStr);
+            if (!maxScoreStr.isBlank()) maxScore = Double.parseDouble(maxScoreStr);
+        } catch (NumberFormatException e) {
+            throw new RuntimeException("Invalid score format");
+        }
+
+        SortBy sortBy = switch (sortValue) {
+            case "Title" -> SortBy.TITLE;
+            case "Sender" -> SortBy.SENDER;
+            case "Date Received" -> SortBy.DATE_RECEIVED;
+            case "Suspicion Score" -> SortBy.SUSPICION_SCORE;
+            default -> SortBy.TITLE;
+        };
+
+        FilterInputData data = new FilterInputData(
                 keyword,
                 sender,
                 sortBy,
                 minScore,
-                maxScore);
-        filterInteractor.execute(inputData);
+                maxScore
+        );
+
+        filterInteractor.execute(data);
+        }
     }
 
-}
+
+
 

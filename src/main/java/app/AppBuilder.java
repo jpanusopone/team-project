@@ -78,7 +78,7 @@ public class AppBuilder {
 //        dashboardView.setDashboardViewModel(dashboardViewModel);
 //
 //        pinnedEmailsController.execute();
-        filterController.execute("", "", null, 0.0, 100.0);
+        filterController.execute("", "", "0.0", "100.0", "Title");
 
         return this;
     }
