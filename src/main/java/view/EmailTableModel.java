@@ -6,9 +6,7 @@ import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
 public class EmailTableModel extends AbstractTableModel {
-    private final String[] columnNames = {
-            "Sender", "Title", "Date Received", "Suspicion Score"
-    };
+    private final String[] columnNames = {"Sender", "Title", "Date Received", "Suspicion Score", "Verified Status"};
 
     private List<Email> emails;
 
@@ -44,6 +42,7 @@ public class EmailTableModel extends AbstractTableModel {
             case 1: return email.getTitle();
             case 2: return email.getDateReceived();
             case 3: return email.getSuspicionScore();
+            case 4: return email.getVerifiedStatus();
             default: return null;
         }
     }
