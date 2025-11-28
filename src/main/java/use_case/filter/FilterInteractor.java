@@ -19,9 +19,9 @@ public class FilterInteractor implements FilterInputBoundary {
     public void execute(FilterInputData filterInputData) {
         if (filterInputData == null) {
             filterPresenter.prepareFailView("Filter cannot be null.");
+            return;
         }
 
-        assert filterInputData != null;
         if (filterInputData.getMinScore() != null && filterInputData.getMaxScore() != null) {
             if (filterInputData.getMinScore() > filterInputData.getMaxScore()) {
                 filterPresenter.prepareFailView("Minimum score cannot be greater than maximum score.");

@@ -1,9 +1,8 @@
-package usecase;
+package use_case;
 
 import entity.PhishingExplanation;
 import entity.PhishingIndicators;
 import entity.RiskLevel;
-import use_case.ExplainPhishingEmailUseCase;
 import use_case.interfaces.ExplanationException;
 import use_case.interfaces.ExplanationService;
 import org.junit.jupiter.api.Test;
@@ -13,7 +12,6 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
