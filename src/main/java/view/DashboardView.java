@@ -15,11 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DashboardView extends JPanel implements PropertyChangeListener{
-    private final String viewName = "dashboard";
     private boolean userAppliedFilter = false;
 
     private FilterController filterController;
-    private FilteredViewModel filteredViewModel;
 
     private JTable emailTable;
     private EmailTableModel emailTableModel;
@@ -37,7 +35,6 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
         super();
         setLayout(new BorderLayout());
 
-        // Optional: add a title label at the top instead of using JFrame.setTitle(...)
         JLabel title = new JLabel("Phishing Detection Dashboard", SwingConstants.CENTER);
         title.setFont(title.getFont().deriveFont(Font.BOLD, 24f));
         add(title, BorderLayout.NORTH);
@@ -143,7 +140,9 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
         setVisible(true);
     }
 
-    public String getViewName() { return viewName;}
+    public String getViewName() {
+        return "dashboard";
+    }
 
     // Expose widgets to controller
     public JButton getFilterButton() { return filterButton; }
@@ -201,7 +200,6 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
     }
 
     public void setFilteredViewModel(FilteredViewModel vm) {
-        this.filteredViewModel = vm;
         vm.addPropertyChangeListener(this);
     }
 }

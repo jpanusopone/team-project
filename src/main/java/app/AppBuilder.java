@@ -80,16 +80,9 @@ public class AppBuilder {
         // Create the filter presenter
         FilterPresenter filterPresenter = new FilterPresenter(viewManagerModel, filteredViewModel);
 
-        // Create the filter data access object
-        FilterDataAccessObject filterDataAccessObject = new FilterDataAccessObject();
-
-        // Create the filter interactor
-        FilterInteractor filterInteractor = new FilterInteractor(filterDataAccessObject, filterPresenter);
-
-        // Create the filter controller with all required dependencies (now includes dashboardSelectView)
-        new FilterController(filterInteractor);
-
-        // Connect the filtered view model to the dashboard view
+        FilterInteractor filterInteractor = new FilterInteractor(filterDAO, filterPresenter);
+        filterController = new FilterController(filterInteractor);
+        dashboardView.setFilterController(filterController);
         dashboardView.setFilteredViewModel(filteredViewModel);
 
         filterController.execute("", "", "0.0", "100.0", "Title");
