@@ -6,6 +6,7 @@ import java.util.List;
 public class Email {
 
     private int id;
+    private String documentId; // Firebase document ID
     private String title;
     private String sender;
     private String body;
@@ -18,18 +19,6 @@ public class Email {
     private boolean pinned;
     private LocalDateTime pinnedDate;
     private String verifiedStatus; // e.g., "Pending", "Confirmed", "Safe"
-
-    public int getId() { return id; }
-    public String getTitle() { return title; }
-    public String getSender() { return sender; }
-    public String getBody() { return body; }
-    public Boolean getPinned() { return pinned; }
-    public LocalDateTime getPinnedDate() { return pinnedDate; }
-    public LocalDateTime getDateReceived() { return dateReceived; }
-    public Double getSuspicionScore() { return suspicionScore; }
-    public String getExplanation() { return explanation; }
-    public List<String> getLinks() { return links; }
-    public String getVerifiedStatus() { return verifiedStatus; }
 
     public Email() {}
 
@@ -59,20 +48,22 @@ public class Email {
     }
 
     // Getters
-//    public int getId() { return id; }
-//    public String getTitle() { return title; }
-//    public String getSender() { return sender; }
-//    public String getBody() { return body; }
-//    public LocalDateTime getDateReceived() { return dateReceived; }
-//    public double getSuspicionScore() { return suspicionScore; }
-//    public String getExplanation() { return explanation; }
-//    public List<String> getLinks() { return links; }
+    public int getId() { return id; }
+    public String getDocumentId() { return documentId; }
+    public String getTitle() { return title; }
+    public String getSender() { return sender; }
+    public String getBody() { return body; }
+    public LocalDateTime getDateReceived() { return dateReceived; }
+    public double getSuspicionScore() { return suspicionScore; }
+    public String getExplanation() { return explanation; }
+    public List<String> getLinks() { return links; }
     public boolean isPinned() { return pinned; }
 //    public LocalDateTime getPinnedDate() { return pinnedDate; }
 //    public String getVerifiedStatus() { return verifiedStatus; }
 
     // Setters (if other use cases need to update these)
     public void setId(int id) { this.id = id; }
+    public void setDocumentId(String documentId) { this.documentId = documentId; }
     public void setTitle(String title) { this.title = title; }
     public void setSender(String sender) { this.sender = sender; }
     public void setBody(String body) { this.body = body; }

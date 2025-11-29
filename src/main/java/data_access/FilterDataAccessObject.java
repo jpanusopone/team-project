@@ -74,10 +74,10 @@ public class FilterDataAccessObject implements FilterUserDataAccessInterface {
         }
 
         // Score filters
-        if (minScore != null && email.getSuspicionScore() != null && email.getSuspicionScore() < minScore) {
+        if (minScore != null && email.getSuspicionScore() < minScore) {
             return false;
         }
-        if (maxScore != null && email.getSuspicionScore() != null && email.getSuspicionScore() > maxScore) {
+        if (maxScore != null && email.getSuspicionScore() > maxScore) {
             return false;
         }
 

@@ -45,7 +45,7 @@ public class FirebaseEmailDataAccessObject {
                 .title(email.getTitle())
                 .sender(email.getSender())
                 .body(email.getBody())
-                .pinned(email.getPinned())
+                .pinned(email.isPinned())
                 .pinnedDate(email.getPinnedDate())
                 .dateReceived(email.getDateReceived())
                 .suspicionScore(email.getSuspicionScore())
@@ -174,10 +174,10 @@ public class FirebaseEmailDataAccessObject {
                     }
 
                     // Score filter
-                    if (minScore != null && email.getSuspicionScore() != null && email.getSuspicionScore() < minScore) {
+                    if (minScore != null && email.getSuspicionScore() < minScore) {
                         return false;
                     }
-                    if (maxScore != null && email.getSuspicionScore() != null && email.getSuspicionScore() > maxScore) {
+                    if (maxScore != null && email.getSuspicionScore() > maxScore) {
                         return false;
                     }
 
@@ -214,6 +214,62 @@ public class FirebaseEmailDataAccessObject {
     }
 
     /**
+     * Check if an email with the same content already exists in the database.
+     * Uses content hash for efficient duplicate detection.
+     *
+     * @param body email body content
+     * @return true if email with same content exists, false otherwise
+     * @throws ExecutionException if the database operation fails
+     * @throws InterruptedException if the operation is interrupted
+     */
+    public boolean emailExistsByContent(String body) throws ExecutionException, InterruptedException {
+        if (body == null || body.trim().isEmpty()) {
+            return false;
+        }
+
+        String contentHash = generateContentHash(body);
+
+        ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_EMAILS)
+                .whereEqualTo("contentHash", contentHash)
+                .get();
+
+        return !future.get().getDocuments().isEmpty();
+    }
+
+    /**
+     * Generate a hash of the email content for duplicate detection.
+     * Normalizes whitespace and case before hashing.
+     *
+     * @param content email body content
+     * @return SHA-256 hash of normalized content
+     */
+    private String generateContentHash(String content) {
+        if (content == null) return "";
+
+        // Normalize: trim, lowercase, collapse multiple spaces
+        String normalized = content.trim()
+                .toLowerCase()
+                .replaceAll("\\s+", " ");
+
+        try {
+            java.security.MessageDigest digest = java.security.MessageDigest.getInstance("SHA-256");
+            byte[] hashBytes = digest.digest(normalized.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+
+            // Convert to hex string
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hashBytes) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (java.security.NoSuchAlgorithmException e) {
+            // Fallback to simple hash if SHA-256 is not available
+            return String.valueOf(normalized.hashCode());
+        }
+    }
+
+    /**
      * Delete an email by ID.
      *
      * @param emailId the email ID to delete
@@ -231,8 +287,12 @@ public class FirebaseEmailDataAccessObject {
         Map<String, Object> map = new HashMap<>();
         if (email.getTitle() != null) map.put("title", email.getTitle());
         if (email.getSender() != null) map.put("sender", email.getSender());
-        if (email.getBody() != null) map.put("body", email.getBody());
-        map.put("pinned", email.getPinned() != null ? email.getPinned() : false);
+        if (email.getBody() != null) {
+            map.put("body", email.getBody());
+            // Add content hash for duplicate detection
+            map.put("contentHash", generateContentHash(email.getBody()));
+        }
+        map.put("pinned", email.isPinned());
 
         if (email.getPinnedDate() != null) {
             map.put("pinnedDate", toTimestamp(email.getPinnedDate()));
@@ -241,7 +301,7 @@ public class FirebaseEmailDataAccessObject {
             map.put("dateReceived", toTimestamp(email.getDateReceived()));
         }
 
-        if (email.getSuspicionScore() != null) map.put("suspicionScore", email.getSuspicionScore());
+        map.put("suspicionScore", email.getSuspicionScore());
         if (email.getExplanation() != null) map.put("explanation", email.getExplanation());
         if (email.getLinks() != null) map.put("links", email.getLinks());
         if (email.getVerifiedStatus() != null) map.put("verifiedStatus", email.getVerifiedStatus());
@@ -256,10 +316,13 @@ public class FirebaseEmailDataAccessObject {
         EmailBuilder builder = new EmailBuilder();
 
         builder.id(document.getId().hashCode())
+                .documentId(document.getId())
                 .title(document.getString("title"))
                 .sender(document.getString("sender"))
-                .body(document.getString("body"))
-                .pinned(document.getBoolean("pinned"));
+                .body(document.getString("body"));
+
+        Boolean pinnedValue = document.getBoolean("pinned");
+        builder.pinned(pinnedValue != null ? pinnedValue : false);
 
         com.google.cloud.Timestamp pinnedTimestamp = document.getTimestamp("pinnedDate");
         if (pinnedTimestamp != null) {
@@ -271,12 +334,16 @@ public class FirebaseEmailDataAccessObject {
             builder.dateReceived(toLocalDateTime(receivedTimestamp));
         }
 
-        builder.suspicionScore(document.getDouble("suspicionScore"))
-                .explanation(document.getString("explanation"));
+        Double scoreValue = document.getDouble("suspicionScore");
+        builder.suspicionScore(scoreValue != null ? scoreValue : 0.0);
+
+        builder.explanation(document.getString("explanation"));
 
         @SuppressWarnings("unchecked")
         List<String> links = (List<String>) document.get("links");
-        builder.links(links);
+        if (links != null) {
+            builder.links(links);
+        }
 
         builder.verifiedStatus(document.getString("verifiedStatus"));
 

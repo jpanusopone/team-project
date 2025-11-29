@@ -23,6 +23,11 @@ public class EmailBuilder {
         return this;
     }
 
+    public EmailBuilder documentId(String documentId) {
+        email.setDocumentId(documentId);
+        return this;
+    }
+
     public EmailBuilder title(String title) {
         email.setTitle(title);
         return this;

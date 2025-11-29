@@ -14,8 +14,19 @@ public class GetPinnedEmailsInteractor implements GetPinnedEmailsInputBoundary {
     }
     @Override
     public void execute(GetPinnedEmailsInputData viewDashboardInputData) {
-        //TODO implement execute
+        try {
+            // Get pinned emails from database
+            var pinnedEmails = userDataAccessObject.getPinnedEmails(viewDashboardInputData);
 
+            // Create output data
+            GetPinnedEmailsOutputData outputData = new GetPinnedEmailsOutputData(pinnedEmails);
 
+            // Send to presenter
+            getPinnedEmailsPresenter.prepareSuccessView(outputData);
+
+        } catch (Exception e) {
+            // Handle any errors
+            getPinnedEmailsPresenter.prepareFailView("Failed to load pinned emails: " + e.getMessage());
+        }
     }
 }
