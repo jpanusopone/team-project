@@ -1,20 +1,15 @@
 package use_case.filter;
 
-import entity.Email;
-import java.util.List;
-
 /**
  * Output Data for the Filter Use Case.
  */
 public class FilterOutputData {
-    List<Email> emails;
+    // TODO implement instance variables
 
-    public FilterOutputData(List<Email> emails) {
-        this.emails = emails;
+    public FilterOutputData() {
+        // TODO implement constructor
     }
 
-    public List<Email> getEmails() {
-        return emails;
-    }
+    // TODO define getters
 
 }
