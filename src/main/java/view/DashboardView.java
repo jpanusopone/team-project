@@ -67,7 +67,7 @@ public class DashboardView extends JPanel implements PropertyChangeListener {
         add(scrollPane, BorderLayout.CENTER);
 
         // ----- BOTTOM BUTTONS -----
-        discordButton = new JButton("Join Discord Webhook");
+        discordButton = new JButton("Join Discord Server");
         backToStartButton = new JButton("Back to Start");
         JPanel bottomPanel = new JPanel();
         bottomPanel.add(discordButton);
