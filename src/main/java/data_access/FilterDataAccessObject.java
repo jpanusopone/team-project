@@ -5,7 +5,7 @@ import use_case.filter.FilterInputData;
 import use_case.filter.FilterUserDataAccessInterface;
 import use_case.filter.SortBy;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -125,5 +125,6 @@ public class FilterDataAccessObject implements FilterUserDataAccessInterface {
         return emails.stream()
                 .sorted(comparator)
                 .collect(Collectors.toList());
+
     }
 }
