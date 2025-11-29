@@ -1,14 +1,26 @@
 package app;
 
+import view.SubmitEmailView;
 import javax.swing.*;
-
-import interface_adapter.filter.FilterController;
-import view.DashboardView;
 
 public class Main {
     public static void main(String[] args) {
-        DashboardView view = new DashboardView();
-        new FilterController(view);
+
+        AppBuilder appBuilder = new AppBuilder();
+        JFrame application = appBuilder
+                .addLoginView()
+                .addDashBoardView()
+                .addDashboardSelectView()
+                .addDashboardControllers()
+                .addItDashboardView()
+                .addEmailDecisionView()
+                .addItDashboardControllers()
+                .addLoginController()
+                .addStartView()
+                .build();
+
+        application.pack();
+        application.setLocationRelativeTo(null);
+        application.setVisible(true);
     }
 }
-
