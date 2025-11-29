@@ -68,7 +68,7 @@ public class SubmitEmailInteractor implements SubmitEmailInputBoundary {
             SubmitEmailOutputData out = new SubmitEmailOutputData(
                     email.getTitle(),
                     email.getSender(),
-                    (int) email.getSuspicionScore().doubleValue(),
+                    (int) email.getSuspicionScore(),
                     email.getExplanation(),
                     null
             );
