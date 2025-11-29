@@ -58,8 +58,8 @@ public class Email {
     public String getExplanation() { return explanation; }
     public List<String> getLinks() { return links; }
     public boolean isPinned() { return pinned; }
-    public LocalDateTime getPinnedDate() { return pinnedDate; }
-    public String getVerifiedStatus() { return verifiedStatus; }
+//    public LocalDateTime getPinnedDate() { return pinnedDate; }
+//    public String getVerifiedStatus() { return verifiedStatus; }
 
     // Setters (if other use cases need to update these)
     public void setId(int id) { this.id = id; }
