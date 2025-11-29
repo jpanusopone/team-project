@@ -1,12 +1,10 @@
 package interface_adapter.filter;
 
-import entity.Email;
 import interface_adapter.ViewManagerModel;
 import use_case.filter.FilterOutputBoundary;
 import use_case.filter.FilterOutputData;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class FilterPresenter implements FilterOutputBoundary {
 
@@ -21,7 +19,13 @@ public class FilterPresenter implements FilterOutputBoundary {
 
     @Override
     public void prepareSuccessView(FilterOutputData outputData) {
-        FilteredState state = new FilteredState(outputData.getEmails());
+        FilteredState state = new FilteredState(
+                outputData.getTitles(),
+                outputData.getSenders(),
+                outputData.getDatesReceived(),
+                outputData.getSuspicionScores(),
+                outputData.getVerifiedStatuses()
+        );
         state.setError(null);
 
         filteredViewModel.setState(state);
@@ -30,7 +34,13 @@ public class FilterPresenter implements FilterOutputBoundary {
 
     @Override
     public void prepareFailView(String error) {
-        FilteredState state = new FilteredState(new ArrayList<>());
+        FilteredState state = new FilteredState(
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>()
+        );
         state.setError(error);
 
         filteredViewModel.setState(state);

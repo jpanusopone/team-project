@@ -1,5 +1,6 @@
 package use_case.filter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import entity.Email;
@@ -34,7 +35,24 @@ public class FilterInteractor implements FilterInputBoundary {
                     filterPresenter.prepareFailView("No emails matched.");
                 }
                 else {
-                    final FilterOutputData filterOutputData = new FilterOutputData(filteredEmails);
+                    // Extract each attribute into separate lists
+                    List<String> titles = new ArrayList<>();
+                    List<String> senders = new ArrayList<>();
+                    List<String> datesReceived = new ArrayList<>();
+                    List<String> suspicionScores = new ArrayList<>();
+                    List<String> verifiedStatuses = new ArrayList<>();
+
+                    for (Email email : filteredEmails) {
+                        titles.add(email.getTitle());
+                        senders.add(email.getSender());
+                        datesReceived.add(email.getDateReceived().toString());
+                        suspicionScores.add(email.getSuspicionScore().toString());
+                        verifiedStatuses.add(email.getVerifiedStatus());
+                    }
+
+                    final FilterOutputData filterOutputData = new FilterOutputData(
+                            titles, senders, datesReceived, suspicionScores, verifiedStatuses
+                    );
                     filterPresenter.prepareSuccessView(filterOutputData);
                 }
             }
