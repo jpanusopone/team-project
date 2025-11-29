@@ -41,7 +41,7 @@ public class LoginController {
             System.out.println("Login failed - invalid credentials");
             // Show an error
             JOptionPane.showMessageDialog(loginView,
-                    "Invalid username or password.\n\nPlease use:\nUsername: username\nPassword: password",
+                    "Username and password are wrong.",
                     "Login failed",
                     JOptionPane.ERROR_MESSAGE);
         }
