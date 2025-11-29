@@ -41,3 +41,6 @@ build/
 ### Firebase
 firebase-credentials.json
 *-firebase-adminsdk-*.json
+
+### Ignore workspace
+.idea/workspace.xml
