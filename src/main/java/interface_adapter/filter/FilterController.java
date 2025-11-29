@@ -47,7 +47,6 @@ public class FilterController {
         }
 
         final SortBy sortBy = switch (sortValue) {
-            case "Title" -> SortBy.TITLE;
             case "Sender" -> SortBy.SENDER;
             case "Date Received" -> SortBy.DATE_RECEIVED;
             case "Suspicion Score" -> SortBy.SUSPICION_SCORE;

@@ -1,10 +1,8 @@
 package view;
 
-import entity.Email;
 import interface_adapter.filter.FilterController;
 import interface_adapter.filter.FilteredState;
 import interface_adapter.filter.FilteredViewModel;
-import use_case.filter.SortBy;
 
 import javax.swing.*;
 import java.awt.*;
@@ -29,7 +27,6 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
     private JButton filterButton;
     private JButton discordButton;
     private JButton backToStartButton;
-    private List<Email> currentEmails; // Store current emails for row access
 
     public DashboardView() {
         super();
@@ -88,7 +85,13 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
         add(filterPanel, BorderLayout.WEST);
 
         // ----- TABLE FOR PINNED EMAILS -----
-        emailTableModel = new EmailTableModel(new ArrayList<>()); // this will be a list of all pinned emails
+        emailTableModel = new EmailTableModel(
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>()
+        );
         emailTable = new JTable(emailTableModel);
 
         // Add custom renderer for status column
@@ -178,16 +181,21 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
                     JOptionPane.ERROR_MESSAGE
             );
 
-            // clear the error so it doesn’t trigger again
+            // clear the error so it doesn't trigger again
             state.setError(null);
             return;
         }
 
         // 2. NORMAL FLOW: update table
-        List<Email> emails = state.getEmails();
-        emailTableModel.setEmails(emails);
+        List<String> senders = state.getSenders();
+        List<String> titles = state.getTitles();
+        List<String> datesReceived = state.getDatesReceived();
+        List<String> suspicionScores = state.getSuspicionScores();
+        List<String> verifiedStatuses = state.getVerifiedStatuses();
 
-        if (emails.isEmpty() && userAppliedFilter) {
+        emailTableModel.setEmails(senders, titles, datesReceived, suspicionScores, verifiedStatuses);
+
+        if (senders.isEmpty() && userAppliedFilter) {
             JOptionPane.showMessageDialog(
                     this,
                     "No emails matched your filter criteria.",

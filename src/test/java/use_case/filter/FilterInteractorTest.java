@@ -4,10 +4,12 @@ import entity.Email;
 import entity.EmailBuilder;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.argThat;
 
 /**
  * Unit tests for FilterInteractor.
@@ -30,12 +32,17 @@ public class FilterInteractorTest {
         );
 
         // 3. Create fake test emails using EmailBuilder
+        LocalDateTime date1 = LocalDateTime.of(2024, 1, 1, 10, 0);
+        LocalDateTime date2 = LocalDateTime.of(2024, 1, 2, 11, 0);
+
         Email email1 = new EmailBuilder()
                 .id(1)
                 .title("Suspicious Email")
                 .sender("scammer@fake.com")
                 .body("Click here to win!")
+                .dateReceived(date1)
                 .suspicionScore(85.0)
+                .verifiedStatus("unverified")
                 .pinned(true)
                 .build();
 
@@ -44,7 +51,9 @@ public class FilterInteractorTest {
                 .title("Another Phishing Attempt")
                 .sender("phish@bad.com")
                 .body("Your account needs verification")
+                .dateReceived(date2)
                 .suspicionScore(92.0)
+                .verifiedStatus("verified")
                 .pinned(true)
                 .build();
 
@@ -57,8 +66,14 @@ public class FilterInteractorTest {
         FilterInteractor interactor = new FilterInteractor(mockDAO, mockPresenter);
         interactor.execute(inputData);
 
-        // 6. Verify the presenter's SUCCESS method was called (not fail)
-        verify(mockPresenter).prepareSuccessView(any(FilterOutputData.class));
+        // 6. Verify the presenter's SUCCESS method was called with correct data
+        verify(mockPresenter).prepareSuccessView(argThat(outputData ->
+                outputData.getTitles().equals(Arrays.asList("Suspicious Email", "Another Phishing Attempt")) &&
+                        outputData.getSenders().equals(Arrays.asList("scammer@fake.com", "phish@bad.com")) &&
+                        outputData.getDatesReceived().equals(Arrays.asList(date1.toString(), date2.toString())) &&
+                        outputData.getSuspicionScores().equals(Arrays.asList("85.0", "92.0")) &&
+                        outputData.getVerifiedStatuses().equals(Arrays.asList("unverified", "verified"))
+        ));
         verify(mockPresenter, never()).prepareFailView(anyString());
     }
 
@@ -177,7 +192,10 @@ public class FilterInteractorTest {
         Email email = new EmailBuilder()
                 .id(1)
                 .title("Test Email")
+                .sender("test@test.com")
+                .dateReceived(LocalDateTime.of(2024, 1, 1, 10, 0))
                 .suspicionScore(75.0)
+                .verifiedStatus("unverified")
                 .build();
 
         when(mockDAO.filter(inputData)).thenReturn(Arrays.asList(email));
@@ -203,7 +221,10 @@ public class FilterInteractorTest {
         Email email = new EmailBuilder()
                 .id(1)
                 .title("Test Email")
+                .sender("test@test.com")
+                .dateReceived(LocalDateTime.of(2024, 1, 1, 10, 0))
                 .suspicionScore(75.0)
+                .verifiedStatus("verified")
                 .build();
 
         when(mockDAO.filter(inputData)).thenReturn(Arrays.asList(email));
