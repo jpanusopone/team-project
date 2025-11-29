@@ -22,6 +22,7 @@ import view.ViewManager;
 import view.SubmitEmailView;
 import view.ItDashboardView;
 import view.EmailDecisionView;
+import view.DashboardSelectView;
 import interface_adapter.login.LoginController;
 import interface_adapter.it_dashboard.ItDashboardController;
 import interface_adapter.filter.ItFilterController;
@@ -35,6 +36,7 @@ public class AppBuilder {
 
     private LoginView loginView;
     private DashboardView dashboardView;
+    private DashboardSelectView dashboardSelectView;
     private StartView startView;
     private ItDashboardView itDashboardView;
     private EmailDecisionView emailDecisionView;
@@ -55,8 +57,21 @@ public class AppBuilder {
         return this;
     }
 
+    public AppBuilder addDashboardSelectView() {
+        dashboardSelectView = new DashboardSelectView();
+        cardPanel.add(dashboardSelectView, dashboardSelectView.getViewName());
+
+        // Add back listener to return to dashboard
+        dashboardSelectView.addBackListener(e -> {
+            viewManagerModel.setState(dashboardView.getViewName());
+            viewManagerModel.firePropertyChange();
+        });
+
+        return this;
+    }
+
     public AppBuilder addDashboardControllers() {
-        // make sure addDashBoardView() is called before this
+        // make sure addDashBoardView() and addDashboardSelectView() are called before this
 
         // --- Setup Filter Use Case ---
         // Create the filter view model
@@ -71,8 +86,8 @@ public class AppBuilder {
         // Create the filter interactor
         FilterInteractor filterInteractor = new FilterInteractor(filterDataAccessObject, filterPresenter);
 
-        // Create the filter controller with all required dependencies
-        new FilterController(dashboardView, filterInteractor);  // its constructor should add listeners
+        // Create the filter controller with all required dependencies (now includes dashboardSelectView)
+        new FilterController(dashboardView, filterInteractor, dashboardSelectView, viewManagerModel);
 
         // Connect the filtered view model to the dashboard view
         dashboardView.setFilteredViewModel(filteredViewModel);

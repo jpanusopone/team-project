@@ -10,6 +10,7 @@ public class Main {
         JFrame application = appBuilder
                 .addLoginView()
                 .addDashBoardView()
+                .addDashboardSelectView()
                 .addDashboardControllers()
                 .addItDashboardView()
                 .addEmailDecisionView()

@@ -30,7 +30,7 @@ public class LoginController {
         System.out.println("Login attempt - Username: '" + username + "', Password length: " + password.length());
 
         // Simple authentication (in production, this should use Firebase Auth or similar)
-        boolean ok = username.equals("admin") && password.equals("admin");
+        boolean ok = username.equals("username") && password.equals("password");
 
         if (ok) {
             System.out.println("Login successful - switching to IT dashboard");
@@ -41,7 +41,7 @@ public class LoginController {
             System.out.println("Login failed - invalid credentials");
             // Show an error
             JOptionPane.showMessageDialog(loginView,
-                    "Invalid username or password.\n\nPlease use:\nUsername: admin\nPassword: admin",
+                    "Invalid username or password.\n\nPlease use:\nUsername: username\nPassword: password",
                     "Login failed",
                     JOptionPane.ERROR_MESSAGE);
         }

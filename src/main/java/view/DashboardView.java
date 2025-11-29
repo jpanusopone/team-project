@@ -21,6 +21,8 @@ public class DashboardView extends JPanel implements PropertyChangeListener {
     private JTable emailTable;
     private JTextField keywordField;
     private JTextField senderField;
+    private JTextField minScoreField;
+    private JTextField maxScoreField;
     private JComboBox<String> sortBox;
     private JButton filterButton;
     private JButton discordButton;
@@ -28,6 +30,7 @@ public class DashboardView extends JPanel implements PropertyChangeListener {
     private FilteredViewModel filteredViewModel;
     private DashboardViewModel dashboardViewModel;
     private GetPinnedEmailsController getPinnedEmailsController;
+    private List<Email> currentEmails; // Store current emails for row access
 
     public DashboardView() {
         super();
@@ -45,6 +48,8 @@ public class DashboardView extends JPanel implements PropertyChangeListener {
 
         keywordField = new JTextField();
         senderField = new JTextField();
+        minScoreField = new JTextField();
+        maxScoreField = new JTextField();
         sortBox = new JComboBox<>(new String[]{"Date", "Sender", "Suspicion Score"});
         filterButton = new JButton("Apply Filter");
 
@@ -52,6 +57,10 @@ public class DashboardView extends JPanel implements PropertyChangeListener {
         filterPanel.add(keywordField);
         filterPanel.add(new JLabel("Sender:"));
         filterPanel.add(senderField);
+        filterPanel.add(new JLabel("Min Score:"));
+        filterPanel.add(minScoreField);
+        filterPanel.add(new JLabel("Max Score:"));
+        filterPanel.add(maxScoreField);
         filterPanel.add(new JLabel("Sort by:"));
         filterPanel.add(sortBox);
         filterPanel.add(filterButton);
@@ -184,6 +193,7 @@ public class DashboardView extends JPanel implements PropertyChangeListener {
      * Update the table with the list of emails
      */
     private void updateTable(List<Email> emails) {
+        this.currentEmails = emails; // Store emails for later access
         DefaultTableModel model = (DefaultTableModel) emailTable.getModel();
         model.setRowCount(0); // Clear existing rows
 
@@ -199,6 +209,16 @@ public class DashboardView extends JPanel implements PropertyChangeListener {
         }
     }
 
+    /**
+     * Get email at specific row index
+     */
+    public Email getEmailAtRow(int row) {
+        if (currentEmails != null && row >= 0 && row < currentEmails.size()) {
+            return currentEmails.get(row);
+        }
+        return null;
+    }
+
     public String getViewName() { return viewName;}
 
     // Expose widgets to controller
@@ -208,6 +228,8 @@ public class DashboardView extends JPanel implements PropertyChangeListener {
     public JTable getEmailTable() { return emailTable; }
     public String getKeyword() { return keywordField.getText(); }
     public String getSender() { return senderField.getText(); }
+    public String getMinScore() { return minScoreField.getText(); }
+    public String getMaxScore() { return maxScoreField.getText(); }
     public String getSort() { return (String) sortBox.getSelectedItem(); }
 
     public void addBackToStartListener(ActionListener listener) {

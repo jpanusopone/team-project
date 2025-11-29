@@ -1,10 +1,15 @@
 package interface_adapter.filter;
 
+import interface_adapter.ViewManagerModel;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import use_case.filter.FilterInputBoundary;
 import use_case.filter.FilterInputData;
 import use_case.filter.SortBy;
 import view.DashboardView;
+import view.DashboardSelectView;
 
 /**
  * Controller for the Filter Use Case.
@@ -12,15 +17,31 @@ import view.DashboardView;
 public class FilterController {
     private final DashboardView view;
     private final FilterInputBoundary filterInteractor;
+    private final DashboardSelectView dashboardSelectView;
+    private final ViewManagerModel viewManagerModel;
 
-    public FilterController(DashboardView view, FilterInputBoundary filterInteractor) {
+    public FilterController(DashboardView view, FilterInputBoundary filterInteractor,
+                           DashboardSelectView dashboardSelectView, ViewManagerModel viewManagerModel) {
         this.view = view;
         this.filterInteractor = filterInteractor;
+        this.dashboardSelectView = dashboardSelectView;
+        this.viewManagerModel = viewManagerModel;
 
         // Connect button to filter action
         view.getFilterButton().addActionListener(e -> applyFilter());
         view.getDiscordButton().addActionListener(e ->
                 JOptionPane.showMessageDialog(view, "Pretend this opens the Discord server!"));
+
+        // Add click listener to table for viewing email details
+        JTable table = view.getEmailTable();
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 1 && table.getSelectedRow() != -1) {
+                    openEmailDetails(table.getSelectedRow());
+                }
+            }
+        });
     }
 
     /**
@@ -30,7 +51,60 @@ public class FilterController {
         // Get inputs from view
         String keyword = view.getKeyword();
         String sender = view.getSender();
+        String minScoreStr = view.getMinScore();
+        String maxScoreStr = view.getMaxScore();
         String sortSelection = view.getSort();
+
+        // Parse min/max scores with validation
+        Double minScore = null;
+        Double maxScore = null;
+
+        try {
+            if (!minScoreStr.isEmpty()) {
+                minScore = Double.parseDouble(minScoreStr);
+                if (minScore < 0 || minScore > 100) {
+                    JOptionPane.showMessageDialog(view,
+                            "Minimum Score must be between 0 and 100",
+                            "Input Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(view,
+                    "Minimum Score must be a valid number",
+                    "Input Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        try {
+            if (!maxScoreStr.isEmpty()) {
+                maxScore = Double.parseDouble(maxScoreStr);
+                if (maxScore < 0 || maxScore > 100) {
+                    JOptionPane.showMessageDialog(view,
+                            "Maximum Score must be between 0 and 100",
+                            "Input Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(view,
+                    "Maximum Score must be a valid number",
+                    "Input Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Validate min <= max
+        if (minScore != null && maxScore != null && minScore > maxScore) {
+            JOptionPane.showMessageDialog(view,
+                    "Minimum Score cannot be greater than Maximum Score",
+                    "Input Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         // Convert sort string to SortBy enum
         SortBy sortBy = convertToSortBy(sortSelection);
@@ -40,8 +114,8 @@ public class FilterController {
                 keyword.isEmpty() ? null : keyword,
                 sender.isEmpty() ? null : sender,
                 sortBy,
-                null,  // minScore - could add input fields for these later
-                null   // maxScore
+                minScore,
+                maxScore
         );
 
         // Execute the filter use case
@@ -62,6 +136,176 @@ public class FilterController {
             default:
                 return SortBy.DATE_RECEIVED;
         }
+    }
+
+    /**
+     * Open email details view when user clicks on a table row
+     */
+    private void openEmailDetails(int row) {
+        // Get the actual Email object from the view
+        entity.Email email = view.getEmailAtRow(row);
+
+        if (email == null) {
+            JOptionPane.showMessageDialog(view,
+                    "Could not load email details.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Format date
+        String dateStr = email.getDateReceived() != null ?
+                email.getDateReceived().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) :
+                "N/A";
+
+        String status = email.getVerifiedStatus() != null ? email.getVerifiedStatus() : "Pending";
+
+        // Build email content (just the body)
+        String emailText;
+        if (email.getBody() != null && !email.getBody().isEmpty()) {
+            emailText = email.getBody();
+        } else {
+            emailText = "[No email body content]";
+        }
+
+        // Build analysis section (phishing analysis + link risk)
+        StringBuilder analysisText = new StringBuilder();
+
+        // Phishing Explanation
+        if (email.getExplanation() != null && !email.getExplanation().isEmpty()) {
+            analysisText.append("═══════════════════════════════════════════════════════\n");
+            analysisText.append("  PHISHING RISK ANALYSIS\n");
+            analysisText.append("═══════════════════════════════════════════════════════\n\n");
+            analysisText.append(email.getExplanation()).append("\n\n");
+        }
+
+        // Link Risk Analysis
+        if (email.getLinks() != null && !email.getLinks().isEmpty()) {
+            analysisText.append("═══════════════════════════════════════════════════════\n");
+            analysisText.append("  LINK RISK ANALYSIS\n");
+            analysisText.append("═══════════════════════════════════════════════════════\n\n");
+
+            boolean hasHighRiskLinks = false;
+            for (String link : email.getLinks()) {
+                String linkAnalysis = analyzeLinkRisk(link);
+                analysisText.append(linkAnalysis).append("\n\n");
+
+                if (isLinkSuspicious(link)) {
+                    hasHighRiskLinks = true;
+                }
+            }
+
+            if (hasHighRiskLinks) {
+                analysisText.append("⚠️  WARNING: This email contains suspicious links!\n");
+                analysisText.append("    DO NOT CLICK on any links in this email.\n\n");
+            }
+        } else {
+            analysisText.append("═══════════════════════════════════════════════════════\n");
+            analysisText.append("  LINK RISK ANALYSIS\n");
+            analysisText.append("═══════════════════════════════════════════════════════\n\n");
+            analysisText.append("No links detected in this email.\n\n");
+        }
+
+        // Set details in the select view
+        dashboardSelectView.setEmailDetails(
+                email.getSender(),
+                email.getTitle(),
+                String.format("%.1f", email.getSuspicionScore()),
+                status,
+                dateStr
+        );
+        dashboardSelectView.setEmailText(emailText);
+        dashboardSelectView.setAnalysisText(analysisText.toString());
+
+        // Switch to the email details screen
+        viewManagerModel.setState(dashboardSelectView.getViewName());
+        viewManagerModel.firePropertyChange();
+    }
+
+    private boolean isLinkSuspicious(String url) {
+        if (url == null || url.trim().isEmpty()) return false;
+
+        String lowerUrl = url.toLowerCase();
+
+        return lowerUrl.contains("bit.ly") ||
+               lowerUrl.contains("tinyurl") ||
+               lowerUrl.contains("goo.gl") ||
+               lowerUrl.contains("ow.ly") ||
+               lowerUrl.contains("@") ||
+               lowerUrl.matches(".*\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}.*") ||
+               lowerUrl.contains("-login") ||
+               lowerUrl.contains("_login") ||
+               lowerUrl.contains("verify") ||
+               lowerUrl.contains("confirm") ||
+               lowerUrl.contains("secure") ||
+               lowerUrl.contains("account-update") ||
+               lowerUrl.matches(".*(paypa1|paypai|amazom|gogle|micr0soft|appleid-|bankofamerica-).*");
+    }
+
+    private String analyzeLinkRisk(String url) {
+        if (url == null || url.trim().isEmpty()) {
+            return "Empty URL";
+        }
+
+        String lowerUrl = url.toLowerCase();
+        StringBuilder analysis = new StringBuilder();
+        analysis.append("🔗 ").append(url).append("\n");
+
+        boolean isSuspicious = false;
+        java.util.List<String> warnings = new java.util.ArrayList<>();
+
+        // Check for URL shorteners
+        if (lowerUrl.contains("bit.ly") || lowerUrl.contains("tinyurl") ||
+            lowerUrl.contains("goo.gl") || lowerUrl.contains("ow.ly")) {
+            warnings.add("URL shortener (hides real destination)");
+            isSuspicious = true;
+        }
+
+        // Check for IP address instead of domain
+        if (lowerUrl.matches(".*\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}.*")) {
+            warnings.add("Uses IP address instead of domain name");
+            isSuspicious = true;
+        }
+
+        // Check for @ symbol (can hide real destination)
+        if (lowerUrl.contains("@")) {
+            warnings.add("Contains @ symbol (can hide destination)");
+            isSuspicious = true;
+        }
+
+        // Check for suspicious keywords
+        if (lowerUrl.contains("-login") || lowerUrl.contains("_login")) {
+            warnings.add("Suspicious login page pattern");
+            isSuspicious = true;
+        }
+        if (lowerUrl.contains("verify") || lowerUrl.contains("confirm")) {
+            warnings.add("Verification/confirmation page");
+            isSuspicious = true;
+        }
+        if (lowerUrl.contains("secure") || lowerUrl.contains("account-update")) {
+            warnings.add("Fake security/update page");
+            isSuspicious = true;
+        }
+
+        // Check for typosquatting
+        if (lowerUrl.matches(".*(paypa1|paypai|amazom|gogle|micr0soft|appleid-|bankofamerica-).*")) {
+            warnings.add("⚠️  TYPOSQUATTING DETECTED - Misspelled domain!");
+            isSuspicious = true;
+        }
+
+        // Build result
+        if (isSuspicious) {
+            analysis.append("   Risk Level: ⚠️  HIGH RISK\n");
+            analysis.append("   Reasons:\n");
+            for (String warning : warnings) {
+                analysis.append("     • ").append(warning).append("\n");
+            }
+        } else {
+            analysis.append("   Risk Level: ✓ Low Risk\n");
+            analysis.append("   This link appears to be safe.");
+        }
+
+        return analysis.toString();
     }
 }
 
