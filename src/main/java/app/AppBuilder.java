@@ -60,24 +60,10 @@ public class AppBuilder {
         FilteredViewModel filteredViewModel = new FilteredViewModel();
         FilterPresenter filterPresenter = new FilterPresenter(viewManagerModel, filteredViewModel);
         FilterInteractor filterInteractor = new FilterInteractor(filterDAO, filterPresenter);
-        filterController = new FilterController(filterInteractor);  // its constructor should add listeners
+        filterController = new FilterController(filterInteractor);
         dashboardView.setFilterController(filterController);
         dashboardView.setFilteredViewModel(filteredViewModel);
 
-        // pinned emails
-//        EmailDataAccessObject emailDAO = new EmailDataAccessObject(createSampleEmails());
-//        DashboardViewModel dashboardViewModel = new DashboardViewModel();
-//        GetPinnedEmailsPresenter pinnedEmailsPresenter = new GetPinnedEmailsPresenter(viewManagerModel, dashboardViewModel);
-//        GetPinnedEmailsInteractor pinnedEmailsInteractor = new GetPinnedEmailsInteractor(emailDAO, pinnedEmailsPresenter);
-//        pinnedEmailsController = new GetPinnedEmailsController(pinnedEmailsInteractor);
-//        dashboardView.setPinnedEmailsController(pinnedEmailsController);
-//        dashboardView.setDashboardViewModel(dashboardViewModel);
-
-//        dashboardView.setFilteredViewModel(filteredViewModel);
-//        dashboardView.setPinnedEmailsController(pinnedEmailsController);
-//        dashboardView.setDashboardViewModel(dashboardViewModel);
-//
-//        pinnedEmailsController.execute();
         filterController.execute("", "", "0.0", "100.0", "Title");
 
         return this;
@@ -97,8 +83,6 @@ public class AppBuilder {
         startView.addDashboardListener(e -> {
             viewManagerModel.setState(dashboardView.getViewName());
             viewManagerModel.firePropertyChange();
-
-//            pinnedEmailsController.execute();
 
         });
 

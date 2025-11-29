@@ -4,8 +4,6 @@ import javax.swing.*;
 
 public class Main {
     public static void main(String[] args) {
-//        DashboardView view = new DashboardView();
-//        new FilterController(view);
         AppBuilder appBuilder = new AppBuilder();
         JFrame application = appBuilder
                 //add submit view later
