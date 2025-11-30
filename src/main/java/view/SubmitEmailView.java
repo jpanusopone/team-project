@@ -30,7 +30,7 @@ public class SubmitEmailView extends JFrame{
 
     private final JButton submitButton = new JButton("Submit");
     private final JButton pinButton = new JButton("Pin to Dashboard");
-    private final JButton backToDashboardButton = new JButton("Back to Dashboard");
+    private final JButton backToDashboardButton = new JButton("Back to Start");
 
     private final ExplanationController explanationController;
     private PhishingExplanation currentExplanation;

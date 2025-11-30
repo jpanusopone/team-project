@@ -167,11 +167,7 @@ public class AppBuilder {
                 // Add back to dashboard listener
                 submitView.addBackToDashboardListener(backEvent -> {
                     submitView.dispose();
-                    // Load pinned emails when going back to dashboard
-                    dashboardView = new DashboardView();
-                    dashboardView.onViewDisplayed();
-                    viewManagerModel.setState(dashboardView.getViewName());
-                    viewManagerModel.firePropertyChange();
+
                 });
             });
         });
