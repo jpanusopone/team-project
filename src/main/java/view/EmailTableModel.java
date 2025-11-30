@@ -49,14 +49,14 @@ public class EmailTableModel extends AbstractTableModel {
     }
 
     @Override
-    public Object getValueAt(int rowIndex, int columnIndex) {
-        switch (columnIndex) {
-            case 0: return senders.get(rowIndex);
-            case 1: return titles.get(rowIndex);
-            case 2: return datesReceived.get(rowIndex);
-            case 3: return suspicionScores.get(rowIndex);
-            case 4: return verifiedStatuses.get(rowIndex);
-            default: return null;
-        }
+    public String getValueAt(int rowIndex, int columnIndex) {
+        return switch (columnIndex) {
+            case 0 -> senders.get(rowIndex);
+            case 1 -> titles.get(rowIndex);
+            case 2 -> datesReceived.get(rowIndex);
+            case 3 -> suspicionScores.get(rowIndex);
+            case 4 -> verifiedStatuses.get(rowIndex);
+            default -> null;
+        };
     }
 }

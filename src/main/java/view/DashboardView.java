@@ -7,26 +7,26 @@ import interface_adapter.filter.FilteredViewModel;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 public class DashboardView extends JPanel implements PropertyChangeListener{
     private boolean userAppliedFilter = false;
 
     private FilterController filterController;
 
-    private JTable emailTable;
-    private EmailTableModel emailTableModel;
-    private JTextField keywordField;
-    private JTextField senderField;
-    private JTextField minScoreField;
-    private JTextField maxScoreField;
-    private JComboBox<String> sortBox;
-    private JButton filterButton;
-    private JButton discordButton;
-    private JButton backToStartButton;
+    private final JTable emailTable;
+    private final EmailTableModel emailTableModel;
+    private final JTextField keywordField;
+    private final JTextField senderField;
+    private final JTextField minScoreField;
+    private final JTextField maxScoreField;
+    private final JComboBox<String> sortBox;
+    private final JButton filterButton;
+    private final JButton discordButton;
+    private final JButton backToStartButton;
 
     public DashboardView() {
         super();
@@ -92,47 +92,13 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
                 new ArrayList<>(),
                 new ArrayList<>()
         );
+
         emailTable = new JTable(emailTableModel);
-
-        // Add custom renderer for status column
-        emailTable.getColumnModel().getColumn(3).setCellRenderer(new javax.swing.table.DefaultTableCellRenderer() {
-            @Override
-            public java.awt.Component getTableCellRendererComponent(JTable table, Object value,
-                    boolean isSelected, boolean hasFocus, int row, int column) {
-                java.awt.Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-
-                if (!isSelected && value != null) {
-                    String status = value.toString();
-                    switch (status) {
-                        case "Confirmed":
-                            c.setBackground(new Color(255, 200, 200)); // Light red for confirmed phishing
-                            c.setForeground(Color.BLACK);
-                            break;
-                        case "Safe":
-                            c.setBackground(new Color(200, 255, 200)); // Light green for safe
-                            c.setForeground(Color.BLACK);
-                            break;
-                        case "Pending":
-                            c.setBackground(new Color(255, 255, 200)); // Light yellow for pending
-                            c.setForeground(Color.BLACK);
-                            break;
-                        default:
-                            c.setBackground(Color.WHITE);
-                            c.setForeground(Color.BLACK);
-                    }
-                } else if (isSelected) {
-                    c.setBackground(table.getSelectionBackground());
-                    c.setForeground(table.getSelectionForeground());
-                }
-
-                return c;
-            }
-        });
 
         JScrollPane scrollPane = new JScrollPane(emailTable);
         add(scrollPane, BorderLayout.CENTER);
 
-        // ----- BOTTOM BUTTONS -----
+        // ----- DISCORD BUTTON AND BACK TO START BUTTON -----
         discordButton = new JButton("Join Discord Webhook");
         backToStartButton = new JButton("Back to Start");
         JPanel bottomPanel = new JPanel();
@@ -143,6 +109,12 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
         setVisible(true);
     }
 
+    public void onViewDisplayed() {
+        if (filterController != null) {
+            filterController.execute("", "", "0.0", "100.0", "Title");
+        }
+    }
+
     public String getViewName() {
         return "dashboard";
     }
@@ -150,17 +122,12 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
     // Expose widgets to controller
     public JButton getFilterButton() { return filterButton; }
     public JButton getDiscordButton() { return discordButton; }
-    public JButton getBackToStartButton() { return backToStartButton; }
     public JTable getEmailTable() { return emailTable; }
     public String getKeyword() { return keywordField.getText(); }
     public String getSender() { return senderField.getText(); }
     public Double getMinScore() { return Double.parseDouble(minScoreField.getText()); }
     public Double getMaxScore() { return Double.parseDouble(maxScoreField.getText()); }
     public String getSort() { return (String) sortBox.getSelectedItem(); }
-
-    public void addBackToStartListener(ActionListener listener) {
-        backToStartButton.addActionListener(listener);
-    }
 
     public void setFilterController(FilterController controller) {
         this.filterController = controller;
@@ -207,7 +174,12 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
         userAppliedFilter = false;
     }
 
+
     public void setFilteredViewModel(FilteredViewModel vm) {
         vm.addPropertyChangeListener(this);
+    }
+
+    public void addBackToStartListener(ActionListener listener) {
+        backToStartButton.addActionListener(listener);
     }
 }

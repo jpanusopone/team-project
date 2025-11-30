@@ -6,25 +6,37 @@ import interface_adapter.filter.FilterController;
 import interface_adapter.filter.FilterPresenter;
 import interface_adapter.filter.FilteredViewModel;
 import use_case.filter.FilterInteractor;
-import view.DashboardView;
-import view.LoginView;
-import view.StartView;
-import view.SubmitEmailView;
 
 import javax.swing.*;
 import java.awt.*;
 
+import view.LoginView;
+import view.StartView;
+import view.DashboardView;
+import view.ViewManager;
+import view.SubmitEmailView;
+import view.ItDashboardView;
+import view.EmailDecisionView;
+import view.DashboardSelectView;
+import interface_adapter.login.LoginController;
+import interface_adapter.it_dashboard.ItDashboardController;
+import interface_adapter.filter.ItFilterController;
+
 public class AppBuilder {
     private final JPanel cardPanel = new JPanel();
+    private final CardLayout cardLayout = new CardLayout();
 
     final ViewManagerModel viewManagerModel = new ViewManagerModel();
+    ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
 
     private LoginView loginView;
     private DashboardView dashboardView;
+    private DashboardSelectView dashboardSelectView;
     private StartView startView;
+    private ItDashboardView itDashboardView;
+    private EmailDecisionView emailDecisionView;
 
     public AppBuilder() {
-        CardLayout cardLayout = new CardLayout();
         cardPanel.setLayout(cardLayout);
     }
 
@@ -40,20 +52,69 @@ public class AppBuilder {
         return this;
     }
 
+    public AppBuilder addDashboardSelectView() {
+        dashboardSelectView = new DashboardSelectView();
+        cardPanel.add(dashboardSelectView, dashboardSelectView.getViewName());
+
+        // Add back listener to return to dashboard
+        dashboardSelectView.addBackListener(e -> {
+            viewManagerModel.setState(dashboardView.getViewName());
+            viewManagerModel.firePropertyChange();
+        });
+
+        return this;
+    }
+
     public AppBuilder addDashboardControllers() {
-        // make sure addDashBoardView() is called before this
+        // make sure addDashBoardView() and addDashboardSelectView() are called before this
 
-        // filter
-        FilterDataAccessObject filterDAO = new FilterDataAccessObject();
+        // --- Setup Filter Use Case ---
+        // Create the filter view model
         FilteredViewModel filteredViewModel = new FilteredViewModel();
+
+        // Create the filter presenter
         FilterPresenter filterPresenter = new FilterPresenter(viewManagerModel, filteredViewModel);
-        FilterInteractor filterInteractor = new FilterInteractor(filterDAO, filterPresenter);
+
+        // Create the filter data access object
+        FilterDataAccessObject filterDataAccessObject = new FilterDataAccessObject();
+
+        // Create the filter interactor
+        FilterInteractor filterInteractor = new FilterInteractor(filterDataAccessObject, filterPresenter);
+
+        // Create the filter controller with all required dependencies (now includes dashboardSelectView)
         FilterController filterController = new FilterController(filterInteractor);
-        dashboardView.setFilterController(filterController);
+
+        // Connect the filtered view model to the dashboard view
         dashboardView.setFilteredViewModel(filteredViewModel);
+        dashboardView.setFilterController(filterController);
+        dashboardView.onViewDisplayed();
 
-        filterController.execute("", "", "0.0", "100.0", "Title");
+        return this;
+    }
 
+    public AppBuilder addItDashboardView() {
+        itDashboardView = new ItDashboardView();
+        cardPanel.add(itDashboardView, itDashboardView.getViewName());
+        return this;
+    }
+
+    public AppBuilder addEmailDecisionView() {
+        emailDecisionView = new EmailDecisionView();
+        cardPanel.add(emailDecisionView, emailDecisionView.getViewName());
+        return this;
+    }
+
+    public AppBuilder addItDashboardControllers() {
+        // Make sure addItDashboardView() and addEmailDecisionView() are called first
+        ItDashboardController itDashboardController = new ItDashboardController(
+                itDashboardView, emailDecisionView, viewManagerModel);
+        new ItFilterController(itDashboardView, itDashboardController);
+        return this;
+    }
+
+    public AppBuilder addLoginController() {
+        // Make sure addLoginView() is called first
+        new LoginController(loginView, viewManagerModel);
         return this;
     }
 
@@ -68,19 +129,52 @@ public class AppBuilder {
                 SubmitEmailView submitView = new SubmitEmailView();
                 submitView.setLocationRelativeTo(null);
                 submitView.setVisible(true);
+
+                // Add back to dashboard listener
+                submitView.addBackToDashboardListener(backEvent -> {
+                    submitView.dispose();
+                    // Load pinned emails when going back to dashboard
+                    dashboardView = new DashboardView();
+                    dashboardView.onViewDisplayed();
+                    viewManagerModel.setState(dashboardView.getViewName());
+                    viewManagerModel.firePropertyChange();
+                });
             });
         });
 
         // When user presses Dashboard
         startView.addDashboardListener(e -> {
+            // Load pinned emails when switching to dashboard
+            dashboardView = new DashboardView();
+            dashboardView.onViewDisplayed();
             viewManagerModel.setState(dashboardView.getViewName());
             viewManagerModel.firePropertyChange();
-
         });
 
         // When user presses IT login
         startView.addItLoginListener(e -> {
             viewManagerModel.setState(loginView.getViewName());
+            viewManagerModel.firePropertyChange();
+        });
+
+        // Add back to start listener for dashboard
+        dashboardView.addBackToStartListener(e -> {
+            viewManagerModel.setState(startView.getViewName());
+            viewManagerModel.firePropertyChange();
+        });
+
+        // Add back to dashboard listener for login
+        loginView.addBackToDashboardListener(e -> {
+            // Load pinned emails when going back to dashboard
+            dashboardView = new DashboardView();
+            dashboardView.onViewDisplayed();
+            viewManagerModel.setState(dashboardView.getViewName());
+            viewManagerModel.firePropertyChange();
+        });
+
+        // Add back to start listener for IT dashboard
+        itDashboardView.getBackButton().addActionListener(e -> {
+            viewManagerModel.setState(startView.getViewName());
             viewManagerModel.firePropertyChange();
         });
 
@@ -97,5 +191,4 @@ public class AppBuilder {
 
         return application;
     }
-
 }
