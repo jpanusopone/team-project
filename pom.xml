@@ -29,7 +29,7 @@
             <version>2.10.1</version>
         </dependency>
 
-        <!-- JUnit 5 -->
+        <!-- JUnit 5 for testing -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -37,7 +37,7 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Mockito -->
+        <!-- Mockito for mocking in tests -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
@@ -45,27 +45,11 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Mockito JUnit Jupiter (for JUnit 5 integration) -->
+        <!-- Mockito JUnit 5 integration -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
             <version>5.5.0</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- JUnit Jupiter for testing -->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>5.9.3</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Mockito for mocking -->
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>5.14.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -77,7 +61,6 @@
                 <configuration>
                     <source>14</source>
                     <target>14</target>
-                    <compilerArgs>--enable-preview</compilerArgs>
                 </configuration>
             </plugin>
         </plugins>
