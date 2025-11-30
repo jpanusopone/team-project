@@ -1,4 +1,5 @@
 package data_access;
+import use_case.save_email.SaveEmailDataAccessInterface;
 
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
  * Firebase implementation for email data access.
  * Stores and retrieves emails from Firestore database.
  */
-public class FirebaseEmailDataAccessObject {
+public class FirebaseEmailDataAccessObject implements SaveEmailDataAccessInterface {
     private static final String COLLECTION_EMAILS = "emails";
     private final Firestore db;
 

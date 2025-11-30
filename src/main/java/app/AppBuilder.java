@@ -160,7 +160,7 @@ public class AppBuilder {
         startView.addSubmitPhishingListener(e -> {
             // Open the Submit Email window as a separate JFrame
             SwingUtilities.invokeLater(() -> {
-                SubmitEmailView submitView = new SubmitEmailView();
+                SubmitEmailView submitView = ApplicationConfig.createSubmitEmailView();
                 submitView.setLocationRelativeTo(null);
                 submitView.setVisible(true);
 

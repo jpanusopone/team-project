@@ -1,21 +1,27 @@
 package view;
 
-import config.ApplicationConfig;
 import entity.Email;
 import entity.EmailBuilder;
 import entity.PhishingExplanation;
 import entity.RiskLevel;
+import interface_adapter.link_risk.LinkRiskController;
+import interface_adapter.link_risk.LinkRiskState;
+import interface_adapter.link_risk.LinkRiskViewModel;
+import interface_adapter.save_email.SaveEmailController;
+import interface_adapter.save_email.SaveEmailViewModel;
 import presentation.ExplanationController;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 /**
  * Use Case 1 GUI: Submit email for analysis.
  */
 
-public class SubmitEmailView extends JFrame{
+public class SubmitEmailView extends JFrame implements PropertyChangeListener {
     private final JTextArea emailArea = new JTextArea(15, 40);
 
     // New fields for email metadata
@@ -33,15 +39,25 @@ public class SubmitEmailView extends JFrame{
     private final JButton backToDashboardButton = new JButton("Back to Start");
 
     private final ExplanationController explanationController;
+    private final SaveEmailController saveEmailController;
+    private final SaveEmailViewModel saveEmailViewModel;
+    private final LinkRiskController linkRiskController;
+    private final LinkRiskViewModel linkRiskViewModel;
     private PhishingExplanation currentExplanation;
 
-    public SubmitEmailView() {
-        this(ApplicationConfig.createExplanationController());
-    }
-
-    public SubmitEmailView(ExplanationController controller) {
+    public SubmitEmailView(ExplanationController controller, SaveEmailController saveController,
+                           SaveEmailViewModel saveViewModel, LinkRiskController linkController,
+                           LinkRiskViewModel linkViewModel) {
         super("Phish Detect - Submit Email");
         this.explanationController = controller;
+        this.saveEmailController = saveController;
+        this.saveEmailViewModel = saveViewModel;
+        this.linkRiskController = linkController;
+        this.linkRiskViewModel = linkViewModel;
+
+        // Register as listener to view models
+        this.saveEmailViewModel.addPropertyChangeListener(this);
+        this.linkRiskViewModel.addPropertyChangeListener(this);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout(10, 10));
@@ -257,71 +273,112 @@ public class SubmitEmailView extends JFrame{
 
         pinButton.setEnabled(false);
 
-        SwingWorker<Void, Void> worker = new SwingWorker<>() {
-            @Override
-            protected Void doInBackground() throws Exception {
-                // Save to Firebase - check for duplicates first
-                data_access.FirebaseEmailDataAccessObject emailDAO = new data_access.FirebaseEmailDataAccessObject();
+        // Parse date from field or use current time
+        java.time.LocalDateTime dateReceived;
+        try {
+            dateReceived = java.time.LocalDateTime.parse(dateStr,
+                java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        } catch (Exception e) {
+            dateReceived = java.time.LocalDateTime.now();
+        }
 
-                // Check if email with same content already exists
-                if (emailDAO.emailExistsByContent(emailText)) {
-                    throw new Exception("This email has already been submitted to the system.");
-                }
+        java.util.List<String> links = currentExplanation.getIndicators() != null &&
+                                        currentExplanation.getIndicators().getUrls() != null ?
+                                        currentExplanation.getIndicators().getUrls() : new java.util.ArrayList<>();
 
-                // Parse date from field or use current time
-                java.time.LocalDateTime dateReceived;
-                try {
-                    dateReceived = java.time.LocalDateTime.parse(dateStr,
-                        java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-                } catch (Exception e) {
-                    // If parsing fails, use current time
-                    dateReceived = java.time.LocalDateTime.now();
-                }
+        // Use controller to save email - follows clean architecture
+        saveEmailController.execute(
+                subject,
+                sender,
+                emailText,
+                dateReceived,
+                mapRiskLevelToScore(currentExplanation.getRiskLevel()),
+                formatExplanation(currentExplanation),
+                links
+        );
 
-                // Create email entity
-                EmailBuilder builder = new EmailBuilder();
-                Email email = builder
-                        .title(subject)
-                        .sender(sender)
-                        .body(emailText)
-                        .dateReceived(dateReceived)
-                        .suspicionScore(mapRiskLevelToScore(currentExplanation.getRiskLevel()))
-                        .explanation(formatExplanation(currentExplanation))
-                        .links(currentExplanation.getIndicators() != null &&
-                               currentExplanation.getIndicators().getUrls() != null ?
-                               currentExplanation.getIndicators().getUrls() : new java.util.ArrayList<>())
-                        .pinned(true)
-                        .pinnedDate(java.time.LocalDateTime.now())
-                        .verifiedStatus("Pending")
-                        .build();
+        // Note: The actual result handling is done in propertyChange() method
+    }
 
-                emailDAO.saveEmail(email);
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        // Handle save email result
+        if ("saveResult".equals(evt.getPropertyName())) {
+            pinButton.setEnabled(true);
 
-                return null;
+            if (saveEmailViewModel.isSuccess()) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        saveEmailViewModel.getMessage(),
+                        "Success",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+            } else {
+                JOptionPane.showMessageDialog(
+                        this,
+                        saveEmailViewModel.getMessage(),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
             }
+        }
 
-            @Override
-            protected void done() {
-                pinButton.setEnabled(true);
-                try {
-                    get();
-                    JOptionPane.showMessageDialog(
-                            SubmitEmailView.this,
-                            "Email successfully pinned to dashboard!",
-                            "Success",
-                            JOptionPane.INFORMATION_MESSAGE
-                    );
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(
-                            SubmitEmailView.this,
-                            "Failed to pin email: " + ex.getMessage(),
-                            "Error",
-                            JOptionPane.ERROR_MESSAGE
-                    );
+        // Handle link risk analysis result
+        if ("state".equals(evt.getPropertyName()) && evt.getSource() == linkRiskViewModel) {
+            LinkRiskState state = linkRiskViewModel.getState();
+
+            if (state.getError() != null) {
+                // API call failed, append error message
+                String currentText = explanationArea.getText();
+                String updatedText = currentText.replace(
+                        "Link Analysis: Checking URLs with Google Safe Browsing...\n",
+                        "Link Analysis: Unable to check URLs (" + state.getError() + ")\n"
+                );
+                explanationArea.setText(updatedText);
+            } else if (state.getUrls() != null && state.getRiskLevels() != null) {
+                // API call succeeded, update with real results
+                StringBuilder linkAnalysis = new StringBuilder();
+                linkAnalysis.append("Link Analysis (Google Safe Browsing):\n");
+
+                boolean hasDangerousLinks = false;
+                java.util.List<String> urls = state.getUrls();
+                java.util.List<String> riskLevels = state.getRiskLevels();
+
+                if (urls.isEmpty()) {
+                    linkAnalysis.append("No links detected in email.\n");
+                } else {
+                    for (int i = 0; i < urls.size(); i++) {
+                        String url = urls.get(i);
+                        String risk = riskLevels.get(i);
+
+                        if ("DANGEROUS".equals(risk)) {
+                            linkAnalysis.append(" - ⚠️ ").append(url).append(" [DANGEROUS]\n");
+                            hasDangerousLinks = true;
+                        } else if ("SAFE".equals(risk)) {
+                            linkAnalysis.append(" - ✓ ").append(url).append(" [SAFE]\n");
+                        } else {
+                            linkAnalysis.append(" - ? ").append(url).append(" [UNKNOWN]\n");
+                        }
+                    }
                 }
+
+                // Update warning label if dangerous links found
+                if (hasDangerousLinks) {
+                    warningLabel.setText("⚠️ DANGER: DO NOT CLICK ANY LINKS! ⚠️");
+                    warningLabel.setForeground(Color.RED);
+                    warningLabel.setBackground(new Color(255, 220, 220));
+                }
+
+                // Replace loading message with actual results
+                String currentText = explanationArea.getText();
+                String updatedText = currentText.replace(
+                        "Link Analysis: Checking URLs with Google Safe Browsing...\n",
+                        linkAnalysis.toString()
+                );
+                explanationArea.setText(updatedText);
+                explanationArea.setCaretPosition(0);
             }
-        };
-        worker.execute();
+        }
     }
 
     private String extractSender(String emailText) {
@@ -382,25 +439,8 @@ public class SubmitEmailView extends JFrame{
         int score = mapRiskLevelToScore(explanation.getRiskLevel());
         scoreNumberLabel.setText(String.valueOf(score));
 
-        // Analyze links
-        boolean hasDangerousLinks = false;
-        if (explanation.getIndicators() != null &&
-            explanation.getIndicators().getUrls() != null &&
-            !explanation.getIndicators().getUrls().isEmpty()) {
-            for (String url : explanation.getIndicators().getUrls()) {
-                if (isLinkSuspicious(url)) {
-                    hasDangerousLinks = true;
-                    break;
-                }
-            }
-        }
-
-        // Update warning label based on suspicion and link analysis
-        if (hasDangerousLinks) {
-            warningLabel.setText("⚠️ DANGER: DO NOT CLICK ANY LINKS! ⚠️");
-            warningLabel.setForeground(Color.RED);
-            warningLabel.setBackground(new Color(255, 220, 220));
-        } else if (explanation.isSuspicious()) {
+        // Update warning label based on suspicion
+        if (explanation.isSuspicious()) {
             warningLabel.setText("!!! Be careful with links !!!");
             warningLabel.setForeground(Color.RED.darker());
             warningLabel.setBackground(new Color(255, 240, 240));
@@ -410,6 +450,7 @@ public class SubmitEmailView extends JFrame{
             warningLabel.setBackground(new Color(240, 255, 240));
         }
 
+        // Build explanation text (without link analysis yet)
         StringBuilder sb = new StringBuilder();
         sb.append("Risk Level: ").append(explanation.getRiskLevel().name().toLowerCase()).append("\n\n");
 
@@ -421,107 +462,23 @@ public class SubmitEmailView extends JFrame{
             sb.append("\n");
         }
 
-        // Add link analysis section
-        if (explanation.getIndicators() != null &&
-            explanation.getIndicators().getUrls() != null &&
-            !explanation.getIndicators().getUrls().isEmpty()) {
-            sb.append("Link Analysis:\n");
-            for (String url : explanation.getIndicators().getUrls()) {
-                String analysis = analyzeLinkRisk(url);
-                sb.append(" - ").append(analysis).append("\n");
-            }
-            sb.append("\n");
-        }
-
         if (!explanation.getSuggestedActions().isEmpty()) {
             sb.append("Suggested actions:\n");
             for (String a : explanation.getSuggestedActions()) {
                 sb.append(" - ").append(a).append("\n");
             }
+            sb.append("\n");
         }
+
+        // Show loading message for link analysis
+        sb.append("Link Analysis: Checking URLs with Google Safe Browsing...\n");
 
         explanationArea.setText(sb.toString());
         explanationArea.setCaretPosition(0);
-    }
 
-    private boolean isLinkSuspicious(String url) {
-        if (url == null || url.trim().isEmpty()) return false;
-
-        String lowerUrl = url.toLowerCase();
-
-        // Check for suspicious patterns
-        return lowerUrl.contains("bit.ly") ||
-               lowerUrl.contains("tinyurl") ||
-               lowerUrl.contains("@") ||  // URL with @ character
-               lowerUrl.matches(".*\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}.*") || // IP address
-               lowerUrl.contains("-login") ||
-               lowerUrl.contains("verify") ||
-               lowerUrl.contains("secure") ||
-               lowerUrl.contains("update") ||
-               lowerUrl.contains("confirm");
-    }
-
-    private String analyzeLinkRisk(String url) {
-        if (url == null || url.trim().isEmpty()) {
-            return "Empty URL";
-        }
-
-        String lowerUrl = url.toLowerCase();
-        StringBuilder analysis = new StringBuilder();
-        analysis.append(url);
-
-        boolean isSuspicious = false;
-        java.util.List<String> warnings = new java.util.ArrayList<>();
-
-        // Check for URL shorteners
-        if (lowerUrl.contains("bit.ly") || lowerUrl.contains("tinyurl") ||
-            lowerUrl.contains("goo.gl") || lowerUrl.contains("ow.ly")) {
-            warnings.add("URL shortener (hides destination)");
-            isSuspicious = true;
-        }
-
-        // Check for IP address instead of domain
-        if (lowerUrl.matches(".*\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}.*")) {
-            warnings.add("uses IP address instead of domain");
-            isSuspicious = true;
-        }
-
-        // Check for @ symbol (can hide real destination)
-        if (lowerUrl.contains("@")) {
-            warnings.add("contains @ symbol");
-            isSuspicious = true;
-        }
-
-        // Check for suspicious keywords
-        if (lowerUrl.contains("-login") || lowerUrl.contains("_login")) {
-            warnings.add("suspicious login page");
-            isSuspicious = true;
-        }
-        if (lowerUrl.contains("verify") || lowerUrl.contains("confirm")) {
-            warnings.add("verification/confirmation page");
-            isSuspicious = true;
-        }
-        if (lowerUrl.contains("secure") || lowerUrl.contains("account-update")) {
-            warnings.add("fake security page");
-            isSuspicious = true;
-        }
-
-        // Check for misspellings of common domains
-        if (lowerUrl.matches(".*(paypa1|paypai|amazom|gogle|micr0soft|appleid-|bankofamerica-).*")) {
-            warnings.add("TYPOSQUATTING - misspelled domain!");
-            isSuspicious = true;
-        }
-
-        // Build result
-        if (isSuspicious) {
-            analysis.append(" [⚠️ SUSPICIOUS - ");
-            analysis.append(String.join(", ", warnings));
-            analysis.append("]");
-        } else {
-            analysis.append(" [✓ Looks safe]");
-        }
-
-        return analysis.toString();
+        // Trigger async link risk analysis via API
+        String emailText = emailArea.getText().trim();
+        linkRiskController.execute(emailText);
     }
 
     private int mapRiskLevelToScore(RiskLevel level) {
