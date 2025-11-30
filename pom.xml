@@ -21,47 +21,6 @@
             <artifactId>firebase-admin</artifactId>
             <version>9.2.0</version>
         </dependency>
-        <!-- JUnit 5 -->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>5.10.0</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Mockito -->
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>5.5.0</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Mockito JUnit Jupiter (for JUnit 5 integration) -->
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-junit-jupiter</artifactId>
-            <version>5.5.0</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-<<<<<<< HEAD
-                    <source>14</source>
-                    <target>14</target>
-=======
-                    <source>24</source>
-                    <target>24</target>
-                    <compilerArgs>--enable-preview</compilerArgs>
->>>>>>> 9fcb758 (fixed email dependencies in dashboard view and filter use case)
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>
