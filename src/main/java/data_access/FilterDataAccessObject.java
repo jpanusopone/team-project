@@ -124,6 +124,5 @@ public class FilterDataAccessObject implements FilterUserDataAccessInterface {
         return emails.stream()
                 .sorted(comparator)
                 .collect(Collectors.toList());
-
     }
 }

@@ -5,8 +5,6 @@ import java.util.List;
 
 import entity.Email;
 
-import static java.lang.String.valueOf;
-
 /**
  * The Filter Interactor.
  */
@@ -48,7 +46,7 @@ public class FilterInteractor implements FilterInputBoundary {
                         titles.add(email.getTitle());
                         senders.add(email.getSender());
                         datesReceived.add(email.getDateReceived().toString());
-                        suspicionScores.add(valueOf(email.getSuspicionScore()));
+                        suspicionScores.add(String.valueOf(email.getSuspicionScore()));
                         verifiedStatuses.add(email.getVerifiedStatus());
                     }
 

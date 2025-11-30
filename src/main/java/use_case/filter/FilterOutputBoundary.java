@@ -11,8 +11,8 @@ public interface FilterOutputBoundary {
     void prepareSuccessView(FilterOutputData outputData);
 
     /**
-     * Prepares the failure view for the Filter Use Case.
-     * @param error the explanation of the failure
+     * Prepares the failure view for the Filter Use Case
+     * @param errorMessage the explanation of the failure
      */
-    void prepareFailView(String error);
+    void prepareFailView(String errorMessage);
 }

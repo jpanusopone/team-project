@@ -1,6 +1,5 @@
 package entity;
 
-import javax.swing.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -83,6 +82,7 @@ public class EmailBuilder {
     public Email build() {
         return email;
     }
+
 
     private void autoExtractMetadata(String body) {
         if (body == null) return;
