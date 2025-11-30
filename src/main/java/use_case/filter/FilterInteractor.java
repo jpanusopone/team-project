@@ -46,7 +46,7 @@ public class FilterInteractor implements FilterInputBoundary {
                         titles.add(email.getTitle());
                         senders.add(email.getSender());
                         datesReceived.add(email.getDateReceived().toString());
-                        suspicionScores.add(email.getSuspicionScore().toString());
+                        suspicionScores.add(String.valueOf(email.getSuspicionScore()));
                         verifiedStatuses.add(email.getVerifiedStatus());
                     }
 

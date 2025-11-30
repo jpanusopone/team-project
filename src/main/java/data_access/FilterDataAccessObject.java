@@ -31,6 +31,8 @@ public class FilterDataAccessObject implements FilterUserDataAccessInterface {
             List<Email> filteredEmails = pinnedEmails.stream()
                     .filter(email -> matchesFilters(email,
                             inputData.getKeyword(),
+                            inputData.getMinScore(),
+                            inputData.getMaxScore(),
                             inputData.getSender()))
                     .collect(Collectors.toList());
 
