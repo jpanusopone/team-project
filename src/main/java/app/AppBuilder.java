@@ -1,5 +1,11 @@
 package app;
 
+import data_access.FirebaseITVerificationDataAccessObject;
+import interface_adapter.it_dashboard.ItUpdateStatusPresenter;
+import use_case.it_dashboard_status.ItUpdateStatusInputBoundary;
+import use_case.it_dashboard_status.ItUpdateStatusInteractor;
+import use_case.it_dashboard_status.ItUpdateStatusOutputBoundary;
+
 import data_access.FilterDataAccessObject;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.filter.FilterController;
@@ -108,9 +114,27 @@ public class AppBuilder {
 
     public AppBuilder addItDashboardControllers() {
         // Make sure addItDashboardView() and addEmailDecisionView() are called first
+        // --- Build the IT update-status use case ---
+        FirebaseITVerificationDataAccessObject itDao =
+                new FirebaseITVerificationDataAccessObject();
+
+        ItUpdateStatusOutputBoundary presenter =
+                new ItUpdateStatusPresenter(viewManagerModel, itDashboardView);
+
+        ItUpdateStatusInputBoundary interactor =
+                new ItUpdateStatusInteractor(itDao, presenter);
+
+        // --- Create the IT dashboard controller (uses interactor) ---
         ItDashboardController itDashboardController = new ItDashboardController(
-                itDashboardView, emailDecisionView, viewManagerModel);
+                itDashboardView,
+                emailDecisionView,
+                viewManagerModel,
+                interactor       // 👈 use case interactor injected here
+        );
+
+        // --- Create filter controller for IT dashboard (loads table, sets currentEmails) ---
         new ItFilterController(itDashboardView, itDashboardController);
+
         return this;
     }
 

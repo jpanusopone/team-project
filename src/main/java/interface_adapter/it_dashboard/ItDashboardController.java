@@ -1,8 +1,10 @@
+// interface_adapter/it_dashboard/ItDashboardController.java
 package interface_adapter.it_dashboard;
 
-import data_access.FirebaseEmailDataAccessObject;
 import entity.Email;
 import interface_adapter.ViewManagerModel;
+import use_case.it_dashboard_status.ItUpdateStatusInputBoundary;
+import use_case.it_dashboard_status.ItUpdateStatusInputData;
 import view.ItDashboardView;
 import view.EmailDecisionView;
 
@@ -10,23 +12,24 @@ import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 public class ItDashboardController {
 
     private final ItDashboardView itDashboardView;
     private final EmailDecisionView emailDecisionView;
     private final ViewManagerModel viewManagerModel;
-    private final FirebaseEmailDataAccessObject emailDAO;
+    private final ItUpdateStatusInputBoundary updateStatusInteractor;
+
     private List<Email> currentEmails;
 
     public ItDashboardController(ItDashboardView itDashboardView,
                                  EmailDecisionView emailDecisionView,
-                                 ViewManagerModel viewManagerModel) {
+                                 ViewManagerModel viewManagerModel,
+                                 ItUpdateStatusInputBoundary updateStatusInteractor) {
         this.itDashboardView = itDashboardView;
         this.emailDecisionView = emailDecisionView;
         this.viewManagerModel = viewManagerModel;
-        this.emailDAO = new FirebaseEmailDataAccessObject();
+        this.updateStatusInteractor = updateStatusInteractor;
 
         setupTableListener();
         setupDecisionViewListeners();
@@ -45,18 +48,9 @@ public class ItDashboardController {
     }
 
     private void setupDecisionViewListeners() {
-        emailDecisionView.addConfirmListener(e -> {
-            updateEmailStatus("Confirmed");
-        });
-
-        emailDecisionView.addSafeListener(e -> {
-            updateEmailStatus("Safe");
-        });
-
-        emailDecisionView.addPendingListener(e -> {
-            updateEmailStatus("Pending");
-        });
-
+        emailDecisionView.addConfirmListener(e -> updateEmailStatus("Confirmed"));
+        emailDecisionView.addSafeListener(e -> updateEmailStatus("Safe"));
+        emailDecisionView.addPendingListener(e -> updateEmailStatus("Pending"));
         emailDecisionView.addBackListener(e -> {
             viewManagerModel.setState(itDashboardView.getViewName());
             viewManagerModel.firePropertyChange();
@@ -73,40 +67,29 @@ public class ItDashboardController {
             return;
         }
 
-        try {
-            // Find the email in the current list
-            Email emailToUpdate = null;
+        // Find the email in the current list
+        Email emailToUpdate = null;
+        if (currentEmails != null) {
             for (Email email : currentEmails) {
                 if (email.getId() == emailId) {
                     emailToUpdate = email;
                     break;
                 }
             }
+        }
 
-            if (emailToUpdate != null && emailToUpdate.getDocumentId() != null) {
-                // Update in Firebase using the document ID
-                emailDAO.updateVerificationStatus(emailToUpdate.getDocumentId(), status);
-
-                JOptionPane.showMessageDialog(emailDecisionView,
-                        "Email status updated to: " + status,
-                        "Success",
-                        JOptionPane.INFORMATION_MESSAGE);
-
-                // Go back to dashboard
-                viewManagerModel.setState(itDashboardView.getViewName());
-                viewManagerModel.firePropertyChange();
-            } else {
-                JOptionPane.showMessageDialog(emailDecisionView,
-                        "Email document ID not found",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-            }
-        } catch (ExecutionException | InterruptedException ex) {
+        if (emailToUpdate == null || emailToUpdate.getDocumentId() == null) {
             JOptionPane.showMessageDialog(emailDecisionView,
-                    "Failed to update email status: " + ex.getMessage(),
+                    "Email document ID not found",
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
+            return;
         }
+
+        // Delegate to use case interactor
+        ItUpdateStatusInputData inputData =
+                new ItUpdateStatusInputData(emailToUpdate.getDocumentId(), status);
+        updateStatusInteractor.updateStatus(inputData);
     }
 
     private void openDecisionScreen(int row) {
@@ -119,7 +102,6 @@ public class ItDashboardController {
         String status = (String) table.getValueAt(row, 4);
         String date   = table.getValueAt(row, 5).toString();
 
-        // Find the full email from current list
         Email selectedEmail = null;
         if (currentEmails != null) {
             for (Email email : currentEmails) {
