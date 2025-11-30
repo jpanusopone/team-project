@@ -1,5 +1,6 @@
 package app;
 
+import config.ApplicationConfig;
 import data_access.FirebaseITVerificationDataAccessObject;
 import interface_adapter.it_dashboard.ItUpdateStatusPresenter;
 import use_case.it_dashboard_status.ItUpdateStatusInputBoundary;
