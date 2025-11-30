@@ -49,7 +49,7 @@ public class EmailTableModel extends AbstractTableModel {
     }
 
     @Override
-    public Object getValueAt(int rowIndex, int columnIndex) {
+    public String getValueAt(int rowIndex, int columnIndex) {
         return switch (columnIndex) {
             case 0 -> senders.get(rowIndex);
             case 1 -> titles.get(rowIndex);

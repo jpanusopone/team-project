@@ -1,16 +1,11 @@
 package app;
 
 import data_access.FilterDataAccessObject;
-import data_access.GetPinnedEmailsDataAccessObject;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.filter.FilterController;
 import interface_adapter.filter.FilterPresenter;
 import interface_adapter.filter.FilteredViewModel;
-import interface_adapter.view_dashboard.DashboardViewModel;
-import interface_adapter.view_dashboard.GetPinnedEmailsController;
-import interface_adapter.view_dashboard.GetPinnedEmailsPresenter;
 import use_case.filter.FilterInteractor;
-import use_case.get_pinned_emails.GetPinnedEmailsInteractor;
 
 import javax.swing.*;
 import java.awt.*;
@@ -92,29 +87,7 @@ public class AppBuilder {
         // Connect the filtered view model to the dashboard view
         dashboardView.setFilteredViewModel(filteredViewModel);
         dashboardView.setFilterController(filterController);
-
-//        // --- Setup Get Pinned Emails Use Case ---
-//        // Create the dashboard view model
-//        DashboardViewModel dashboardViewModel = new DashboardViewModel();
-//
-//        // Create the get pinned emails presenter
-//        GetPinnedEmailsPresenter getPinnedEmailsPresenter = new GetPinnedEmailsPresenter(viewManagerModel, dashboardViewModel);
-//
-//        // Create the get pinned emails data access object
-//        GetPinnedEmailsDataAccessObject getPinnedEmailsDataAccessObject = new GetPinnedEmailsDataAccessObject();
-//
-//        // Create the get pinned emails interactor
-//        GetPinnedEmailsInteractor getPinnedEmailsInteractor = new GetPinnedEmailsInteractor(
-//                getPinnedEmailsDataAccessObject,
-//                getPinnedEmailsPresenter
-//        );
-//
-//        // Create the get pinned emails controller
-//        GetPinnedEmailsController getPinnedEmailsController = new GetPinnedEmailsController(getPinnedEmailsInteractor);
-//
-//        // Connect the dashboard view model and controller to the dashboard view
-//        dashboardView.setDashboardViewModel(dashboardViewModel);
-//        dashboardView.setGetPinnedEmailsController(getPinnedEmailsController);
+        dashboardView.onViewDisplayed();
 
         return this;
     }
@@ -162,6 +135,7 @@ public class AppBuilder {
                     submitView.dispose();
                     // Load pinned emails when going back to dashboard
                     dashboardView = new DashboardView();
+                    dashboardView.onViewDisplayed();
                     viewManagerModel.setState(dashboardView.getViewName());
                     viewManagerModel.firePropertyChange();
                 });
@@ -172,6 +146,7 @@ public class AppBuilder {
         startView.addDashboardListener(e -> {
             // Load pinned emails when switching to dashboard
             dashboardView = new DashboardView();
+            dashboardView.onViewDisplayed();
             viewManagerModel.setState(dashboardView.getViewName());
             viewManagerModel.firePropertyChange();
         });
@@ -192,6 +167,7 @@ public class AppBuilder {
         loginView.addBackToDashboardListener(e -> {
             // Load pinned emails when going back to dashboard
             dashboardView = new DashboardView();
+            dashboardView.onViewDisplayed();
             viewManagerModel.setState(dashboardView.getViewName());
             viewManagerModel.firePropertyChange();
         });

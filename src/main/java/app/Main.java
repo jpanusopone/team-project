@@ -1,6 +1,5 @@
 package app;
 
-import view.SubmitEmailView;
 import javax.swing.*;
 
 public class Main {
