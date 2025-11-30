@@ -1,5 +1,6 @@
 package app;
 
+import config.ApplicationConfig;
 import data_access.FilterDataAccessObject;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.filter.FilterController;
@@ -136,7 +137,7 @@ public class AppBuilder {
         startView.addSubmitPhishingListener(e -> {
             // Open the Submit Email window as a separate JFrame
             SwingUtilities.invokeLater(() -> {
-                SubmitEmailView submitView = new SubmitEmailView();
+                SubmitEmailView submitView = ApplicationConfig.createSubmitEmailView();
                 submitView.setLocationRelativeTo(null);
                 submitView.setVisible(true);
 

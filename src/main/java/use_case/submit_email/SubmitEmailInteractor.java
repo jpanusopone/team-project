@@ -4,18 +4,18 @@ import entity.Email;
 import entity.EmailBuilder;
 import entity.PhishingExplanation;
 import entity.RiskLevel;
-import presentation.ExplanationController;
-import presentation.ExplanationResponse;
+import use_case.ExplainPhishingEmailUseCase;
+import use_case.interfaces.ExplanationException;
 
 public class SubmitEmailInteractor implements SubmitEmailInputBoundary {
 
     private final SubmitEmailOutputBoundary presenter;
-    private final ExplanationController explanationController;
+    private final ExplainPhishingEmailUseCase explainPhishingEmailUseCase;
 
     public SubmitEmailInteractor(SubmitEmailOutputBoundary presenter,
-                                 ExplanationController explanationController) {
+                                 ExplainPhishingEmailUseCase explainPhishingEmailUseCase) {
         this.presenter = presenter;
-        this.explanationController = explanationController;
+        this.explainPhishingEmailUseCase = explainPhishingEmailUseCase;
     }
 
     private int mapRisk(RiskLevel level) {
@@ -45,17 +45,7 @@ public class SubmitEmailInteractor implements SubmitEmailInputBoundary {
         }
 
         try {
-            ExplanationResponse response = explanationController.getExplanation(raw);
-
-            if (!response.isSuccess()) {
-                presenter.present(new SubmitEmailOutputData(
-                        "", "", 0, "",
-                        "Failed to analyze email: " + response.getErrorMessage()
-                ));
-                return;
-            }
-
-            PhishingExplanation expl = response.getExplanation();
+            PhishingExplanation expl = explainPhishingEmailUseCase.execute(raw);
 
             Email email = new EmailBuilder()
                     .body(raw)
@@ -74,6 +64,11 @@ public class SubmitEmailInteractor implements SubmitEmailInputBoundary {
             );
             presenter.present(out);
 
+        } catch (ExplanationException e) {
+            presenter.present(new SubmitEmailOutputData(
+                    "", "", 0, "",
+                    "Failed to analyze email: " + e.getMessage()
+            ));
         } catch (IllegalStateException e) {
             presenter.present(new SubmitEmailOutputData(
                     "", "", 0, "",
