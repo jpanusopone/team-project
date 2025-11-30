@@ -3,7 +3,7 @@ package interface_adapter.filter;
 import interface_adapter.ViewModel;
 
 /**
- * The State information representing the filtered
+ * The State information representing the filtered view.
  */
 public class FilteredViewModel extends ViewModel<FilteredState> {
 
