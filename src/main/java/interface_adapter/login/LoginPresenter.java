@@ -24,7 +24,7 @@ public class LoginPresenter implements LoginOutputBoundary {
     @Override
     public void prepareFailView(String errorMessage) {
         System.out.println("LoginPresenter: fail - " + errorMessage);
-        // In "proper" clean architecture this would go via a ViewModel,
+        // In “proper” clean architecture this would go via a ViewModel,
         // but this keeps it close to your current behaviour:
         JOptionPane.showMessageDialog(null,
                 errorMessage,
