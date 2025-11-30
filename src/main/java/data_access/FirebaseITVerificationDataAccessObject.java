@@ -12,7 +12,7 @@ import java.util.concurrent.ExecutionException;
  * Firebase implementation for IT verification data access.
  * Handles IT staff authentication and email verification status updates.
  */
-public class FirebaseITVerificationDataAccessObject {
+public class FirebaseITVerificationDataAccessObject implements ItVerificationGateway{
     private static final String COLLECTION_IT_ACCOUNTS = "it_accounts";
     private static final String COLLECTION_EMAILS = "emails";
     private final Firestore db;
@@ -64,6 +64,8 @@ public class FirebaseITVerificationDataAccessObject {
      * @throws ExecutionException if the database operation fails
      * @throws InterruptedException if the operation is interrupted
      */
+
+    @Override
     public void updateEmailVerificationStatus(String emailId, String status)
             throws ExecutionException, InterruptedException {
         Map<String, Object> updates = new HashMap<>();
@@ -88,4 +90,6 @@ public class FirebaseITVerificationDataAccessObject {
 
         return !future.get().getDocuments().isEmpty();
     }
+
+
 }
