@@ -21,6 +21,8 @@ import view.DashboardSelectView;
 import interface_adapter.login.LoginController;
 import interface_adapter.it_dashboard.ItDashboardController;
 import interface_adapter.filter.ItFilterController;
+import interface_adapter.login.LoginPresenter;
+import use_case.login.LoginInteractor;
 
 public class AppBuilder {
     private final JPanel cardPanel = new JPanel();
@@ -114,7 +116,15 @@ public class AppBuilder {
 
     public AppBuilder addLoginController() {
         // Make sure addLoginView() is called first
-        new LoginController(loginView, viewManagerModel);
+        // 1. Create presenter
+        LoginPresenter loginPresenter = new LoginPresenter(viewManagerModel);
+
+        // 2. Create interactor (use case) with presenter
+        LoginInteractor loginInteractor = new LoginInteractor(loginPresenter);
+
+        // 3. Create controller with view, viewManagerModel, and interactor
+        new LoginController(loginView, viewManagerModel, loginInteractor);
+
         return this;
     }
 
