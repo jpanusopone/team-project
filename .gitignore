@@ -41,3 +41,6 @@ build/
 ### Firebase
 firebase-credentials.json
 *-firebase-adminsdk-*.json
+
+### Discord
+discord_webhook_url.txt

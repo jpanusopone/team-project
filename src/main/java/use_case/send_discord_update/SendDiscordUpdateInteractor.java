@@ -16,7 +16,7 @@ public class SendDiscordUpdateInteractor implements SendDiscordUpdateInputBounda
     private final SendDiscordUpdateOutputData sendDiscordUpdateOutputData;
 
     public SendDiscordUpdateInteractor(SendDiscordUpdateOutputData sendDiscordUpdateOutputData) throws IOException {
-        webhookUrl = Files.readString(Path.of("discord_webhook_url.txt"));
+        webhookUrl = Files.readString(Path.of("discord_webhook_url.txt")).trim();
         this.sendDiscordUpdateOutputData = sendDiscordUpdateOutputData;
     }
 
