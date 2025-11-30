@@ -41,7 +41,26 @@ public class FilterInteractor implements FilterInputBoundary {
             return;
         }
 
-        FilterOutputData filterOutputData = new FilterOutputData(filteredEmails);
+        // Convert Email objects to string lists for presentation layer
+        List<String> titles = new java.util.ArrayList<>();
+        List<String> senders = new java.util.ArrayList<>();
+        List<String> datesReceived = new java.util.ArrayList<>();
+        List<String> suspicionScores = new java.util.ArrayList<>();
+        List<String> verifiedStatuses = new java.util.ArrayList<>();
+
+        for (Email email : filteredEmails) {
+            titles.add(email.getTitle() != null ? email.getTitle() : "Untitled");
+            senders.add(email.getSender() != null ? email.getSender() : "Unknown");
+            datesReceived.add(email.getDateReceived() != null ?
+                    email.getDateReceived().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) :
+                    "N/A");
+            suspicionScores.add(String.format("%.1f", email.getSuspicionScore()));
+            verifiedStatuses.add(email.getVerifiedStatus() != null ? email.getVerifiedStatus() : "Pending");
+        }
+
+        FilterOutputData filterOutputData = new FilterOutputData(
+                titles, senders, datesReceived, suspicionScores, verifiedStatuses
+        );
         filterPresenter.prepareSuccessView(filterOutputData);
     }
 

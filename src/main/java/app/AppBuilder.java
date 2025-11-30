@@ -1,5 +1,6 @@
 package app;
 
+import config.ApplicationConfig;
 import data_access.FilterDataAccessObject;
 import data_access.GetPinnedEmailsDataAccessObject;
 import interface_adapter.ViewManagerModel;
@@ -86,11 +87,14 @@ public class AppBuilder {
         // Create the filter interactor
         FilterInteractor filterInteractor = new FilterInteractor(filterDataAccessObject, filterPresenter);
 
-        // Create the filter controller with all required dependencies (now includes dashboardSelectView)
-        new FilterController(dashboardView, filterInteractor, dashboardSelectView, viewManagerModel);
+        // Create the filter controller (clean architecture - controller only depends on use case)
+        FilterController filterController = new FilterController(filterInteractor);
 
         // Connect the filtered view model to the dashboard view
         dashboardView.setFilteredViewModel(filteredViewModel);
+
+        // Wire up the filter controller to the dashboard view
+        dashboardView.setFilterController(filterController);
 
         // --- Setup Get Pinned Emails Use Case ---
         // Create the dashboard view model
@@ -152,7 +156,7 @@ public class AppBuilder {
         startView.addSubmitPhishingListener(e -> {
             // Open the Submit Email window as a separate JFrame
             SwingUtilities.invokeLater(() -> {
-                SubmitEmailView submitView = new SubmitEmailView();
+                SubmitEmailView submitView = ApplicationConfig.createSubmitEmailView();
                 submitView.setLocationRelativeTo(null);
                 submitView.setVisible(true);
 

@@ -150,6 +150,30 @@ public class DashboardView extends JPanel implements PropertyChangeListener {
     }
 
     /**
+     * Set the filter controller and wire up filter button
+     */
+    public void setFilterController(FilterController controller) {
+        filterButton.addActionListener(e -> {
+            try {
+                controller.execute(
+                        keywordField.getText(),
+                        senderField.getText(),
+                        minScoreField.getText(),
+                        maxScoreField.getText(),
+                        (String) sortBox.getSelectedItem()
+                );
+            } catch (RuntimeException ex) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        ex.getMessage(),
+                        "Input Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
+            }
+        });
+    }
+
+    /**
      * Load pinned emails from Firebase
      */
     public void loadPinnedEmails() {
@@ -169,9 +193,15 @@ public class DashboardView extends JPanel implements PropertyChangeListener {
             if (state.getError() != null) {
                 // Show error message
                 JOptionPane.showMessageDialog(this, state.getError(), "Filter Error", JOptionPane.ERROR_MESSAGE);
-            } else if (state.getEmails() != null) {
-                // Update table with filtered emails
-                updateTable(state.getEmails());
+            } else {
+                // Update table with filtered emails (using string lists)
+                updateTableFromStrings(
+                        state.getSenders(),
+                        state.getTitles(),
+                        state.getSuspicionScores(),
+                        state.getVerifiedStatuses(),
+                        state.getDatesReceived()
+                );
             }
         }
 
@@ -205,6 +235,31 @@ public class DashboardView extends JPanel implements PropertyChangeListener {
                     email.getSuspicionScore(),
                     status,
                     email.getDateReceived()
+            });
+        }
+    }
+
+    /**
+     * Update the table with string lists (from FilteredState)
+     */
+    private void updateTableFromStrings(List<String> senders, List<String> titles,
+                                       List<String> scores, List<String> statuses,
+                                       List<String> dates) {
+        this.currentEmails = null; // Clear email cache when using string data
+        DefaultTableModel model = (DefaultTableModel) emailTable.getModel();
+        model.setRowCount(0); // Clear existing rows
+
+        if (senders == null || titles == null) {
+            return;
+        }
+
+        for (int i = 0; i < senders.size(); i++) {
+            model.addRow(new Object[]{
+                    senders.get(i),
+                    titles.get(i),
+                    scores != null && i < scores.size() ? scores.get(i) : "N/A",
+                    statuses != null && i < statuses.size() ? statuses.get(i) : "Pending",
+                    dates != null && i < dates.size() ? dates.get(i) : "N/A"
             });
         }
     }
