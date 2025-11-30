@@ -1,8 +1,9 @@
 package config;
 
 import infrastructure.services.*;
-import use_case.ExplainPhishingEmailUseCase;
 import use_case.interfaces.ExplanationService;
+import use_case.explain_phishing.ExplainPhishingInteractor;
+import use_case.explain_phishing.ExplainPhishingInputBoundary;
 import presentation.ExplanationController;
 
 import java.util.Arrays;
@@ -28,8 +29,9 @@ public class ApplicationConfig {
                 new OpenRouterExplanationService(apiKey, "deepseek/deepseek-r1")
         );
 
-        ExplainPhishingEmailUseCase useCase = new ExplainPhishingEmailUseCase(services);
-        return new ExplanationController(useCase);
+        // Create ExplainPhishing use case with clean architecture
+        ExplainPhishingInputBoundary explainPhishingInteractor = new ExplainPhishingInteractor(services);
+        return new ExplanationController(explainPhishingInteractor);
     }
 
     public static view.SubmitEmailView createSubmitEmailView() {

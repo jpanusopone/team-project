@@ -4,31 +4,27 @@ import entity.Email;
 import entity.EmailBuilder;
 import entity.PhishingExplanation;
 import entity.RiskLevel;
-import use_case.ExplainPhishingEmailUseCase;
-import use_case.interfaces.ExplanationException;
+import use_case.explain_phishing.ExplainPhishingInputBoundary;
+import use_case.explain_phishing.ExplainPhishingInputData;
+import use_case.explain_phishing.ExplainPhishingOutputData;
 
 public class SubmitEmailInteractor implements SubmitEmailInputBoundary {
 
     private final SubmitEmailOutputBoundary presenter;
-    private final ExplainPhishingEmailUseCase explainPhishingEmailUseCase;
+    private final ExplainPhishingInputBoundary explainPhishingInteractor;
 
     public SubmitEmailInteractor(SubmitEmailOutputBoundary presenter,
-                                 ExplainPhishingEmailUseCase explainPhishingEmailUseCase) {
+                                 ExplainPhishingInputBoundary explainPhishingInteractor) {
         this.presenter = presenter;
-        this.explainPhishingEmailUseCase = explainPhishingEmailUseCase;
+        this.explainPhishingInteractor = explainPhishingInteractor;
     }
 
     private int mapRisk(RiskLevel level) {
-        switch (level) {
-            case HIGH:
-                return 100;
-            case MEDIUM:
-                return 50;
-            case LOW:
-                return 20;
-            default:
-                return 0;
-        }
+        return switch (level) {
+            case HIGH -> 100;
+            case MEDIUM -> 50;
+            case LOW -> 20;
+        };
     }
 
     @Override
@@ -45,7 +41,20 @@ public class SubmitEmailInteractor implements SubmitEmailInputBoundary {
         }
 
         try {
-            PhishingExplanation expl = explainPhishingEmailUseCase.execute(raw);
+            // Call the ExplainPhishing use case through its input boundary
+            ExplainPhishingInputData explainInput = new ExplainPhishingInputData(raw);
+            ExplainPhishingOutputData explainOutput = explainPhishingInteractor.execute(explainInput);
+
+            // Check if explanation was successful
+            if (!explainOutput.isSuccess()) {
+                presenter.present(new SubmitEmailOutputData(
+                        "", "", 0, "",
+                        explainOutput.getErrorMessage()
+                ));
+                return;
+            }
+
+            PhishingExplanation expl = explainOutput.getExplanation();
 
             Email email = new EmailBuilder()
                     .body(raw)
@@ -64,11 +73,6 @@ public class SubmitEmailInteractor implements SubmitEmailInputBoundary {
             );
             presenter.present(out);
 
-        } catch (ExplanationException e) {
-            presenter.present(new SubmitEmailOutputData(
-                    "", "", 0, "",
-                    "Failed to analyze email: " + e.getMessage()
-            ));
         } catch (IllegalStateException e) {
             presenter.present(new SubmitEmailOutputData(
                     "", "", 0, "",
