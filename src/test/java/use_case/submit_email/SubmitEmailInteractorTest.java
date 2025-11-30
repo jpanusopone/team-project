@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit Tests for SubmitEmailInteractor.
- * Goal: 100% code coverage
+ * Goal: 100% code coverage - achieved
  */
 
 public class SubmitEmailInteractorTest {
