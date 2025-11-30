@@ -1,22 +1,26 @@
 package presentation;
 
 import entity.PhishingExplanation;
-import use_case.ExplainPhishingEmailUseCase;
-import use_case.interfaces.ExplanationException;
+import use_case.explain_phishing.ExplainPhishingInputBoundary;
+import use_case.explain_phishing.ExplainPhishingInputData;
+import use_case.explain_phishing.ExplainPhishingOutputData;
 
 public class ExplanationController {
-    private final ExplainPhishingEmailUseCase useCase;
+    private final ExplainPhishingInputBoundary explainPhishingInteractor;
 
-    public ExplanationController(ExplainPhishingEmailUseCase useCase) {
-        this.useCase = useCase;
+    public ExplanationController(ExplainPhishingInputBoundary explainPhishingInteractor) {
+        this.explainPhishingInteractor = explainPhishingInteractor;
     }
 
     public ExplanationResponse getExplanation(String emailContent) {
-        try {
-            PhishingExplanation explanation = useCase.execute(emailContent);
+        ExplainPhishingInputData inputData = new ExplainPhishingInputData(emailContent);
+        ExplainPhishingOutputData outputData = explainPhishingInteractor.execute(inputData);
+
+        if (outputData.isSuccess()) {
+            PhishingExplanation explanation = outputData.getExplanation();
             return new ExplanationResponse(true, explanation, null);
-        } catch (ExplanationException e) {
-            return new ExplanationResponse(false, null, e.getMessage());
+        } else {
+            return new ExplanationResponse(false, null, outputData.getErrorMessage());
         }
     }
 }
