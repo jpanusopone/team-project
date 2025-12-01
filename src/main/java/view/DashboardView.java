@@ -1,10 +1,14 @@
 package view;
 
 import java.awt.BorderLayout;
+import java.awt.Desktop;
 import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +43,8 @@ public class DashboardView extends JPanel implements PropertyChangeListener {
     private final JButton filterButton;
     private final JButton discordButton;
     private final JButton backToStartButton;
+
+    private static final String DISCORD_INVITE_LINK_URL = "https://discord.gg/FmME2xh7";
 
     public DashboardView() {
         setLayout(new BorderLayout());
@@ -91,14 +97,26 @@ public class DashboardView extends JPanel implements PropertyChangeListener {
         add(scrollPane, BorderLayout.CENTER);
 
         // ----- DISCORD BUTTON AND BACK TO START BUTTON -----
-        discordButton = new JButton("Join Discord Webhook");
+        discordButton = new JButton("Join Discord Server");
+
+        // Click button to open invite link to join Discord server in browser
+        discordButton.addActionListener(event -> {
+            try {
+                Desktop.getDesktop().browse(new URI(DISCORD_INVITE_LINK_URL));
+            }
+            catch (IOException | URISyntaxException ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Unable to open browser.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
         backToStartButton = new JButton("Back to Start");
         final JPanel bottomPanel = new JPanel();
         bottomPanel.add(discordButton);
         bottomPanel.add(backToStartButton);
         add(bottomPanel, BorderLayout.SOUTH);
-
-        setVisible(true);
     }
 
     private void applyFilter() {

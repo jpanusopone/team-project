@@ -1,6 +1,10 @@
 package app;
 
 import javax.swing.JFrame;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
+import com.formdev.flatlaf.FlatLightLaf;
 
 public class Main {
     /**
@@ -9,6 +13,14 @@ public class Main {
      * @param args command line arguments (not used)
      */
     public static void main(String[] args) {
+        try {
+            UIManager.setLookAndFeel(new FlatLightLaf());
+        }
+        catch (UnsupportedLookAndFeelException ex) {
+            // You might want to log this instead in a real app
+            ex.printStackTrace();
+        }
+
         final AppBuilder appBuilder = new AppBuilder();
         final JFrame application = appBuilder
                 .addLoginView()

@@ -1,12 +1,17 @@
 package view;
 
 import java.awt.BorderLayout;
+import java.awt.Desktop;
 import java.awt.GridLayout;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -34,6 +39,8 @@ public class ItDashboardView extends JPanel {
     private JButton filterButton;
     private JButton discordButton;
     private JButton backButton;
+
+    private static final String DISCORD_INVITE_LINK_URL = "https://discord.gg/FmME2xh7";
 
     /**
      * Constructs the IT dashboard view.
@@ -102,7 +109,21 @@ public class ItDashboardView extends JPanel {
 
     private JPanel buildBottomPanel() {
         final JPanel bottomPanel = new JPanel();
+
         discordButton = new JButton("Join Discord Webhook");
+        // Click button to open invite link to join Discord server in browser
+        discordButton.addActionListener(event -> {
+            try {
+                Desktop.getDesktop().browse(new URI(DISCORD_INVITE_LINK_URL));
+            }
+            catch (IOException | URISyntaxException ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Unable to open browser.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
         bottomPanel.add(discordButton);
         bottomPanel.add(backButton);
         return bottomPanel;
