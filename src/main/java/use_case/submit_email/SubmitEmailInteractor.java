@@ -7,78 +7,105 @@ import entity.RiskLevel;
 import use_case.ExplainPhishingEmailUseCase;
 import use_case.interfaces.ExplanationException;
 
+/**
+ * Interactor for the Submit Email use case.
+ * Validates raw email input, calls the explanation use case,
+ * maps the result, and sends output data to the presenter.
+ */
 public class SubmitEmailInteractor implements SubmitEmailInputBoundary {
+
+    private static final int RISK_HIGH_SCORE = 100;
+    private static final int RISK_MEDIUM_SCORE = 50;
+    private static final int RISK_LOW_SCORE = 20;
 
     private final SubmitEmailOutputBoundary presenter;
     private final ExplainPhishingEmailUseCase explainPhishingEmailUseCase;
 
+    /**
+     * Create a new SubmitEmailInteractor.
+     *
+     * @param presenter the output boundary to present results
+     * @param explainPhishingEmailUseCase the explanation use case
+     */
     public SubmitEmailInteractor(SubmitEmailOutputBoundary presenter,
                                  ExplainPhishingEmailUseCase explainPhishingEmailUseCase) {
         this.presenter = presenter;
         this.explainPhishingEmailUseCase = explainPhishingEmailUseCase;
     }
 
+    /**
+     * Map a {@link RiskLevel} to a numeric score.
+     *
+     * @param level the risk level
+     * @return numeric risk score
+     */
     private int mapRisk(RiskLevel level) {
-        switch (level) {
-            case HIGH:
-                return 100;
-            case MEDIUM:
-                return 50;
-            case LOW:
-                return 20;
-            default:
-                return 0;
-        }
+        return switch (level) {
+            case HIGH -> RISK_HIGH_SCORE;
+            case MEDIUM -> RISK_MEDIUM_SCORE;
+            case LOW -> RISK_LOW_SCORE;
+            default -> 0;
+        };
     }
 
+    /**
+     * Execute the submit email use case.
+     *
+     * @param inputData the raw email input data
+     */
     @Override
     public void execute(SubmitEmailInputData inputData) {
-        String raw = inputData.getRawEmail();
+        final String raw = inputData.getRawEmail();
 
         if (raw == null || raw.trim().isEmpty()) {
-            SubmitEmailOutputData out = new SubmitEmailOutputData(
-                    "", "", 0, "",
+            final SubmitEmailOutputData out = new SubmitEmailOutputData(
+                    "",
+                    "",
+                    0,
+                    "",
                     "Please paste an email before analyzing."
             );
             presenter.present(out);
-            return;
         }
+        else {
+            try {
+                final PhishingExplanation explanation =
+                        explainPhishingEmailUseCase.execute(raw);
 
-        try {
-            PhishingExplanation expl = explainPhishingEmailUseCase.execute(raw);
+                final Email email = new EmailBuilder()
+                        .body(raw)
+                        .suspicionScore(mapRisk(explanation.getRiskLevel()))
+                        .explanation(String.join("\n", explanation.getReasons()))
+                        .links(explanation.getIndicators().getUrls())
+                        .build();
 
-            Email email = new EmailBuilder()
-                    .body(raw)
-                    .suspicionScore(mapRisk(expl.getRiskLevel()))
-                    .explanation(String.join("\n", expl.getReasons()))
-                    .links(expl.getIndicators().getUrls())
-                    .build();
-
-
-            SubmitEmailOutputData out = new SubmitEmailOutputData(
-                    email.getTitle(),
-                    email.getSender(),
-                    (int) email.getSuspicionScore(),
-                    email.getExplanation(),
-                    null
-            );
-            presenter.present(out);
-
-        } catch (ExplanationException e) {
-            presenter.present(new SubmitEmailOutputData(
-                    "", "", 0, "",
-                    "Failed to analyze email: " + e.getMessage()
-            ));
-        } catch (IllegalStateException e) {
-            presenter.present(new SubmitEmailOutputData(
-                    "", "", 0, "",
-                    "OPENAI_API_KEY is not set on this machine."
-            ));
-        } catch (Exception e) {
-            presenter.present(new SubmitEmailOutputData(
-                    "", "", 0, "",
-                    "Unable to analyse this email. Please try again later."
-            ));
+                final SubmitEmailOutputData out = new SubmitEmailOutputData(
+                        email.getTitle(),
+                        email.getSender(),
+                        (int) email.getSuspicionScore(),
+                        email.getExplanation(),
+                        null
+                );
+                presenter.present(out);
+            }
+            catch (ExplanationException ex) {
+                presenter.present(new SubmitEmailOutputData(
+                        "",
+                        "",
+                        0,
+                        "",
+                        "Failed to analyze email: " + ex.getMessage()
+                ));
+            }
+            catch (IllegalStateException ex) {
+                presenter.present(new SubmitEmailOutputData(
+                        "",
+                        "",
+                        0,
+                        "",
+                        "OPENAI_API_KEY is not set on this machine."
+                ));
+            }
         }
     }
 }

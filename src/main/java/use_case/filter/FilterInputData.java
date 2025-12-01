@@ -1,7 +1,7 @@
 package use_case.filter;
 
 /**
- * the Input Data for the Filter Use Case.
+ * The Input Data for the Filter Use Case.
  */
 public class FilterInputData {
     private final String keyword;

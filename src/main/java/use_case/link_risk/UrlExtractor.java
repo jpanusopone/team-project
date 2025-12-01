@@ -7,23 +7,30 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class UrlExtractor {
-    // Pattern 1: URLs with explicit http/https scheme.
+public final class UrlExtractor {
+
+    /**
+     * Pattern 1: URLs with explicit http/https scheme.
+     */
     private static final Pattern SCHEME_URL_PATTERN = Pattern.compile(
             "(https?://[\\w\\-._~:/?#\\[\\]@!$&'()*+,;=%]+)",
             Pattern.CASE_INSENSITIVE
     );
 
-    // Pattern 2: "naked" URLs without scheme, e.g. www.example.com, example.com/path
-    // This is intentionally conservative to avoid matching random "a.b" text.
+    /**
+     * Pattern 2: "naked" URLs without scheme, e.g. www.example.com, example.com/path.
+     * This is intentionally conservative to avoid matching random "a.b" text.
+     */
     private static final Pattern NAKED_URL_PATTERN = Pattern.compile(
-            "\\b(?:www\\.)?[a-zA-Z0-9._-]+\\.[a-zA-Z]{2,}" +           // domain.tld or www.domain.tld
-                    "(?:/[\\w\\-._~:/?#\\[\\]@!$&'()*+,;=%]*)?",              // optional path/query/etc.
+            "\\b(?:www\\.)?[a-zA-Z0-9._-]+\\.[a-zA-Z]{2,}"
+                    + "(?:/[\\w\\-._~:/?#\\[\\]@!$&'()*+,;=%]*)?",
             Pattern.CASE_INSENSITIVE
     );
 
-    // Characters we want to trim off the *end* of a detected URL,
-    // e.g. "https://example.com)." -> "https://example.com"
+    /**
+     * Characters we want to trim off the end of a detected URL,
+     * for example: "https://example.com)." should become "https://example.com".
+     */
     private static final Pattern TRAILING_PUNCTUATION = Pattern.compile("[).,!?;:]+$");
 
     private UrlExtractor() {
@@ -37,38 +44,37 @@ public class UrlExtractor {
      * @return a list of URLs in the order they appear in the text
      */
     public static List<String> extractUrls(String text) {
-        List<String> urls = new ArrayList<>();
-        if (text == null || text.isEmpty()) {
-            return urls;
-        }
+        final List<String> urls = new ArrayList<>();
 
-        // 1) Find all scheme URLs first
-        List<Range> schemeRanges = new ArrayList<>();
-        Matcher schemeMatcher = SCHEME_URL_PATTERN.matcher(text);
-        while (schemeMatcher.find()) {
-            String url = cleanUrl(schemeMatcher.group(1));
-            if (!url.isEmpty()) {
-                urls.add(url);
-                schemeRanges.add(new Range(schemeMatcher.start(1), schemeMatcher.end(1)));
-            }
-        }
+        if (text != null && !text.isEmpty()) {
+            final List<Range> schemeRanges = new ArrayList<>();
+            final Matcher schemeMatcher = SCHEME_URL_PATTERN.matcher(text);
 
-        // 2) Find naked URLs that are not inside a scheme URL range
-        Matcher nakedMatcher = NAKED_URL_PATTERN.matcher(text);
-        Set<String> alreadyAdded = new HashSet<>(urls); // avoid duplicates
-        while (nakedMatcher.find()) {
-            int start = nakedMatcher.start();
-            int end = nakedMatcher.end();
-
-            if (isInsideAnyRange(start, end, schemeRanges)) {
-                // This naked match is actually part of an http/https URL we've already captured
-                continue;
+            while (schemeMatcher.find()) {
+                final String url = cleanUrl(schemeMatcher.group(1));
+                if (!url.isEmpty()) {
+                    urls.add(url);
+                    schemeRanges.add(new Range(schemeMatcher.start(1), schemeMatcher.end(1)));
+                }
             }
 
-            String url = cleanUrl(nakedMatcher.group());
-            if (!url.isEmpty() && !alreadyAdded.contains(url)) {
-                urls.add(url);
-                alreadyAdded.add(url);
+            final Matcher nakedMatcher = NAKED_URL_PATTERN.matcher(text);
+            final Set<String> alreadyAdded = new HashSet<>(urls);
+
+            while (nakedMatcher.find()) {
+                final int start = nakedMatcher.start();
+                final int end = nakedMatcher.end();
+
+                // Skip if this naked URL is part of a scheme URL we already recorded.
+                if (isInsideAnyRange(start, end, schemeRanges)) {
+                    continue;
+                }
+
+                final String url = cleanUrl(nakedMatcher.group());
+                if (!url.isEmpty() && !alreadyAdded.contains(url)) {
+                    urls.add(url);
+                    alreadyAdded.add(url);
+                }
             }
         }
 
@@ -76,37 +82,58 @@ public class UrlExtractor {
     }
 
     /**
-     * Remove trailing punctuation that commonly sticks to URLs in text.
+     * Removes trailing punctuation that commonly sticks to URLs in text.
+     *
+     * @param raw the raw URL string
+     * @return the cleaned URL string without trailing punctuation; empty string if raw is null
      */
     private static String cleanUrl(String raw) {
-        if (raw == null) {
-            return "";
+        String trimmed = "";
+        if (raw != null) {
+            trimmed = raw.trim();
+            trimmed = TRAILING_PUNCTUATION.matcher(trimmed).replaceAll("");
         }
-        String trimmed = raw.trim();
-        // Strip trailing punctuation like ),.?!:;
-        trimmed = TRAILING_PUNCTUATION.matcher(trimmed).replaceAll("");
         return trimmed;
     }
 
+    /**
+     * Determines whether the given [start, end] range lies completely inside
+     * any of the provided ranges.
+     *
+     * @param start  the start index of the candidate range
+     * @param end    the end index of the candidate range
+     * @param ranges the list of existing ranges
+     * @return true if the candidate range is inside any of the ranges; false otherwise
+     */
     private static boolean isInsideAnyRange(int start, int end, List<Range> ranges) {
+        boolean inside = false;
         for (Range range : ranges) {
-            if (start >= range.start && end <= range.end) {
-                return true;
+            if (start >= range.getStart() && end <= range.getEnd()) {
+                inside = true;
+                break;
             }
         }
-        return false;
+        return inside;
     }
 
     /**
      * Helper class to track character index ranges.
      */
     private static final class Range {
-        final int start;
-        final int end;
+        private final int start;
+        private final int end;
 
         Range(int start, int end) {
             this.start = start;
             this.end = end;
+        }
+
+        int getStart() {
+            return start;
+        }
+
+        int getEnd() {
+            return end;
         }
     }
 }
