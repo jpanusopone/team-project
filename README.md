@@ -50,8 +50,6 @@ For sending messages on new phishing emails.
 
 ## Current Functionality
 
-(screenshots + animations here, with descriptions)
-
 ![img_1.png](img_1.png)
 
 ^ The submit email window that appears after the user chooses to submit an email on the start window.
