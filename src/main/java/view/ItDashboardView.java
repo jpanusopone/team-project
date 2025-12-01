@@ -70,9 +70,7 @@ public class ItDashboardView extends JPanel {
         senderField = new JTextField();
         minScoreField = new JTextField();
         maxScoreField = new JTextField();
-        sortBox = new JComboBox<>(new String[] {
-                "Title", "Date", "Sender", "Suspicion Score",
-        });
+        sortBox = new JComboBox<>(new String[] {"Title", "Date", "Sender", "Suspicion Score"});
         filterButton = new JButton("Apply Filter");
         backButton = new JButton("Back to Start");
 
@@ -92,9 +90,7 @@ public class ItDashboardView extends JPanel {
     }
 
     private JScrollPane buildTableScrollPane() {
-        final String[] columns = {
-                "ID", "Sender", "Title", "Suspicion Score", "Status", "Date",
-        };
+        final String[] columns = {"ID", "Sender", "Title", "Suspicion Score", "Status", "Date"};
 
         final DefaultTableModel model = new DefaultTableModel(columns, 0) {
             @Override

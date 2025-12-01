@@ -1,12 +1,12 @@
 package infrastructure.services;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import entity.PhishingExplanation;
 import entity.PhishingIndicators;
 import entity.RiskLevel;
-import use_case.interfaces.ExplanationService;
 import use_case.interfaces.ExplanationException;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import use_case.interfaces.ExplanationService;
 
 import java.net.http.HttpClient;
 import java.util.List;
@@ -25,36 +25,37 @@ public abstract class LLMExplanationService implements ExplanationService {
     @Override
     public PhishingExplanation explainEmail(String emailContent) throws ExplanationException {
         try {
-            String prompt = buildPrompt(emailContent);
-            String responseJson = callAPI(prompt);
+            final String prompt = buildPrompt(emailContent);
+            final String responseJson = callApi(prompt);
             return parseResponse(responseJson);
         }
-        catch (Exception e) {
-            throw new ExplanationException("Failed to get explanation", e);
+        catch (Exception ex) {
+            throw new ExplanationException("Failed to get explanation", ex);
         }
     }
 
     protected String buildPrompt(String emailContent) {
-        return "Analyze this email for phishing indicators and respond ONLY with valid JSON matching this exact structure:\n\n" +
-                "{\n" +
-                "  \"suspicious\": boolean,\n" +
-                "  \"risk_level\": \"low\" | \"medium\" | \"high\",\n" +
-                "  \"reasons\": [\"reason1\", \"reason2\"],\n" +
-                "  \"indicators\": {\n" +
-                "    \"urls\": [\"url1\"],\n" +
-                "    \"sender\": \"email@domain.com or null\",\n" +
-                "    \"reply_to\": \"email@domain.com or null\",\n" +
-                "    \"display_name_mismatch\": true/false/null,\n" +
-                "    \"urgent_language\": true/false/null,\n" +
-                "    \"requests_sensitive_info\": true/false/null,\n" +
-                "    \"attachments\": [\"file1.exe\"]\n" +
-                "  },\n" +
-                "  \"suggested_actions\": [\"action1\", \"action2\"]\n" +
-                "}\n\n" +
-                "Email to analyze:\n" + emailContent;
+        return "Analyze this email for phishing indicators and respond ONLY with valid JSON matching "
+                + "this exact structure:\n\n"
+                + "{\n"
+                + "  \"suspicious\": boolean,\n"
+                + "  \"risk_level\": \"low\" | \"medium\" | \"high\",\n"
+                + "  \"reasons\": [\"reason1\", \"reason2\"],\n"
+                + "  \"indicators\": {\n"
+                + "    \"urls\": [\"url1\"],\n"
+                + "    \"sender\": \"email@domain.com or null\",\n"
+                + "    \"reply_to\": \"email@domain.com or null\",\n"
+                + "    \"display_name_mismatch\": true/false/null,\n"
+                + "    \"urgent_language\": true/false/null,\n"
+                + "    \"requests_sensitive_info\": true/false/null,\n"
+                + "    \"attachments\": [\"file1.exe\"]\n"
+                + "  },\n"
+                + "  \"suggested_actions\": [\"action1\", \"action2\"]\n"
+                + "}\n\n"
+                + "Email to analyze:\n" + emailContent;
     }
 
-    protected abstract String callAPI(String prompt) throws Exception;
+    protected abstract String callApi(String prompt) throws Exception;
 
     protected PhishingExplanation parseResponse(String responseJson) {
         // Handle case where response might be a JSON string (e.g., DeepSeek returns "{ ... }" as a string)
@@ -63,18 +64,18 @@ public abstract class LLMExplanationService implements ExplanationService {
             root = gson.fromJson(responseJson, JsonObject.class);
         } catch (Exception e) {
             // If direct parsing fails, try parsing as string first
-            String jsonContent = gson.fromJson(responseJson, String.class);
+            final String jsonContent = gson.fromJson(responseJson, String.class);
             root = gson.fromJson(jsonContent, JsonObject.class);
         }
 
-        boolean suspicious = root.get("suspicious").getAsBoolean();
-        RiskLevel riskLevel = RiskLevel.valueOf(root.get("risk_level").getAsString().toUpperCase());
+        final boolean suspicious = root.get("suspicious").getAsBoolean();
+        final RiskLevel riskLevel = RiskLevel.valueOf(root.get("risk_level").getAsString().toUpperCase());
 
-        List<String> reasons = gson.fromJson(root.get("reasons"), List.class);
-        List<String> suggestedActions = gson.fromJson(root.get("suggested_actions"), List.class);
+        final List<String> reasons = gson.fromJson(root.get("reasons"), List.class);
+        final List<String> suggestedActions = gson.fromJson(root.get("suggested_actions"), List.class);
 
-        JsonObject indicatorsJson = root.getAsJsonObject("indicators");
-        PhishingIndicators indicators = new PhishingIndicators(
+        final JsonObject indicatorsJson = root.getAsJsonObject("indicators");
+        final PhishingIndicators indicators = new PhishingIndicators(
                 gson.fromJson(indicatorsJson.get("urls"), List.class),
                 getStringOrNull(indicatorsJson, "sender"),
                 getStringOrNull(indicatorsJson, "reply_to"),

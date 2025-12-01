@@ -51,13 +51,18 @@ public class DashboardView extends JPanel implements PropertyChangeListener {
 
         final JLabel title = new JLabel("Phishing Detection Dashboard", SwingConstants.CENTER);
         final java.awt.Font baseFont = title.getFont();
-        title.setFont(baseFont.deriveFont(java.awt.Font.BOLD, 24f));
+        final float titleFontSize = 24f;
+        title.setFont(baseFont.deriveFont(java.awt.Font.BOLD, titleFontSize));
         add(title, BorderLayout.NORTH);
 
         // ----- LEFT FILTER PANEL -----
         final JPanel filterPanel = new JPanel();
-        filterPanel.setLayout(new GridLayout(0, 1, 5, 5));
-        filterPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        final int filterHorGap = 5;
+        final int filterVerGap = 5;
+        filterPanel.setLayout(new GridLayout(0, 1, filterHorGap, filterVerGap));
+        final int filterPanelBorder = 10;
+        filterPanel.setBorder(BorderFactory.createEmptyBorder(filterPanelBorder, filterPanelBorder,
+                filterPanelBorder, filterPanelBorder));
 
         keywordField = new JTextField();
         senderField = new JTextField();
@@ -106,8 +111,7 @@ public class DashboardView extends JPanel implements PropertyChangeListener {
             }
             catch (IOException | URISyntaxException ex) {
                 JOptionPane.showMessageDialog(this,
-                        "Unable to open browser.",
-                        "Error",
+                        "Unable to open browser.", "Error",
                         JOptionPane.ERROR_MESSAGE);
             }
         });

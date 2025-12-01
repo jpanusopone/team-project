@@ -214,8 +214,8 @@ public class ItFilterController {
                     email.getSender(),
                     email.getTitle(),
                     String.format("%.1f", email.getSuspicionScore()),
-                    status,
-                    dateString,
+                status,
+                dateString,
             });
         }
 
