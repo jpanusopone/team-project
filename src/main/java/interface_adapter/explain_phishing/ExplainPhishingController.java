@@ -6,9 +6,7 @@ import use_case.explain_phishing.ExplainPhishingOutputData;
 
 /**
  * ExplainPhishing Controller.
- *
  * Responsibility: Convert user input into use case input data and execute the use case.
- *
  * Clean Architecture Layer: Interface Adapter Layer
  * Dependencies: Depends on use case (inward dependency)
  */
@@ -27,7 +25,7 @@ public class ExplainPhishingController {
      * @return The output data containing the phishing explanation
      */
     public ExplainPhishingOutputData execute(String emailContent) {
-        ExplainPhishingInputData inputData = new ExplainPhishingInputData(emailContent);
+        final ExplainPhishingInputData inputData = new ExplainPhishingInputData(emailContent);
         return interactor.execute(inputData);
     }
 }
