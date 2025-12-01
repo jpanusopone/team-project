@@ -5,14 +5,22 @@ import use_case.login.LoginInputBoundary;
 import use_case.login.LoginInputData;
 import view.LoginView;
 
-import javax.swing.*;
-
+/**
+ * Controller for handling login logic.
+ */
 public class LoginController {
 
     private final LoginView loginView;
     private final ViewManagerModel viewManagerModel;
     private final LoginInputBoundary loginInteractor;
 
+    /**
+     * Construct a LoginController.
+     *
+     * @param loginView the login view
+     * @param viewManagerModel the view manager model
+     * @param loginInteractor the login interactor
+     */
     public LoginController(LoginView loginView,
                            ViewManagerModel viewManagerModel,
                            LoginInputBoundary loginInteractor) {
@@ -22,20 +30,26 @@ public class LoginController {
 
         System.out.println("LoginController initialized");
 
-        this.loginView.addLoginListener(e -> onLogin());
-        this.loginView.addCancelListener(e -> onCancel());
+        this.loginView.addLoginListener(idEvent -> onLogin());
+        this.loginView.addCancelListener(idEvent -> onCancel());
 
         System.out.println("Login button listeners attached");
     }
 
+    /**
+     * Handle login button pressed.
+     */
     private void onLogin() {
-        String username = loginView.getUsernameField().getText().trim();
-        String password = new String(loginView.getPasswordField().getPassword());
+        final String username = loginView.getUsernameField().getText().trim();
+        final String password = new String(loginView.getPasswordField().getPassword());
 
-        LoginInputData inputData = new LoginInputData(username, password);
+        final LoginInputData inputData = new LoginInputData(username, password);
         loginInteractor.execute(inputData);
     }
 
+    /**
+     * Handle cancel button pressed.
+     */
     private void onCancel() {
         viewManagerModel.setState("start");
         viewManagerModel.firePropertyChange();

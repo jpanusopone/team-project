@@ -4,12 +4,19 @@ import interface_adapter.ViewManagerModel;
 import use_case.login.LoginOutputBoundary;
 import use_case.login.LoginOutputData;
 
-import javax.swing.*;
-
+/**
+ * Presenter for the login use case.
+ * Updates the ViewManagerModel based on login results.
+ */
 public class LoginPresenter implements LoginOutputBoundary {
 
     private final ViewManagerModel viewManagerModel;
 
+    /**
+     * Construct a LoginPresenter.
+     *
+     * @param viewManagerModel the view manager model that controls the active view
+     */
     public LoginPresenter(ViewManagerModel viewManagerModel) {
         this.viewManagerModel = viewManagerModel;
     }
@@ -23,12 +30,8 @@ public class LoginPresenter implements LoginOutputBoundary {
 
     @Override
     public void prepareFailView(String errorMessage) {
+        // In a full clean-architecture setup, this would update a ViewModel,
+        // and the view would observe and display the error.
         System.out.println("LoginPresenter: fail - " + errorMessage);
-        // In “proper” clean architecture this would go via a ViewModel,
-        // but this keeps it close to your current behaviour:
-        JOptionPane.showMessageDialog(null,
-                errorMessage,
-                "Login failed",
-                JOptionPane.ERROR_MESSAGE);
     }
 }

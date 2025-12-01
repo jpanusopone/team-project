@@ -3,9 +3,10 @@ package interface_adapter.filter;
 import java.util.List;
 
 /**
- * The State information representing the current filters.
+ * The state information representing the current filters applied to the email list.
  */
 public class FilteredState {
+
     private List<String> titles;
     private List<String> senders;
     private List<String> datesReceived;
@@ -13,6 +14,15 @@ public class FilteredState {
     private List<String> verifiedStatuses;
     private String error;
 
+    /**
+     * Construct a state object containing full filter lists.
+     *
+     * @param titles           list of titles
+     * @param senders          list of senders
+     * @param datesReceived    list of received dates
+     * @param suspicionScores  list of suspicion scores
+     * @param verifiedStatuses list of verification statuses
+     */
     public FilteredState(List<String> titles, List<String> senders,
                          List<String> datesReceived, List<String> suspicionScores,
                          List<String> verifiedStatuses) {
@@ -24,6 +34,9 @@ public class FilteredState {
         this.error = null;
     }
 
+    /**
+     * Default constructor.
+     */
     public FilteredState() {
         // Default constructor
     }
@@ -56,7 +69,9 @@ public class FilteredState {
 
     // --- SETTERS ---
 
-    public void setTitles(List<String> titles) { this.titles = titles; }
+    public void setTitles(List<String> titles) {
+        this.titles = titles;
+    }
 
     public void setSenders(List<String> senders) {
         this.senders = senders;

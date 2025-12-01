@@ -4,23 +4,29 @@ import use_case.link_risk.LinkRiskInputBoundary;
 import use_case.link_risk.LinkRiskInputData;
 
 /**
- * Controller for Link Risk use case.
- * Converts view input to use case input.
+ * Controller for the Link Risk use case.
+ * Converts view input into use-case input data.
  */
 public class LinkRiskController {
 
     private final LinkRiskInputBoundary linkRiskInteractor;
 
+    /**
+     * Constructs a LinkRiskController.
+     *
+     * @param linkRiskInteractor the interactor to call
+     */
     public LinkRiskController(LinkRiskInputBoundary linkRiskInteractor) {
         this.linkRiskInteractor = linkRiskInteractor;
     }
 
     /**
-     * Execute link risk analysis on email text.
-     * @param emailText the email content to extract and analyze URLs from
+     * Executes link risk analysis on the provided email content.
+     *
+     * @param emailText the email text containing links to analyze
      */
     public void execute(String emailText) {
-        LinkRiskInputData inputData = new LinkRiskInputData(emailText);
+        final LinkRiskInputData inputData = new LinkRiskInputData(emailText);
         linkRiskInteractor.execute(inputData);
     }
 }

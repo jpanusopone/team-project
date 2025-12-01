@@ -7,7 +7,7 @@ import interface_adapter.ViewModel;
  */
 public class FilteredViewModel extends ViewModel<FilteredState> {
 
-    public FilteredViewModel(){
+    public FilteredViewModel() {
         super("filtered");
         setState(new FilteredState());
     }
