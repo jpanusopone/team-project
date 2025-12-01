@@ -1,17 +1,15 @@
 package use_case.explain_phishing;
 
-import entity.PhishingExplanation;
-import use_case.interfaces.ExplanationService;
-import use_case.interfaces.ExplanationException;
-
 import java.util.List;
+
+import entity.PhishingExplanation;
+import use_case.interfaces.ExplanationException;
+import use_case.interfaces.ExplanationService;
 
 /**
  * ExplainPhishing Use Case Interactor.
- *
  * Responsibility: Orchestrate getting phishing explanations from multiple
  * explanation services (DeepSeek, OpenAI, etc.) using a fallback pattern.
- *
  * Clean Architecture Layer: Use Case Layer
  * Dependencies: Only depends on entities and use case interfaces
  */
@@ -25,7 +23,7 @@ public class ExplainPhishingInteractor implements ExplainPhishingInputBoundary {
 
     @Override
     public ExplainPhishingOutputData execute(ExplainPhishingInputData inputData) {
-        String emailContent = inputData.getEmailContent();
+        final String emailContent = inputData.getEmailContent();
 
         // Validate input
         if (emailContent == null || emailContent.trim().isEmpty()) {
@@ -35,12 +33,13 @@ public class ExplainPhishingInteractor implements ExplainPhishingInputBoundary {
         // Try each service in order (fallback pattern)
         for (ExplanationService service : explanationServices) {
             try {
-                PhishingExplanation explanation = service.explainEmail(emailContent);
+                final PhishingExplanation explanation = service.explainEmail(emailContent);
                 return new ExplainPhishingOutputData(explanation);
-            } catch (ExplanationException e) {
+            }
+            catch (ExplanationException e) {
                 // Log and try next service
-                System.err.println("Service " + service.getClass().getSimpleName() +
-                                 " failed: " + e.getMessage());
+                System.err.println("Service " + service.getClass().getSimpleName()
+                        + " failed: " + e.getMessage());
                 // Continue to next service
             }
         }
