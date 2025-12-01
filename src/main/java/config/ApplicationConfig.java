@@ -13,7 +13,8 @@ import interface_adapter.save_email.SaveEmailController;
 import interface_adapter.save_email.SaveEmailPresenter;
 import interface_adapter.save_email.SaveEmailViewModel;
 import presentation.ExplanationController;
-import use_case.ExplainPhishingEmailUseCase;
+import use_case.explain_phishing.ExplainPhishingInputBoundary;
+import use_case.explain_phishing.ExplainPhishingInteractor;
 import use_case.interfaces.ExplanationService;
 import use_case.link_risk.LinkRiskInteractor;
 import use_case.save_email.SaveEmailInteractor;
@@ -44,8 +45,10 @@ public class ApplicationConfig {
                 new OpenRouterExplanationService(apiKey, "deepseek/deepseek-r1")
         );
 
-        final ExplainPhishingEmailUseCase useCase = new ExplainPhishingEmailUseCase(services);
-        return new ExplanationController(useCase);
+        // Create ExplainPhishing use case with clean architecture
+        final ExplainPhishingInputBoundary explainPhishingInteractor =
+                new ExplainPhishingInteractor(services);
+        return new ExplanationController(explainPhishingInteractor);
     }
 
     /**

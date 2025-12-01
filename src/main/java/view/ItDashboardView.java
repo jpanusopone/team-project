@@ -28,6 +28,8 @@ public class ItDashboardView extends JPanel {
     private static final int GAP_SMALL = 5;
     private static final int PADDING = 10;
 
+    private static final String DISCORD_INVITE_LINK_URL = "https://discord.gg/FmME2xh7";
+
     private final String viewName = "itdashboard";
 
     private JTable emailTable;
@@ -39,8 +41,6 @@ public class ItDashboardView extends JPanel {
     private JButton filterButton;
     private JButton discordButton;
     private JButton backButton;
-
-    private static final String DISCORD_INVITE_LINK_URL = "https://discord.gg/FmME2xh7";
 
     /**
      * Constructs the IT dashboard view.
@@ -54,7 +54,8 @@ public class ItDashboardView extends JPanel {
     }
 
     private JLabel buildTitleLabel() {
-        final JLabel title = new JLabel("Phishing Detection IT Dashboard", SwingConstants.CENTER);
+        final JLabel title =
+                new JLabel("Phishing Detection IT Dashboard", SwingConstants.CENTER);
         title.setFont(title.getFont().deriveFont(TITLE_FONT_SIZE));
         return title;
     }

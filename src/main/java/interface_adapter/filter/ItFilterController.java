@@ -35,13 +35,10 @@ public class ItFilterController {
         this.emailDao = new FirebaseEmailDataAccessObject();
         this.dashboardController = dashboardController;
 
-        view.getItFilterButton().addActionListener(event -> {
-            applyFilter();
-        });
-        view.getItDiscordButton().addActionListener(event -> {
-            JOptionPane.showMessageDialog(view,
-                    "Pretend this opens the Discord server!");
-        });
+        // Filter button applies filter
+        view.getItFilterButton().addActionListener(event -> applyFilter());
+
+        // Discord button behavior is handled inside ItDashboardView
 
         loadAllPinnedEmails();
     }

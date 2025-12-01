@@ -1,25 +1,26 @@
 package presentation;
 
 import entity.PhishingExplanation;
-import use_case.ExplainPhishingEmailUseCase;
-import use_case.interfaces.ExplanationException;
+import use_case.explain_phishing.ExplainPhishingInputBoundary;
+import use_case.explain_phishing.ExplainPhishingInputData;
+import use_case.explain_phishing.ExplainPhishingOutputData;
 
 /**
  * Controller that coordinates phishing explanation requests.
- * Delegates to the ExplainPhishingEmailUseCase and wraps the result
+ * Delegates to the explain-phishing use case and wraps the result
  * in an {@link ExplanationResponse}.
  */
 public class ExplanationController {
 
-    private final ExplainPhishingEmailUseCase useCase;
+    private final ExplainPhishingInputBoundary explainPhishingInteractor;
 
     /**
      * Constructs an ExplanationController with the given use case.
      *
-     * @param useCase the use case that explains phishing emails
+     * @param explainPhishingInteractor the use case that explains phishing emails
      */
-    public ExplanationController(ExplainPhishingEmailUseCase useCase) {
-        this.useCase = useCase;
+    public ExplanationController(ExplainPhishingInputBoundary explainPhishingInteractor) {
+        this.explainPhishingInteractor = explainPhishingInteractor;
     }
 
     /**
@@ -29,13 +30,16 @@ public class ExplanationController {
      * @return an ExplanationResponse indicating success or failure
      */
     public ExplanationResponse getExplanation(String emailContent) {
-        ExplanationResponse response;
-        try {
-            final PhishingExplanation explanation = useCase.execute(emailContent);
+        final ExplainPhishingInputData inputData = new ExplainPhishingInputData(emailContent);
+        final ExplainPhishingOutputData outputData = explainPhishingInteractor.execute(inputData);
+
+        final ExplanationResponse response;
+        if (outputData.isSuccess()) {
+            final PhishingExplanation explanation = outputData.getExplanation();
             response = new ExplanationResponse(true, explanation, null);
         }
-        catch (ExplanationException ex) {
-            response = new ExplanationResponse(false, null, ex.getMessage());
+        else {
+            response = new ExplanationResponse(false, null, outputData.getErrorMessage());
         }
         return response;
     }

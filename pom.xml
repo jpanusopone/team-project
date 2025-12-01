@@ -15,6 +15,7 @@
     </properties>
 
     <dependencies>
+
         <!-- Firebase Admin SDK -->
         <dependency>
             <groupId>com.google.firebase</groupId>
@@ -58,7 +59,10 @@
             <artifactId>flatlaf</artifactId>
             <version>3.5.2</version>
         </dependency>
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/main
     </dependencies>
     <build>
         <plugins>

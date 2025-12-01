@@ -4,8 +4,9 @@ import entity.Email;
 import entity.EmailBuilder;
 import entity.PhishingExplanation;
 import entity.RiskLevel;
-import use_case.ExplainPhishingEmailUseCase;
-import use_case.interfaces.ExplanationException;
+import use_case.explain_phishing.ExplainPhishingInputBoundary;
+import use_case.explain_phishing.ExplainPhishingInputData;
+import use_case.explain_phishing.ExplainPhishingOutputData;
 
 /**
  * Interactor for the Submit Email use case.
@@ -19,18 +20,18 @@ public class SubmitEmailInteractor implements SubmitEmailInputBoundary {
     private static final int RISK_LOW_SCORE = 20;
 
     private final SubmitEmailOutputBoundary presenter;
-    private final ExplainPhishingEmailUseCase explainPhishingEmailUseCase;
+    private final ExplainPhishingInputBoundary explainPhishingInteractor;
 
     /**
      * Create a new SubmitEmailInteractor.
      *
-     * @param presenter the output boundary to present results
-     * @param explainPhishingEmailUseCase the explanation use case
+     * @param presenter                 the output boundary to present results
+     * @param explainPhishingInteractor the explanation use case
      */
     public SubmitEmailInteractor(SubmitEmailOutputBoundary presenter,
-                                 ExplainPhishingEmailUseCase explainPhishingEmailUseCase) {
+                                 ExplainPhishingInputBoundary explainPhishingInteractor) {
         this.presenter = presenter;
-        this.explainPhishingEmailUseCase = explainPhishingEmailUseCase;
+        this.explainPhishingInteractor = explainPhishingInteractor;
     }
 
     /**
@@ -66,46 +67,63 @@ public class SubmitEmailInteractor implements SubmitEmailInputBoundary {
                     "Please paste an email before analyzing."
             );
             presenter.present(out);
+            return;
         }
-        else {
-            try {
-                final PhishingExplanation explanation =
-                        explainPhishingEmailUseCase.execute(raw);
 
-                final Email email = new EmailBuilder()
-                        .body(raw)
-                        .suspicionScore(mapRisk(explanation.getRiskLevel()))
-                        .explanation(String.join("\n", explanation.getReasons()))
-                        .links(explanation.getIndicators().getUrls())
-                        .build();
+        try {
+            // Call the ExplainPhishing use case through its input boundary
+            final ExplainPhishingInputData explainInput = new ExplainPhishingInputData(raw);
+            final ExplainPhishingOutputData explainOutput =
+                    explainPhishingInteractor.execute(explainInput);
 
-                final SubmitEmailOutputData out = new SubmitEmailOutputData(
-                        email.getTitle(),
-                        email.getSender(),
-                        (int) email.getSuspicionScore(),
-                        email.getExplanation(),
-                        null
-                );
-                presenter.present(out);
-            }
-            catch (ExplanationException ex) {
+            // Check if explanation was successful
+            if (!explainOutput.isSuccess()) {
                 presenter.present(new SubmitEmailOutputData(
                         "",
                         "",
                         0,
                         "",
-                        "Failed to analyze email: " + ex.getMessage()
+                        explainOutput.getErrorMessage()
                 ));
+                return;
             }
-            catch (IllegalStateException ex) {
-                presenter.present(new SubmitEmailOutputData(
-                        "",
-                        "",
-                        0,
-                        "",
-                        "OPENAI_API_KEY is not set on this machine."
-                ));
-            }
+
+            final PhishingExplanation explanation = explainOutput.getExplanation();
+
+            final Email email = new EmailBuilder()
+                    .body(raw)
+                    .suspicionScore(mapRisk(explanation.getRiskLevel()))
+                    .explanation(String.join("\n", explanation.getReasons()))
+                    .links(explanation.getIndicators().getUrls())
+                    .build();
+
+            final SubmitEmailOutputData out = new SubmitEmailOutputData(
+                    email.getTitle(),
+                    email.getSender(),
+                    (int) email.getSuspicionScore(),
+                    email.getExplanation(),
+                    null
+            );
+            presenter.present(out);
+
+        }
+        catch (IllegalStateException ex) {
+            presenter.present(new SubmitEmailOutputData(
+                    "",
+                    "",
+                    0,
+                    "",
+                    "OPENAI_API_KEY is not set on this machine."
+            ));
+        }
+        catch (Exception ex) {
+            presenter.present(new SubmitEmailOutputData(
+                    "",
+                    "",
+                    0,
+                    "",
+                    "Unable to analyse this email. Please try again later."
+            ));
         }
     }
 }
