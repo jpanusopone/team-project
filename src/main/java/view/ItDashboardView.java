@@ -105,7 +105,7 @@ public class ItDashboardView extends JPanel {
         add(scrollPane, BorderLayout.CENTER);
 
         // ----- DISCORD BUTTON -----
-        discordButton = new JButton("Join Discord Webhook");
+        discordButton = new JButton("Join Discord Server");
         // Click button to open invite link to join Discord server in browser
         discordButton.addActionListener(e -> {
             try {
