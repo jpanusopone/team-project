@@ -1,42 +1,44 @@
 package app;
 
-import config.ApplicationConfig;
-import data_access.FirebaseITVerificationDataAccessObject;
-import interface_adapter.it_dashboard.ItUpdateStatusPresenter;
-import use_case.it_dashboard_status.ItUpdateStatusInputBoundary;
-import use_case.it_dashboard_status.ItUpdateStatusInteractor;
-import use_case.it_dashboard_status.ItUpdateStatusOutputBoundary;
+import java.awt.CardLayout;
 
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
+
+import config.ApplicationConfig;
 import data_access.FilterDataAccessObject;
+import data_access.FirebaseITVerificationDataAccessObject;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.filter.FilterController;
 import interface_adapter.filter.FilterPresenter;
 import interface_adapter.filter.FilteredViewModel;
+import interface_adapter.filter.ItFilterController;
+import interface_adapter.it_dashboard.ItDashboardController;
+import interface_adapter.it_dashboard.ItUpdateStatusPresenter;
+import interface_adapter.login.LoginController;
+import interface_adapter.login.LoginPresenter;
 import use_case.filter.FilterInteractor;
-
-import javax.swing.*;
-import java.awt.*;
-
+import use_case.it_dashboard_status.ItUpdateStatusInputBoundary;
+import use_case.it_dashboard_status.ItUpdateStatusInteractor;
+import use_case.it_dashboard_status.ItUpdateStatusOutputBoundary;
+import use_case.login.LoginInteractor;
+import view.DashboardSelectView;
+import view.DashboardView;
+import view.EmailDecisionView;
+import view.ItDashboardView;
 import view.LoginView;
 import view.StartView;
-import view.DashboardView;
-import view.ViewManager;
 import view.SubmitEmailView;
-import view.ItDashboardView;
-import view.EmailDecisionView;
-import view.DashboardSelectView;
-import interface_adapter.login.LoginController;
-import interface_adapter.it_dashboard.ItDashboardController;
-import interface_adapter.filter.ItFilterController;
-import interface_adapter.login.LoginPresenter;
-import use_case.login.LoginInteractor;
+import view.ViewManager;
 
 public class AppBuilder {
     private final JPanel cardPanel = new JPanel();
     private final CardLayout cardLayout = new CardLayout();
 
-    final ViewManagerModel viewManagerModel = new ViewManagerModel();
-    ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
+    private final ViewManagerModel viewManagerModel = new ViewManagerModel();
+    private final ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
 
     private LoginView loginView;
     private DashboardView dashboardView;
@@ -45,28 +47,47 @@ public class AppBuilder {
     private ItDashboardView itDashboardView;
     private EmailDecisionView emailDecisionView;
 
+    /**
+     * Constructs an AppBuilder and initializes the card layout.
+     */
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
     }
 
+    /**
+     * Adds the login view to the card layout.
+     *
+     * @return this builder for chaining
+     */
     public AppBuilder addLoginView() {
         loginView = new LoginView();
         cardPanel.add(loginView, loginView.getViewName());
         return this;
     }
 
-    public AppBuilder addDashBoardView(){
+    /**
+     * Adds the main dashboard view to the card layout.
+     *
+     * @return this builder for chaining
+     */
+    public AppBuilder addDashBoardView() {
         dashboardView = new DashboardView();
         cardPanel.add(dashboardView, dashboardView.getViewName());
         return this;
     }
 
+    /**
+     * Adds the dashboard selection view and wires its back button
+     * to return to the main dashboard.
+     *
+     * @return this builder for chaining
+     */
     public AppBuilder addDashboardSelectView() {
         dashboardSelectView = new DashboardSelectView();
         cardPanel.add(dashboardSelectView, dashboardSelectView.getViewName());
 
         // Add back listener to return to dashboard
-        dashboardSelectView.addBackListener(e -> {
+        dashboardSelectView.addBackListener(event -> {
             viewManagerModel.setState(dashboardView.getViewName());
             viewManagerModel.firePropertyChange();
         });
@@ -74,24 +95,19 @@ public class AppBuilder {
         return this;
     }
 
+    /**
+     * Wires the filter use case to the dashboard view.
+     *
+     * @return this builder for chaining
+     */
     public AppBuilder addDashboardControllers() {
         // make sure addDashBoardView() and addDashboardSelectView() are called before this
 
-        // --- Setup Filter Use Case ---
-        // Create the filter view model
-        FilteredViewModel filteredViewModel = new FilteredViewModel();
-
-        // Create the filter presenter
-        FilterPresenter filterPresenter = new FilterPresenter(viewManagerModel, filteredViewModel);
-
-        // Create the filter data access object
-        FilterDataAccessObject filterDataAccessObject = new FilterDataAccessObject();
-
-        // Create the filter interactor
-        FilterInteractor filterInteractor = new FilterInteractor(filterDataAccessObject, filterPresenter);
-
-        // Create the filter controller with all required dependencies (now includes dashboardSelectView)
-        FilterController filterController = new FilterController(filterInteractor);
+        final FilteredViewModel filteredViewModel = new FilteredViewModel();
+        final FilterPresenter filterPresenter = new FilterPresenter(viewManagerModel, filteredViewModel);
+        final FilterDataAccessObject filterDataAccessObject = new FilterDataAccessObject();
+        final FilterInteractor filterInteractor = new FilterInteractor(filterDataAccessObject, filterPresenter);
+        final FilterController filterController = new FilterController(filterInteractor);
 
         // Connect the filtered view model to the dashboard view
         dashboardView.setFilteredViewModel(filteredViewModel);
@@ -101,36 +117,50 @@ public class AppBuilder {
         return this;
     }
 
+    /**
+     * Adds the IT dashboard view to the card layout.
+     *
+     * @return this builder for chaining
+     */
     public AppBuilder addItDashboardView() {
         itDashboardView = new ItDashboardView();
         cardPanel.add(itDashboardView, itDashboardView.getViewName());
         return this;
     }
 
+    /**
+     * Adds the email decision view to the card layout.
+     *
+     * @return this builder for chaining
+     */
     public AppBuilder addEmailDecisionView() {
         emailDecisionView = new EmailDecisionView();
         cardPanel.add(emailDecisionView, emailDecisionView.getViewName());
         return this;
     }
 
+    /**
+     * Wires the IT dashboard to the update-status use case and
+     * filter controller.
+     *
+     * @return this builder for chaining
+     */
     public AppBuilder addItDashboardControllers() {
         // Make sure addItDashboardView() and addEmailDecisionView() are called first
-        // --- Build the IT update-status use case ---
-        FirebaseITVerificationDataAccessObject itDao =
+        final FirebaseITVerificationDataAccessObject itDao =
                 new FirebaseITVerificationDataAccessObject();
 
-        ItUpdateStatusOutputBoundary presenter =
+        final ItUpdateStatusOutputBoundary presenter =
                 new ItUpdateStatusPresenter(viewManagerModel, itDashboardView);
 
-        ItUpdateStatusInputBoundary interactor =
+        final ItUpdateStatusInputBoundary interactor =
                 new ItUpdateStatusInteractor(itDao, presenter);
 
-        // --- Create the IT dashboard controller (uses interactor) ---
-        ItDashboardController itDashboardController = new ItDashboardController(
+        final ItDashboardController itDashboardController = new ItDashboardController(
                 itDashboardView,
                 emailDecisionView,
                 viewManagerModel,
-                interactor       // 👈 use case interactor injected here
+                interactor
         );
 
         // --- Create filter controller for IT dashboard (loads table, sets currentEmails) ---
@@ -139,13 +169,18 @@ public class AppBuilder {
         return this;
     }
 
+    /**
+     * Wires the login view to its presenter and use case interactor.
+     *
+     * @return this builder for chaining
+     */
     public AppBuilder addLoginController() {
         // Make sure addLoginView() is called first
         // 1. Create presenter
-        LoginPresenter loginPresenter = new LoginPresenter(viewManagerModel);
+        final LoginPresenter loginPresenter = new LoginPresenter(viewManagerModel);
 
         // 2. Create interactor (use case) with presenter
-        LoginInteractor loginInteractor = new LoginInteractor(loginPresenter);
+        final LoginInteractor loginInteractor = new LoginInteractor(loginPresenter);
 
         // 3. Create controller with view, viewManagerModel, and interactor
         new LoginController(loginView, viewManagerModel, loginInteractor);
@@ -153,65 +188,77 @@ public class AppBuilder {
         return this;
     }
 
-    public AppBuilder addStartView(){
+    /**
+     * Adds the start view and connects navigation buttons to the
+     * appropriate views.
+     *
+     * @return this builder for chaining
+     */
+    public AppBuilder addStartView() {
         startView = new StartView();
         cardPanel.add(startView, startView.getViewName());
 
         // When user presses Submit Phishing Email
-        startView.addSubmitPhishingListener(e -> {
-            // Open the Submit Email window as a separate JFrame
-            SwingUtilities.invokeLater(() -> {
-                SubmitEmailView submitView = ApplicationConfig.createSubmitEmailView();
-                submitView.setLocationRelativeTo(null);
-                submitView.setVisible(true);
-
-                // Add back to dashboard listener
-                submitView.addBackToDashboardListener(backEvent -> {
-                    submitView.dispose();
-
-                });
-            });
-        });
+        startView.addSubmitPhishingListener(event -> handleSubmitPhishing());
 
         // When user presses Dashboard
-        startView.addDashboardListener(e -> {
-            // Load pinned emails when switching to dashboard
-            dashboardView = new DashboardView();
-            dashboardView.onViewDisplayed();
-            viewManagerModel.setState(dashboardView.getViewName());
-            viewManagerModel.firePropertyChange();
-        });
+        startView.addDashboardListener(event -> handleDashboardPressed());
 
         // When user presses IT login
-        startView.addItLoginListener(e -> {
+        startView.addItLoginListener(event -> {
             viewManagerModel.setState(loginView.getViewName());
             viewManagerModel.firePropertyChange();
         });
 
         // Add back to start listener for dashboard
-        dashboardView.addBackToStartListener(e -> {
+        dashboardView.addBackToStartListener(event -> {
             viewManagerModel.setState(startView.getViewName());
             viewManagerModel.firePropertyChange();
         });
 
         // Add back to dashboard listener for login
-        loginView.addBackToDashboardListener(e -> {
+        loginView.addBackToDashboardListener(event -> {
             // Load pinned emails when going back to dashboard
-            dashboardView = new DashboardView();
-            dashboardView.onViewDisplayed();
-            viewManagerModel.setState(dashboardView.getViewName());
-            viewManagerModel.firePropertyChange();
+            handleDashboardPressed();
         });
 
         // Add back to start listener for IT dashboard
-        itDashboardView.getBackButton().addActionListener(e -> {
+        itDashboardView.getBackButton().addActionListener(event -> {
             viewManagerModel.setState(startView.getViewName());
             viewManagerModel.firePropertyChange();
         });
 
         return this;
     }
-    public JFrame build(){
+
+    /**
+     * Opens the submit email view in a separate window.
+     */
+    private void handleSubmitPhishing() {
+        SwingUtilities.invokeLater(() -> {
+            final SubmitEmailView submitView = ApplicationConfig.createSubmitEmailView();
+            submitView.setLocationRelativeTo(null);
+            submitView.setVisible(true);
+            submitView.addBackToDashboardListener(backEvent -> submitView.dispose());
+        });
+    }
+
+    /**
+     * Shows the dashboard view and refreshes its pinned emails.
+     */
+    private void handleDashboardPressed() {
+        dashboardView = new DashboardView();
+        dashboardView.onViewDisplayed();
+        viewManagerModel.setState(dashboardView.getViewName());
+        viewManagerModel.firePropertyChange();
+    }
+
+    /**
+     * Builds and returns the main application frame.
+     *
+     * @return the configured JFrame for the application
+     */
+    public JFrame build() {
         final JFrame application = new JFrame("PhishDetect");
         application.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
