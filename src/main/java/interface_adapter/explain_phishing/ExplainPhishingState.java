@@ -5,9 +5,9 @@ import entity.PhishingExplanation;
 /**
  * ExplainPhishing State.
  *
- * Responsibility: Hold the current state of the ExplainPhishing view.
+ * <p>Responsibility: Hold the current state of the ExplainPhishing view.
  *
- * Clean Architecture Layer: Interface Adapter Layer
+ * <p>Clean Architecture Layer: Interface Adapter Layer
  */
 public class ExplainPhishingState {
     private PhishingExplanation explanation;
@@ -44,6 +44,15 @@ public class ExplainPhishingState {
         this.errorMessage = errorMessage;
     }
 
+    /**
+     * Indicates whether this state contains an error.
+     *
+     * <p>This method returns {@code true} if an error message has been set
+     * for the ExplainPhishing view, meaning the use case execution resulted
+     * in a failure state rather than a successful explanation.
+     *
+     * @return {@code true} if an error message is present; {@code false} otherwise
+     */
     public boolean hasError() {
         return errorMessage != null;
     }

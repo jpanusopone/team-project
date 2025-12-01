@@ -6,10 +6,11 @@ import use_case.explain_phishing.ExplainPhishingOutputData;
 /**
  * ExplainPhishing Presenter.
  *
- * Responsibility: Convert use case output into view-friendly state and update the ViewModel.
+ * <p>Responsibility: Convert use case output into view-friendly state and update the ViewModel.
  *
- * Clean Architecture Layer: Interface Adapter Layer
- * Dependencies: Implements use case output boundary (inward dependency)
+ * <p>Clean Architecture Layer: Interface Adapter Layer
+ *
+ * <p>Dependencies: Implements use case output boundary (inward dependency)
  */
 public class ExplainPhishingPresenter implements ExplainPhishingOutputBoundary {
 
@@ -21,14 +22,14 @@ public class ExplainPhishingPresenter implements ExplainPhishingOutputBoundary {
 
     @Override
     public void presentSuccess(ExplainPhishingOutputData outputData) {
-        ExplainPhishingState state = new ExplainPhishingState(outputData.getExplanation());
+        final ExplainPhishingState state = new ExplainPhishingState(outputData.getExplanation());
         viewModel.setState(state);
         viewModel.firePropertyChange();
     }
 
     @Override
     public void presentFailure(String errorMessage) {
-        ExplainPhishingState state = new ExplainPhishingState(errorMessage);
+        final ExplainPhishingState state = new ExplainPhishingState(errorMessage);
         viewModel.setState(state);
         viewModel.firePropertyChange();
     }

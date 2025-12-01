@@ -7,18 +7,18 @@ import java.util.List;
 
 public class it_signin {
     public static void main(String[] args) {
-        JFrame frame = new  JFrame();
-        JPanel mainPanel = new JPanel();
+        final JFrame frame = new JFrame();
+        final JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        JPanel itPanel = new JPanel();
+        final JPanel itPanel = new JPanel();
         itPanel.setLayout(new GridLayout(2, 2));
         itPanel.add(new JLabel("Username:"));
-        JTextField username = new JTextField(15);
+        final JTextField username = new JTextField(15);
         itPanel.add(username);
         itPanel.add(new JLabel("Password:"));
-        JPasswordField password = new JPasswordField(15);
+        final JPasswordField password = new JPasswordField(15);
         itPanel.add(password);
-        JPanel buttonPanel = new JPanel();
+        final JPanel buttonPanel = new JPanel();
         buttonPanel.add(new JButton("Login"));
         buttonPanel.add(new JButton("Cancel"));
 

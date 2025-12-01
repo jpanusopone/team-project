@@ -8,10 +8,13 @@ import use_case.interfaces.ExplanationService;
 
 /**
  * ExplainPhishing Use Case Interactor.
- * Responsibility: Orchestrate getting phishing explanations from multiple
+ *
+ * <p>Responsibility: Orchestrate getting phishing explanations from multiple
  * explanation services (DeepSeek, OpenAI, etc.) using a fallback pattern.
- * Clean Architecture Layer: Use Case Layer
- * Dependencies: Only depends on entities and use case interfaces
+ *
+ * <p>Clean Architecture Layer: Use Case Layer
+ *
+ * <p>Dependencies: Only depends on entities and use case interfaces
  */
 public class ExplainPhishingInteractor implements ExplainPhishingInputBoundary {
 

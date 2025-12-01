@@ -6,9 +6,12 @@ import use_case.explain_phishing.ExplainPhishingOutputData;
 
 /**
  * ExplainPhishing Controller.
- * Responsibility: Convert user input into use case input data and execute the use case.
- * Clean Architecture Layer: Interface Adapter Layer
- * Dependencies: Depends on use case (inward dependency)
+ *
+ * <p>Responsibility: Convert user input into use case input data and execute the use case.
+ *
+ * <p>Clean Architecture Layer: Interface Adapter Layer
+ *
+ * <p>Dependencies: Depends on use case (inward dependency)
  */
 public class ExplainPhishingController {
 

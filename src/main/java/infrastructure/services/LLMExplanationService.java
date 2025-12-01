@@ -1,12 +1,12 @@
 package infrastructure.services;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import entity.PhishingExplanation;
 import entity.PhishingIndicators;
 import entity.RiskLevel;
-import use_case.interfaces.ExplanationService;
 import use_case.interfaces.ExplanationException;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import use_case.interfaces.ExplanationService;
 
 import java.net.http.HttpClient;
 import java.util.List;
@@ -29,13 +29,14 @@ public abstract class LLMExplanationService implements ExplanationService {
             final String responseJson = callApi(prompt);
             return parseResponse(responseJson);
         }
-        catch (Exception e) {
-            throw new ExplanationException("Failed to get explanation", e);
+        catch (Exception ex) {
+            throw new ExplanationException("Failed to get explanation", ex);
         }
     }
 
     protected String buildPrompt(String emailContent) {
-        return "Analyze this email for phishing indicators and respond ONLY with valid JSON matching this exact structure:\n\n"
+        return "Analyze this email for phishing indicators and respond ONLY with valid JSON matching "
+                + "this exact structure:\n\n"
                 + "{\n"
                 + "  \"suspicious\": boolean,\n"
                 + "  \"risk_level\": \"low\" | \"medium\" | \"high\",\n"
