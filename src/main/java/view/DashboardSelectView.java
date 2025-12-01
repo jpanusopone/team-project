@@ -37,10 +37,11 @@ public class DashboardSelectView extends JPanel {
 
     public DashboardSelectView() {
         setLayout(new BorderLayout());
-        setBorder(new EmptyBorder(20, 20, 20, 20));
+        final int borderDimensions = 20;
+        setBorder(new EmptyBorder(borderDimensions, borderDimensions, borderDimensions, borderDimensions));
 
         // ----- Title -----
-        JLabel title = new JLabel("View Email Details", SwingConstants.CENTER);
+        final JLabel title = new JLabel("View Email Details", SwingConstants.CENTER);
         title.setFont(title.getFont().deriveFont(Font.BOLD, 26f));
         add(title, BorderLayout.NORTH);
 
@@ -50,36 +51,37 @@ public class DashboardSelectView extends JPanel {
         emailArea.setWrapStyleWord(true);
         emailArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
 
-        JScrollPane emailScroll = new JScrollPane(emailArea);
+        final JScrollPane emailScroll = new JScrollPane(emailArea);
         emailScroll.setBorder(BorderFactory.createTitledBorder("Email Content"));
 
         // ----- Analysis Area -----
         analysisArea.setEditable(false);
         analysisArea.setLineWrap(true);
         analysisArea.setWrapStyleWord(true);
-        analysisArea.setFont(new Font("SansSerif", Font.PLAIN, 13));
+        final int fontSize = 13;
+        analysisArea.setFont(new Font("SansSerif", Font.PLAIN, fontSize));
         // Light yellow background
         analysisArea.setBackground(new Color(255, 255, 240));
 
-        JScrollPane analysisScroll = new JScrollPane(analysisArea);
+        final JScrollPane analysisScroll = new JScrollPane(analysisArea);
         analysisScroll.setBorder(BorderFactory.createTitledBorder("Security Analysis"));
         // Fixed height
         analysisScroll.setPreferredSize(new Dimension(0, 250));
 
         // Split email content and analysis vertically using JSplitPane
-        JSplitPane splitPane =
+        final JSplitPane splitPane =
                 new JSplitPane(JSplitPane.VERTICAL_SPLIT, emailScroll, analysisScroll);
         // Give 60% to email, 40% to analysis
         splitPane.setResizeWeight(0.6);
         splitPane.setDividerLocation(0.6);
 
         // Put split pane + back button in a vertical column
-        JPanel leftColumn = new JPanel();
+        final JPanel leftColumn = new JPanel();
         leftColumn.setLayout(new BorderLayout(10, 10));
 
         leftColumn.add(splitPane, BorderLayout.CENTER);
 
-        JPanel bottomLeft = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        final JPanel bottomLeft = new JPanel(new FlowLayout(FlowLayout.LEFT));
         bottomLeft.add(backButton);
 
         leftColumn.add(bottomLeft, BorderLayout.SOUTH);
@@ -87,7 +89,7 @@ public class DashboardSelectView extends JPanel {
         add(leftColumn, BorderLayout.CENTER);
 
         // Right side panel for metadata
-        JPanel infoPanel = new JPanel();
+        final JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
         infoPanel.setBorder(BorderFactory.createCompoundBorder(
                 new EmptyBorder(10, 20, 10, 10),
@@ -97,22 +99,24 @@ public class DashboardSelectView extends JPanel {
         infoPanel.setPreferredSize(new Dimension(300, 0));
 
         // Style labels
-        Font labelFont = new Font("SansSerif", Font.PLAIN, 14);
+        final Font labelFont = new Font("SansSerif", Font.PLAIN, 14);
         senderLabel.setFont(labelFont);
         titleLabel.setFont(labelFont);
         scoreLabel.setFont(labelFont);
         statusLabel.setFont(labelFont);
         dateLabel.setFont(labelFont);
 
-        infoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        final int rigidAreaHeight1 = 10;
+        final int rigidAreaHeight2 = 15;
+        infoPanel.add(Box.createRigidArea(new Dimension(0, rigidAreaHeight1)));
         infoPanel.add(senderLabel);
-        infoPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+        infoPanel.add(Box.createRigidArea(new Dimension(0, rigidAreaHeight2)));
         infoPanel.add(titleLabel);
-        infoPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+        infoPanel.add(Box.createRigidArea(new Dimension(0, rigidAreaHeight2)));
         infoPanel.add(scoreLabel);
-        infoPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+        infoPanel.add(Box.createRigidArea(new Dimension(0, rigidAreaHeight2)));
         infoPanel.add(statusLabel);
-        infoPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+        infoPanel.add(Box.createRigidArea(new Dimension(0, rigidAreaHeight2)));
         infoPanel.add(dateLabel);
         infoPanel.add(Box.createVerticalGlue());
 

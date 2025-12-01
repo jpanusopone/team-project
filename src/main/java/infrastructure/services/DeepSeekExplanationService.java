@@ -21,7 +21,7 @@ public class DeepSeekExplanationService extends LLMExplanationService {
     }
 
     @Override
-    protected String callAPI(String prompt) throws Exception {
+    protected String callApi(String prompt) throws Exception {
         final JsonObject requestBody = new JsonObject();
         requestBody.addProperty("model", model);
 

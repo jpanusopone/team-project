@@ -21,7 +21,7 @@ public class OpenRouterExplanationService extends LLMExplanationService {
     }
 
     @Override
-    protected String callAPI(String prompt) throws Exception {
+    protected String callApi(String prompt) throws Exception {
         JsonObject requestBody = new JsonObject();
         requestBody.addProperty("model", model);
 
