@@ -8,14 +8,14 @@ import java.net.URI;
 public class ItDashboardView extends JPanel {
     private final String viewName = "itdashboard";
 
-    private JTable emailTable;
-    private JTextField keywordField;
-    private JTextField senderField;
-    private JTextField minScoreField;
-    private JTextField maxScoreField;
-    private JComboBox<String> sortBox;
-    private JButton filterButton;
-    private JButton discordButton;
+    private final JTable emailTable;
+    private final JTextField keywordField;
+    private final JTextField senderField;
+    private final JTextField minScoreField;
+    private final JTextField maxScoreField;
+    private final JComboBox<String> sortBox;
+    private final JButton filterButton;
+    private final JButton discordButton;
     private JButton backButton;
 
     private final String discordInviteLinkURL = "https://discord.gg/FmME2xh7";
