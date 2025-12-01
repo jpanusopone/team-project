@@ -24,8 +24,8 @@ public class ItFilterController {
         this.dashboardController = dashboardController;
 
         view.getItFilterButton().addActionListener(e -> applyFilter());
-        view.getItDiscordButton().addActionListener(e ->
-                JOptionPane.showMessageDialog(view, "Pretend this opens the Discord server!"));
+//        view.getItDiscordButton().addActionListener(e ->
+//                JOptionPane.showMessageDialog(view, "Pretend this opens the Discord server!"));
 
         // Load initial data
         loadAllPinnedEmails();

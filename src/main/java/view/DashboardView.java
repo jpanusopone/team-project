@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.net.URI;
 
 public class DashboardView extends JPanel implements PropertyChangeListener{
     private boolean userAppliedFilter = false;
@@ -27,6 +28,8 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
     private final JButton filterButton;
     private final JButton discordButton;
     private final JButton backToStartButton;
+
+    private final String discordInviteLinkURL = "https://discord.gg/FmME2xh7";
 
     public DashboardView() {
         super();
@@ -99,7 +102,18 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
         add(scrollPane, BorderLayout.CENTER);
 
         // ----- DISCORD BUTTON AND BACK TO START BUTTON -----
-        discordButton = new JButton("Join Discord Webhook");
+        discordButton = new JButton("Join Discord Server");
+        // Click button to open invite link to join Discord server in browser
+        discordButton.addActionListener(e -> {
+            try {
+                Desktop.getDesktop().browse(new URI(discordInviteLinkURL));
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Unable to open browser.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        });
         backToStartButton = new JButton("Back to Start");
         JPanel bottomPanel = new JPanel();
         bottomPanel.add(discordButton);
