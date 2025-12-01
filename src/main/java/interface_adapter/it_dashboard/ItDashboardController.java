@@ -1,19 +1,33 @@
-// interface_adapter/it_dashboard/ItDashboardController.java
 package interface_adapter.it_dashboard;
+
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.List;
+
+import javax.swing.JOptionPane;
+import javax.swing.JTable;
 
 import entity.Email;
 import interface_adapter.ViewManagerModel;
 import use_case.it_dashboard_status.ItUpdateStatusInputBoundary;
 import use_case.it_dashboard_status.ItUpdateStatusInputData;
-import view.ItDashboardView;
 import view.EmailDecisionView;
+import view.ItDashboardView;
 
-import javax.swing.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.List;
-
+/**
+ * Controller for the IT dashboard, handling table clicks and decision actions.
+ */
 public class ItDashboardController {
+
+    private static final String NEWLINE = "\n";
+    private static final String DOUBLE_NEWLINE = "\n\n";
+
+    private static final int COLUMN_ID = 0;
+    private static final int COLUMN_SENDER = 1;
+    private static final int COLUMN_TITLE = 2;
+    private static final int COLUMN_SCORE = 3;
+    private static final int COLUMN_STATUS = 4;
+    private static final int COLUMN_DATE = 5;
 
     private final ItDashboardView itDashboardView;
     private final EmailDecisionView emailDecisionView;
@@ -22,6 +36,14 @@ public class ItDashboardController {
 
     private List<Email> currentEmails;
 
+    /**
+     * Constructs a controller for the IT dashboard.
+     *
+     * @param itDashboardView       the dashboard view
+     * @param emailDecisionView     the decision view
+     * @param viewManagerModel      the view manager model
+     * @param updateStatusInteractor the interactor for updating status
+     */
     public ItDashboardController(ItDashboardView itDashboardView,
                                  EmailDecisionView emailDecisionView,
                                  ViewManagerModel viewManagerModel,
@@ -35,72 +57,95 @@ public class ItDashboardController {
         setupDecisionViewListeners();
     }
 
+    /**
+     * Set up listener for clicks on the email table.
+     */
     private void setupTableListener() {
-        JTable table = itDashboardView.getItEmailTable();
+        final JTable table = itDashboardView.getItEmailTable();
         table.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 1 && table.getSelectedRow() != -1) {
+            public void mouseClicked(MouseEvent event) {
+                if (event.getClickCount() == 1 && table.getSelectedRow() != -1) {
                     openDecisionScreen(table.getSelectedRow());
                 }
             }
         });
     }
 
+    /**
+     * Set up listeners for the decision view buttons.
+     */
     private void setupDecisionViewListeners() {
-        emailDecisionView.addConfirmListener(e -> updateEmailStatus("Confirmed"));
-        emailDecisionView.addSafeListener(e -> updateEmailStatus("Safe"));
-        emailDecisionView.addPendingListener(e -> updateEmailStatus("Pending"));
-        emailDecisionView.addBackListener(e -> {
+        emailDecisionView.addConfirmListener(actionEvent -> {
+            updateEmailStatus("Confirmed");
+        });
+        emailDecisionView.addSafeListener(actionEvent -> {
+            updateEmailStatus("Safe");
+        });
+        emailDecisionView.addPendingListener(actionEvent -> {
+            updateEmailStatus("Pending");
+        });
+        emailDecisionView.addBackListener(actionEvent -> {
             viewManagerModel.setState(itDashboardView.getViewName());
             viewManagerModel.firePropertyChange();
         });
     }
 
+    /**
+     * Update the status of the currently selected email.
+     *
+     * @param status the new status
+     */
     private void updateEmailStatus(String status) {
-        int emailId = emailDecisionView.getCurrentEmailId();
-        if (emailId == -1) {
-            JOptionPane.showMessageDialog(emailDecisionView,
-                    "No email selected",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+        final int emailId = emailDecisionView.getCurrentEmailId();
+        String errorMessage = null;
 
-        // Find the email in the current list
-        Email emailToUpdate = null;
-        if (currentEmails != null) {
-            for (Email email : currentEmails) {
-                if (email.getId() == emailId) {
-                    emailToUpdate = email;
-                    break;
+        if (emailId == -1) {
+            errorMessage = "No email selected";
+        }
+        else {
+            Email emailToUpdate = null;
+            if (currentEmails != null) {
+                for (Email email : currentEmails) {
+                    if (email.getId() == emailId) {
+                        emailToUpdate = email;
+                        break;
+                    }
                 }
+            }
+
+            if (emailToUpdate == null || emailToUpdate.getDocumentId() == null) {
+                errorMessage = "Email document ID not found";
+            }
+            else {
+                final ItUpdateStatusInputData inputData =
+                        new ItUpdateStatusInputData(emailToUpdate.getDocumentId(), status);
+                updateStatusInteractor.updateStatus(inputData);
             }
         }
 
-        if (emailToUpdate == null || emailToUpdate.getDocumentId() == null) {
+        if (errorMessage != null) {
             JOptionPane.showMessageDialog(emailDecisionView,
-                    "Email document ID not found",
+                    errorMessage,
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
-            return;
         }
-
-        // Delegate to use case interactor
-        ItUpdateStatusInputData inputData =
-                new ItUpdateStatusInputData(emailToUpdate.getDocumentId(), status);
-        updateStatusInteractor.updateStatus(inputData);
     }
 
+    /**
+     * Open the decision screen for the email in the given row.
+     *
+     * @param row the selected row index
+     */
     private void openDecisionScreen(int row) {
-        JTable table = itDashboardView.getItEmailTable();
+        final JTable table = itDashboardView.getItEmailTable();
 
-        int emailId = (Integer) table.getValueAt(row, 0);
-        String sender = (String) table.getValueAt(row, 1);
-        String title  = (String) table.getValueAt(row, 2);
-        Object score  = table.getValueAt(row, 3);
-        String status = (String) table.getValueAt(row, 4);
-        String date   = table.getValueAt(row, 5).toString();
+        final int emailId = (Integer) table.getValueAt(row, COLUMN_ID);
+        final String sender = (String) table.getValueAt(row, COLUMN_SENDER);
+        final String title = (String) table.getValueAt(row, COLUMN_TITLE);
+        final Object score = table.getValueAt(row, COLUMN_SCORE);
+        final String status = (String) table.getValueAt(row, COLUMN_STATUS);
+        final String date = table.getValueAt(row, COLUMN_DATE).toString();
 
         Email selectedEmail = null;
         if (currentEmails != null) {
@@ -112,22 +157,29 @@ public class ItDashboardController {
             }
         }
 
-        StringBuilder emailText = new StringBuilder();
-        emailText.append("Sender: ").append(sender).append("\n");
-        emailText.append("Title: ").append(title).append("\n");
-        emailText.append("Suspicion score: ").append(score).append("\n");
-        emailText.append("Current Status: ").append(status).append("\n");
-        emailText.append("Date: ").append(date).append("\n\n");
+        final StringBuilder emailText = new StringBuilder();
+        emailText.append("Sender: ").append(sender).append(NEWLINE);
+        emailText.append("Title: ").append(title).append(NEWLINE);
+        emailText.append("Suspicion score: ").append(score).append(NEWLINE);
+        emailText.append("Current Status: ").append(status).append(NEWLINE);
+        emailText.append("Date: ").append(date).append(DOUBLE_NEWLINE);
 
         if (selectedEmail != null) {
-            emailText.append("Body:\n").append(selectedEmail.getBody()).append("\n\n");
+            emailText.append("Body:").append(NEWLINE)
+                    .append(selectedEmail.getBody())
+                    .append(DOUBLE_NEWLINE);
+
             if (selectedEmail.getExplanation() != null) {
-                emailText.append("Explanation:\n").append(selectedEmail.getExplanation()).append("\n\n");
+                emailText.append("Explanation:").append(NEWLINE)
+                        .append(selectedEmail.getExplanation())
+                        .append(DOUBLE_NEWLINE);
             }
-            if (selectedEmail.getLinks() != null && !selectedEmail.getLinks().isEmpty()) {
-                emailText.append("Links:\n");
+
+            if (selectedEmail.getLinks() != null
+                    && !selectedEmail.getLinks().isEmpty()) {
+                emailText.append("Links:").append(NEWLINE);
                 for (String link : selectedEmail.getLinks()) {
-                    emailText.append("- ").append(link).append("\n");
+                    emailText.append("- ").append(link).append(NEWLINE);
                 }
             }
         }
@@ -139,6 +191,11 @@ public class ItDashboardController {
         viewManagerModel.firePropertyChange();
     }
 
+    /**
+     * Set the current list of emails shown on the dashboard.
+     *
+     * @param emails the list of current emails
+     */
     public void setCurrentEmails(List<Email> emails) {
         this.currentEmails = emails;
     }

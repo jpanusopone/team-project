@@ -1,20 +1,23 @@
 package data_access;
 
-import com.google.api.core.ApiFuture;
-import com.google.cloud.firestore.*;
-import config.FirebaseConfig;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+
+import com.google.api.core.ApiFuture;
+import com.google.cloud.firestore.Firestore;
+import com.google.cloud.firestore.QuerySnapshot;
+import config.FirebaseConfig;
 
 /**
  * Firebase implementation for IT verification data access.
  * Handles IT staff authentication and email verification status updates.
  */
-public class FirebaseITVerificationDataAccessObject implements ItVerificationGateway{
+public class FirebaseITVerificationDataAccessObject implements ItVerificationGateway {
     private static final String COLLECTION_IT_ACCOUNTS = "it_accounts";
     private static final String COLLECTION_EMAILS = "emails";
+    private static final String FIELD_USERNAME = "username";
+
     private final Firestore db;
 
     public FirebaseITVerificationDataAccessObject() {
@@ -30,9 +33,10 @@ public class FirebaseITVerificationDataAccessObject implements ItVerificationGat
      * @throws ExecutionException if the database operation fails
      * @throws InterruptedException if the operation is interrupted
      */
-    public boolean verifyITLogin(String username, String password) throws ExecutionException, InterruptedException {
-        ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_IT_ACCOUNTS)
-                .whereEqualTo("username", username)
+    public boolean verifyITLogin(String username, String password)
+            throws ExecutionException, InterruptedException {
+        final ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_IT_ACCOUNTS)
+                .whereEqualTo(FIELD_USERNAME, username)
                 .whereEqualTo("password", password)
                 .get();
 
@@ -47,9 +51,10 @@ public class FirebaseITVerificationDataAccessObject implements ItVerificationGat
      * @throws ExecutionException if the database operation fails
      * @throws InterruptedException if the operation is interrupted
      */
-    public void createITAccount(String username, String password) throws ExecutionException, InterruptedException {
-        Map<String, Object> accountData = new HashMap<>();
-        accountData.put("username", username);
+    public void createITAccount(String username, String password)
+            throws ExecutionException, InterruptedException {
+        final Map<String, Object> accountData = new HashMap<>();
+        accountData.put(FIELD_USERNAME, username);
         accountData.put("password", password);
         accountData.put("createdAt", com.google.cloud.Timestamp.now());
 
@@ -64,11 +69,10 @@ public class FirebaseITVerificationDataAccessObject implements ItVerificationGat
      * @throws ExecutionException if the database operation fails
      * @throws InterruptedException if the operation is interrupted
      */
-
     @Override
     public void updateEmailVerificationStatus(String emailId, String status)
             throws ExecutionException, InterruptedException {
-        Map<String, Object> updates = new HashMap<>();
+        final Map<String, Object> updates = new HashMap<>();
         updates.put("verifiedStatus", status);
         updates.put("verifiedAt", com.google.cloud.Timestamp.now());
 
@@ -83,13 +87,12 @@ public class FirebaseITVerificationDataAccessObject implements ItVerificationGat
      * @throws ExecutionException if the database operation fails
      * @throws InterruptedException if the operation is interrupted
      */
-    public boolean itAccountExists(String username) throws ExecutionException, InterruptedException {
-        ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_IT_ACCOUNTS)
-                .whereEqualTo("username", username)
+    public boolean itAccountExists(String username)
+            throws ExecutionException, InterruptedException {
+        final ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_IT_ACCOUNTS)
+                .whereEqualTo(FIELD_USERNAME, username)
                 .get();
 
         return !future.get().getDocuments().isEmpty();
     }
-
-
 }

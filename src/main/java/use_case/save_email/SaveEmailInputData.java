@@ -3,7 +3,12 @@ package use_case.save_email;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Input data for the Save Email use case.
+ * Holds all email attributes needed to perform the save operation.
+ */
 public class SaveEmailInputData {
+
     private final String title;
     private final String sender;
     private final String body;
@@ -12,6 +17,17 @@ public class SaveEmailInputData {
     private final String explanation;
     private final List<String> links;
 
+    /**
+     * Constructs a new SaveEmailInputData object.
+     *
+     * @param title           the email title
+     * @param sender          the email sender
+     * @param body            the email body
+     * @param dateReceived    the date/time when the email was received
+     * @param suspicionScore  the computed suspicion score
+     * @param explanation     explanation for the score
+     * @param links           list of extracted links
+     */
     public SaveEmailInputData(String title, String sender, String body,
                               LocalDateTime dateReceived, double suspicionScore,
                               String explanation, List<String> links) {
@@ -24,11 +40,31 @@ public class SaveEmailInputData {
         this.links = links;
     }
 
-    public String getTitle() { return title; }
-    public String getSender() { return sender; }
-    public String getBody() { return body; }
-    public LocalDateTime getDateReceived() { return dateReceived; }
-    public double getSuspicionScore() { return suspicionScore; }
-    public String getExplanation() { return explanation; }
-    public List<String> getLinks() { return links; }
+    public String getTitle() {
+        return title;
+    }
+
+    public String getSender() {
+        return sender;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public LocalDateTime getDateReceived() {
+        return dateReceived;
+    }
+
+    public double getSuspicionScore() {
+        return suspicionScore;
+    }
+
+    public String getExplanation() {
+        return explanation;
+    }
+
+    public List<String> getLinks() {
+        return links;
+    }
 }

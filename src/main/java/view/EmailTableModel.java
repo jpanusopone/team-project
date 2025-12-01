@@ -1,10 +1,23 @@
 package view;
 
-import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
+import javax.swing.table.AbstractTableModel;
+
+/**
+ * Table model for displaying email information in the dashboard.
+ */
 public class EmailTableModel extends AbstractTableModel {
-    private final String[] columnNames = {"Sender", "Title", "Date Received", "Suspicion Score", "Verified Status"};
+
+    private static final int COL_SENDER = 0;
+    private static final int COL_TITLE = 1;
+    private static final int COL_DATE_RECEIVED = 2;
+    private static final int COL_SUSPICION_SCORE = 3;
+    private static final int COL_VERIFIED_STATUS = 4;
+
+    private static final String[] COLUMN_NAMES = {
+            "Sender", "Title", "Date Received", "Suspicion Score", "Verified Status",
+    };
 
     private List<String> senders;
     private List<String> titles;
@@ -12,50 +25,76 @@ public class EmailTableModel extends AbstractTableModel {
     private List<String> suspicionScores;
     private List<String> verifiedStatuses;
 
-    public EmailTableModel(List<String> senders, List<String> titles,
-                           List<String> datesReceived, List<String> suspicionScores,
-                           List<String> verifiedStatuses) {
-        this.senders = senders;
-        this.titles = titles;
-        this.datesReceived = datesReceived;
-        this.suspicionScores = suspicionScores;
-        this.verifiedStatuses = verifiedStatuses;
+    /**
+     * Constructs an EmailTableModel with the given column data.
+     *
+     * @param initialSenders          the list of senders
+     * @param initialTitles           the list of titles
+     * @param initialDatesReceived    the list of received dates
+     * @param initialSuspicionScores  the list of suspicion scores
+     * @param initialVerifiedStatuses the list of verified statuses
+     */
+    public EmailTableModel(List<String> initialSenders,
+                           List<String> initialTitles,
+                           List<String> initialDatesReceived,
+                           List<String> initialSuspicionScores,
+                           List<String> initialVerifiedStatuses) {
+        this.senders = initialSenders;
+        this.titles = initialTitles;
+        this.datesReceived = initialDatesReceived;
+        this.suspicionScores = initialSuspicionScores;
+        this.verifiedStatuses = initialVerifiedStatuses;
     }
 
-    public void setEmails(List<String> senders, List<String> titles,
-                          List<String> datesReceived, List<String> suspicionScores,
-                          List<String> verifiedStatuses) {
-        this.senders = senders;
-        this.titles = titles;
-        this.datesReceived = datesReceived;
-        this.suspicionScores = suspicionScores;
-        this.verifiedStatuses = verifiedStatuses;
+    /**
+     * Updates all email columns in the table model and refreshes the view.
+     *
+     * @param newSenders          the new list of senders
+     * @param newTitles           the new list of titles
+     * @param newDatesReceived    the new list of received dates
+     * @param newSuspicionScores  the new list of suspicion scores
+     * @param newVerifiedStatuses the new list of verified statuses
+     */
+    public void setEmails(List<String> newSenders,
+                          List<String> newTitles,
+                          List<String> newDatesReceived,
+                          List<String> newSuspicionScores,
+                          List<String> newVerifiedStatuses) {
+        this.senders = newSenders;
+        this.titles = newTitles;
+        this.datesReceived = newDatesReceived;
+        this.suspicionScores = newSuspicionScores;
+        this.verifiedStatuses = newVerifiedStatuses;
         fireTableDataChanged();
     }
 
     @Override
     public int getRowCount() {
-        return senders != null ? senders.size() : 0;
+        int count = 0;
+        if (senders != null) {
+            count = senders.size();
+        }
+        return count;
     }
 
     @Override
     public int getColumnCount() {
-        return columnNames.length;
+        return COLUMN_NAMES.length;
     }
 
     @Override
     public String getColumnName(int column) {
-        return columnNames[column];
+        return COLUMN_NAMES[column];
     }
 
     @Override
     public String getValueAt(int rowIndex, int columnIndex) {
         return switch (columnIndex) {
-            case 0 -> senders.get(rowIndex);
-            case 1 -> titles.get(rowIndex);
-            case 2 -> datesReceived.get(rowIndex);
-            case 3 -> suspicionScores.get(rowIndex);
-            case 4 -> verifiedStatuses.get(rowIndex);
+            case COL_SENDER -> senders.get(rowIndex);
+            case COL_TITLE -> titles.get(rowIndex);
+            case COL_DATE_RECEIVED -> datesReceived.get(rowIndex);
+            case COL_SUSPICION_SCORE -> suspicionScores.get(rowIndex);
+            case COL_VERIFIED_STATUS -> verifiedStatuses.get(rowIndex);
             default -> null;
         };
     }

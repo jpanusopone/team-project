@@ -1,16 +1,32 @@
 package config;
 
-import infrastructure.services.*;
-import use_case.interfaces.ExplanationService;
-import use_case.explain_phishing.ExplainPhishingInteractor;
-import use_case.explain_phishing.ExplainPhishingInputBoundary;
-import presentation.ExplanationController;
-
 import java.util.Arrays;
 import java.util.List;
 
+import data_access.FirebaseEmailDataAccessObject;
+import data_access.GoogleSafeBrowsingLinkRiskDataAccessObject;
+import infrastructure.services.OpenRouterExplanationService;
+import interface_adapter.link_risk.LinkRiskController;
+import interface_adapter.link_risk.LinkRiskPresenter;
+import interface_adapter.link_risk.LinkRiskViewModel;
+import interface_adapter.save_email.SaveEmailController;
+import interface_adapter.save_email.SaveEmailPresenter;
+import interface_adapter.save_email.SaveEmailViewModel;
+import presentation.ExplanationController;
+import use_case.explain_phishing.ExplainPhishingInputBoundary;
+import use_case.explain_phishing.ExplainPhishingInteractor;
+import use_case.interfaces.ExplanationService;
+import use_case.link_risk.LinkRiskInteractor;
+import use_case.save_email.SaveEmailInteractor;
+import view.SubmitEmailView;
+
 public class ApplicationConfig {
 
+    /**
+     * Creates an ExplanationController wired to multiple LLM services via OpenRouter.
+     *
+     * @return the configured ExplanationController
+     */
     public static ExplanationController createExplanationController() {
         // Create services in priority order (fallback chain)
         // Using OpenRouter API gateway for unified access to multiple LLMs
@@ -23,51 +39,58 @@ public class ApplicationConfig {
             apiKey = "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";
         }
 
-        List<ExplanationService> services = Arrays.asList(
+        final List<ExplanationService> services = Arrays.asList(
                 new OpenRouterExplanationService(apiKey, "openai/gpt-4o-mini"),
                 new OpenRouterExplanationService(apiKey, "deepseek/deepseek-chat"),
                 new OpenRouterExplanationService(apiKey, "deepseek/deepseek-r1")
         );
 
         // Create ExplainPhishing use case with clean architecture
-        ExplainPhishingInputBoundary explainPhishingInteractor = new ExplainPhishingInteractor(services);
+        final ExplainPhishingInputBoundary explainPhishingInteractor =
+                new ExplainPhishingInteractor(services);
         return new ExplanationController(explainPhishingInteractor);
     }
 
-    public static view.SubmitEmailView createSubmitEmailView() {
+    /**
+     * Creates a fully wired SubmitEmailView with save-email and link-risk use cases.
+     *
+     * @return the configured SubmitEmailView
+     */
+    public static SubmitEmailView createSubmitEmailView() {
         // Create SaveEmail use case
-        interface_adapter.save_email.SaveEmailViewModel saveEmailViewModel =
-            new interface_adapter.save_email.SaveEmailViewModel();
-        interface_adapter.save_email.SaveEmailPresenter saveEmailPresenter =
-            new interface_adapter.save_email.SaveEmailPresenter(saveEmailViewModel);
+        final SaveEmailViewModel saveEmailViewModel = new SaveEmailViewModel();
+        final SaveEmailPresenter saveEmailPresenter = new SaveEmailPresenter(saveEmailViewModel);
 
-        data_access.FirebaseEmailDataAccessObject emailDAO =
-            new data_access.FirebaseEmailDataAccessObject();
-        use_case.save_email.SaveEmailInteractor saveEmailInteractor =
-            new use_case.save_email.SaveEmailInteractor(emailDAO, saveEmailPresenter);
-        interface_adapter.save_email.SaveEmailController saveEmailController =
-            new interface_adapter.save_email.SaveEmailController(saveEmailInteractor);
+        final FirebaseEmailDataAccessObject emailDao =
+                new FirebaseEmailDataAccessObject();
+        final SaveEmailInteractor saveEmailInteractor =
+                new SaveEmailInteractor(emailDao, saveEmailPresenter);
+        final SaveEmailController saveEmailController =
+                new SaveEmailController(saveEmailInteractor);
 
         // Create LinkRisk use case with Google Safe Browsing API
-        interface_adapter.link_risk.LinkRiskViewModel linkRiskViewModel =
-            new interface_adapter.link_risk.LinkRiskViewModel();
-        interface_adapter.link_risk.LinkRiskPresenter linkRiskPresenter =
-            new interface_adapter.link_risk.LinkRiskPresenter(linkRiskViewModel);
+        final LinkRiskViewModel linkRiskViewModel = new LinkRiskViewModel();
+        final LinkRiskPresenter linkRiskPresenter = new LinkRiskPresenter(linkRiskViewModel);
 
-        // Google Safe Browsing API key (hardcoded for now)
-        String googleApiKey = "AIzaSyB6wXISuyZxd6Q_LyqlWR10iOoMNXipSac"; // TODO: Move to environment variable
+        // Move Google Safe Browsing API key to environment variable
+        final String googleApiKey = "AIzaSyB6wXISuyZxd6Q_LyqlWR10iOoMNXipSac";
 
-        data_access.GoogleSafeBrowsingLinkRiskDataAccessObject linkRiskDAO =
-            new data_access.GoogleSafeBrowsingLinkRiskDataAccessObject(googleApiKey);
-        use_case.link_risk.LinkRiskInteractor linkRiskInteractor =
-            new use_case.link_risk.LinkRiskInteractor(linkRiskDAO, linkRiskPresenter);
-        interface_adapter.link_risk.LinkRiskController linkRiskController =
-            new interface_adapter.link_risk.LinkRiskController(linkRiskInteractor);
+        final GoogleSafeBrowsingLinkRiskDataAccessObject linkRiskDao =
+                new GoogleSafeBrowsingLinkRiskDataAccessObject(googleApiKey);
+        final LinkRiskInteractor linkRiskInteractor =
+                new LinkRiskInteractor(linkRiskDao, linkRiskPresenter);
+        final LinkRiskController linkRiskController =
+                new LinkRiskController(linkRiskInteractor);
 
         // Create explanation controller
-        presentation.ExplanationController explanationController = createExplanationController();
+        final ExplanationController explanationController = createExplanationController();
 
-        return new view.SubmitEmailView(explanationController, saveEmailController,
-                                       saveEmailViewModel, linkRiskController, linkRiskViewModel);
+        return new SubmitEmailView(
+                explanationController,
+                saveEmailController,
+                saveEmailViewModel,
+                linkRiskController,
+                linkRiskViewModel
+        );
     }
 }

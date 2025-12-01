@@ -59,6 +59,10 @@
             <artifactId>flatlaf</artifactId>
             <version>3.5.2</version>
         </dependency>
+<<<<<<< HEAD
+
+=======
+>>>>>>> origin/main
     </dependencies>
     <build>
         <plugins>

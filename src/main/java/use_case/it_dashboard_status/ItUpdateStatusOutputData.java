@@ -1,4 +1,5 @@
 // use_case/it_dashboard_status/ItUpdateStatusOutputData.java
+
 package use_case.it_dashboard_status;
 
 public class ItUpdateStatusOutputData {

@@ -1,49 +1,53 @@
 package infrastructure.services;
 
-import use_case.interfaces.ExplanationException;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonArray;
+import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.net.URI;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import use_case.interfaces.ExplanationException;
 
 public class DeepSeekExplanationService extends LLMExplanationService {
     private static final String API_URL = "https://api.deepseek.com/v1/chat/completions";
+    private static final double DEFAULT_TEMPERATURE = 0.3;
+    private static final int HTTP_OK = 200;
+
     private final String model;
 
     public DeepSeekExplanationService(String apiKey, String model) {
         super(apiKey);
-        this.model = model; // "deepseek-chat" or "deepseek-reasoner"
+        this.model = model;
     }
 
     @Override
     protected String callAPI(String prompt) throws Exception {
-        JsonObject requestBody = new JsonObject();
+        final JsonObject requestBody = new JsonObject();
         requestBody.addProperty("model", model);
 
-        JsonArray messages = new JsonArray();
-        JsonObject message = new JsonObject();
+        final JsonArray messages = new JsonArray();
+        final JsonObject message = new JsonObject();
         message.addProperty("role", "user");
         message.addProperty("content", prompt);
         messages.add(message);
 
         requestBody.add("messages", messages);
-        requestBody.addProperty("temperature", 0.3);
+        requestBody.addProperty("temperature", DEFAULT_TEMPERATURE);
 
-        HttpRequest request = HttpRequest.newBuilder()
+        final HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(API_URL))
                 .header("Content-Type", "application/json")
                 .header("Authorization", "Bearer " + apiKey)
                 .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(requestBody)))
                 .build();
 
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        final HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-        if (response.statusCode() != 200) {
+        if (response.statusCode() != HTTP_OK) {
             throw new ExplanationException("DeepSeek API error: " + response.statusCode());
         }
 
-        JsonObject responseJson = gson.fromJson(response.body(), JsonObject.class);
+        final JsonObject responseJson = gson.fromJson(response.body(), JsonObject.class);
         return responseJson.getAsJsonArray("choices")
                 .get(0).getAsJsonObject()
                 .getAsJsonObject("message")

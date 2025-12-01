@@ -28,7 +28,8 @@ public abstract class LLMExplanationService implements ExplanationService {
             String prompt = buildPrompt(emailContent);
             String responseJson = callAPI(prompt);
             return parseResponse(responseJson);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new ExplanationException("Failed to get explanation", e);
         }
     }

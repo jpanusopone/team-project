@@ -1,74 +1,123 @@
 package interface_adapter.filter;
 
-import data_access.FirebaseEmailDataAccessObject;
-import entity.Email;
-import interface_adapter.it_dashboard.ItDashboardController;
-import view.ItDashboardView;
-
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
+import data_access.FirebaseEmailDataAccessObject;
+import entity.Email;
+import interface_adapter.it_dashboard.ItDashboardController;
+import view.ItDashboardView;
+
+/**
+ * Controller responsible for filtering and displaying pinned emails
+ * in the IT dashboard view.
+ */
 public class ItFilterController {
 
     private final ItDashboardView view;
-    private final FirebaseEmailDataAccessObject emailDAO;
+    private final FirebaseEmailDataAccessObject emailDao;
     private final ItDashboardController dashboardController;
 
-    public ItFilterController(ItDashboardView view, ItDashboardController dashboardController) {
+    /**
+     * Construct an IT filter controller.
+     *
+     * @param view                the IT dashboard view
+     * @param dashboardController the IT dashboard controller
+     */
+    public ItFilterController(ItDashboardView view,
+                              ItDashboardController dashboardController) {
         this.view = view;
-        this.emailDAO = new FirebaseEmailDataAccessObject();
+        this.emailDao = new FirebaseEmailDataAccessObject();
         this.dashboardController = dashboardController;
 
-        view.getItFilterButton().addActionListener(e -> applyFilter());
-//        view.getItDiscordButton().addActionListener(e ->
-//                JOptionPane.showMessageDialog(view, "Pretend this opens the Discord server!"));
+        // Filter button applies filter
+        view.getItFilterButton().addActionListener(event -> applyFilter());
 
-        // Load initial data
+        // Discord button behavior is handled inside ItDashboardView
+
         loadAllPinnedEmails();
     }
 
+    /**
+     * Load all pinned emails and display them in the table.
+     */
     private void loadAllPinnedEmails() {
         try {
-            List<Email> emails = emailDAO.getPinnedEmails();
+            final List<Email> emails = emailDao.getPinnedEmails();
             displayEmails(emails);
-        } catch (ExecutionException | InterruptedException e) {
+        }
+        catch (ExecutionException | InterruptedException ex) {
             JOptionPane.showMessageDialog(view,
-                    "Failed to load emails: " + e.getMessage(),
+                    "Failed to load emails: " + ex.getMessage(),
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
         }
     }
 
+    /**
+     * Apply keyword, sender, and sorting filters, then update the table.
+     */
     private void applyFilter() {
         try {
-            String keyword = view.getKeyword();
-            String sender = view.getSender();
-            String sortBy = view.getSort();
+            final String keyword = view.getKeyword();
+            final String sender = view.getSender();
+            final String sortBy = view.getSort();
 
-            // Get pinned emails
-            List<Email> emails = emailDAO.getPinnedEmails();
+            final List<Email> emails = emailDao.getPinnedEmails();
 
-            // Apply keyword filter
-            if (!keyword.isEmpty()) {
-                String lowerKeyword = keyword.toLowerCase();
-                emails.removeIf(email ->
-                        !email.getTitle().toLowerCase().contains(lowerKeyword) &&
-                        !email.getSender().toLowerCase().contains(lowerKeyword) &&
-                        !email.getBody().toLowerCase().contains(lowerKeyword)
-                );
-            }
+            filterByKeyword(emails, keyword);
+            filterBySender(emails, sender);
+            sortEmails(emails, sortBy);
 
-            // Apply sender filter
-            if (!sender.isEmpty()) {
-                String lowerSender = sender.toLowerCase();
-                emails.removeIf(email -> !email.getSender().toLowerCase().contains(lowerSender));
-            }
+            displayEmails(emails);
+        }
+        catch (ExecutionException | InterruptedException ex) {
+            JOptionPane.showMessageDialog(view,
+                    "Failed to filter emails: " + ex.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
-            // Apply sorting
+    /**
+     * Filter emails list by keyword, if provided.
+     *
+     * @param emails  the list of emails to filter (modified in place)
+     * @param keyword the keyword input
+     */
+    private void filterByKeyword(List<Email> emails, String keyword) {
+        if (keyword != null && !keyword.isEmpty()) {
+            final String lowerKeyword = keyword.toLowerCase();
+            emails.removeIf(email -> !matchesKeyword(email, lowerKeyword));
+        }
+    }
+
+    /**
+     * Filter emails list by sender, if provided.
+     *
+     * @param emails the list of emails to filter (modified in place)
+     * @param sender the sender input
+     */
+    private void filterBySender(List<Email> emails, String sender) {
+        if (sender != null && !sender.isEmpty()) {
+            final String lowerSender = sender.toLowerCase();
+            emails.removeIf(email -> !matchesSender(email, lowerSender));
+        }
+    }
+
+    /**
+     * Sort emails list based on the sort option.
+     *
+     * @param emails the list of emails to sort (modified in place)
+     * @param sortBy the sort option string
+     */
+    private void sortEmails(List<Email> emails, String sortBy) {
+        if (sortBy != null) {
             switch (sortBy) {
                 case "Date":
                     emails.sort(Comparator.comparing(Email::getDateReceived).reversed());
@@ -79,36 +128,97 @@ public class ItFilterController {
                 case "Suspicion Score":
                     emails.sort(Comparator.comparing(Email::getSuspicionScore).reversed());
                     break;
+                default:
+                    break;
             }
-
-            displayEmails(emails);
-        } catch (ExecutionException | InterruptedException e) {
-            JOptionPane.showMessageDialog(view,
-                    "Failed to filter emails: " + e.getMessage(),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private void displayEmails(List<Email> emails) {
-        DefaultTableModel model = (DefaultTableModel) view.getItEmailTable().getModel();
-        model.setRowCount(0);  // clear table
+    /**
+     * Check if an email matches the given keyword.
+     *
+     * @param email        the email to check
+     * @param lowerKeyword the keyword in lowercase
+     * @return true if any of title/sender/body contains the keyword
+     */
+    private boolean matchesKeyword(Email email, String lowerKeyword) {
+        final String titleLower = toLowerOrEmpty(email.getTitle());
+        final String senderLower = toLowerOrEmpty(email.getSender());
+        final String bodyLower = toLowerOrEmpty(email.getBody());
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        return titleLower.contains(lowerKeyword)
+                || senderLower.contains(lowerKeyword)
+                || bodyLower.contains(lowerKeyword);
+    }
+
+    /**
+     * Check if an email matches the given sender filter.
+     *
+     * @param email       the email to check
+     * @param lowerSender the sender substring in lowercase
+     * @return true if sender contains the substring
+     */
+    private boolean matchesSender(Email email, String lowerSender) {
+        final String senderLower = toLowerOrEmpty(email.getSender());
+        return senderLower.contains(lowerSender);
+    }
+
+    /**
+     * Convert a string to lowercase, or return an empty string if null.
+     *
+     * @param value the input string
+     * @return lowercase string or empty string
+     */
+    private String toLowerOrEmpty(String value) {
+        String result = "";
+        if (value != null) {
+            result = value.toLowerCase();
+        }
+        return result;
+    }
+
+    /**
+     * Display the given list of emails in the IT dashboard table and
+     * update the dashboard controller with the current emails.
+     *
+     * @param emails the emails to display
+     */
+    private void displayEmails(List<Email> emails) {
+        final DefaultTableModel model =
+                (DefaultTableModel) view.getItEmailTable().getModel();
+
+        model.setRowCount(0);
+
+        final DateTimeFormatter formatter =
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
         for (Email email : emails) {
-            String status = email.getVerifiedStatus() != null ? email.getVerifiedStatus() : "Pending";
-            model.addRow(new Object[]{
+            final String status;
+            if (email.getVerifiedStatus() != null) {
+                status = email.getVerifiedStatus();
+            }
+            else {
+                status = "Pending";
+            }
+
+            final String dateString;
+            if (email.getDateReceived() != null) {
+                dateString = email.getDateReceived().format(formatter);
+            }
+            else {
+                dateString = "N/A";
+            }
+
+            model.addRow(new Object[] {
                     email.getId(),
                     email.getSender(),
                     email.getTitle(),
                     String.format("%.1f", email.getSuspicionScore()),
                     status,
-                    email.getDateReceived() != null ? email.getDateReceived().format(formatter) : "N/A"
+                    dateString,
             });
         }
 
-        // Update the dashboard controller with current emails
         dashboardController.setCurrentEmails(emails);
     }
 }

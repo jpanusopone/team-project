@@ -1,10 +1,25 @@
 package use_case.link_risk;
 
+/**
+ * Represents the result of checking the risk level of a URL.
+ */
 public class LinkRiskResult {
 
-    private final String url;
-    private final String riskLevel;   // e.g. "SAFE", "DANGEROUS", "UNKNOWN"
+    /**
+     * Multiplier used in hashCode calculation.
+     */
+    private static final int HASH_MULTIPLIER = 31;
 
+    private final String url;
+    private final String riskLevel;
+
+    /**
+     * Creates a new {@code LinkRiskResult}.
+     *
+     * @param url       the URL that was evaluated
+     * @param riskLevel the risk assessment (for example, SAFE, DANGEROUS)
+     * @throws IllegalArgumentException if {@code url} or {@code riskLevel} is null or blank
+     */
     public LinkRiskResult(String url, String riskLevel) {
         if (url == null || url.isBlank()) {
             throw new IllegalArgumentException("url must not be null or blank");
@@ -17,37 +32,66 @@ public class LinkRiskResult {
         this.riskLevel = riskLevel;
     }
 
+    /**
+     * Returns the URL that was evaluated.
+     *
+     * @return the URL
+     */
     public String getUrl() {
         return url;
     }
 
+    /**
+     * Returns the risk level assigned to the URL.
+     *
+     * @return the risk level string
+     */
     public String getRiskLevel() {
         return riskLevel;
     }
 
+    /**
+     * Returns a string representation of this result.
+     *
+     * @return a string describing the URL and its risk level
+     */
     @Override
     public String toString() {
-        return "LinkRiskResult{" +
-                "url='" + url + '\'' +
-                ", riskLevel='" + riskLevel + '\'' +
-                '}';
+        return "LinkRiskResult{"
+                + "url='" + url + '\''
+                + ", riskLevel='" + riskLevel + '\''
+                + '}';
     }
 
+    /**
+     * Compares this object for equality with another.
+     *
+     * @param obj the object to compare with
+     * @return {@code true} if {@code obj} is a {@code LinkRiskResult} with the same URL and risk level,
+     *         {@code false} otherwise
+     */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof LinkRiskResult)) return false;
-
-        LinkRiskResult that = (LinkRiskResult) obj;
-
-        if (!url.equals(that.url)) return false;
-        return riskLevel.equals(that.riskLevel);
+        boolean equal = false;
+        if (this == obj) {
+            equal = true;
+        }
+        else if (obj instanceof LinkRiskResult) {
+            final LinkRiskResult that = (LinkRiskResult) obj;
+            equal = url.equals(that.url) && riskLevel.equals(that.riskLevel);
+        }
+        return equal;
     }
 
+    /**
+     * Returns a hash code for this result.
+     *
+     * @return the hash code
+     */
     @Override
     public int hashCode() {
         int result = url.hashCode();
-        result = 31 * result + riskLevel.hashCode();
+        result = HASH_MULTIPLIER * result + riskLevel.hashCode();
         return result;
     }
 }

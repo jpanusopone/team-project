@@ -24,44 +24,35 @@ public class FilterInteractor implements FilterInputBoundary {
             filterPresenter.prepareFailView("Filter cannot be null.");
         }
         else if (filterInputData.getMinScore() != null && filterInputData.getMaxScore() != null
-                && (filterInputData.getMinScore() > filterInputData.getMaxScore())) {
+                && filterInputData.getMinScore() > filterInputData.getMaxScore()) {
             filterPresenter.prepareFailView("Minimum score cannot be greater than maximum score.");
         }
         else {
-            final List<Email> filteredEmails;
-            try {
-                filteredEmails = filterUserDataAccessObject.filter(filterInputData);
-                if (filteredEmails == null || filteredEmails.isEmpty()) {
-                    filterPresenter.prepareFailView("No emails matched.");
-                }
-                else {
-                    // Extract each attribute into separate lists
-                    List<String> titles = new ArrayList<>();
-                    List<String> senders = new ArrayList<>();
-                    List<String> datesReceived = new ArrayList<>();
-                    List<String> suspicionScores = new ArrayList<>();
-                    List<String> verifiedStatuses = new ArrayList<>();
-
-                    for (Email email : filteredEmails) {
-                        titles.add(email.getTitle());
-                        senders.add(email.getSender());
-                        datesReceived.add(email.getDateReceived().toString());
-                        suspicionScores.add(String.valueOf(email.getSuspicionScore()));
-                        verifiedStatuses.add(email.getVerifiedStatus());
-                    }
-
-                    final FilterOutputData filterOutputData = new FilterOutputData(
-                            titles, senders, datesReceived, suspicionScores, verifiedStatuses
-                    );
-                    filterPresenter.prepareSuccessView(filterOutputData);
-                }
+            final List<Email> filteredEmails = filterUserDataAccessObject.filter(filterInputData);
+            if (filteredEmails == null || filteredEmails.isEmpty()) {
+                filterPresenter.prepareFailView("No emails matched.");
             }
-            catch (RuntimeException exception) {
-                filterPresenter.prepareFailView("Failed to load filtered emails.");
-            }
+            else {
+                // Extract each attribute into separate lists
+                final List<String> titles = new ArrayList<>();
+                final List<String> senders = new ArrayList<>();
+                final List<String> datesReceived = new ArrayList<>();
+                final List<String> suspicionScores = new ArrayList<>();
+                final List<String> verifiedStatuses = new ArrayList<>();
 
+                for (Email email : filteredEmails) {
+                    titles.add(email.getTitle());
+                    senders.add(email.getSender());
+                    datesReceived.add(email.getDateReceived().toString());
+                    suspicionScores.add(String.valueOf(email.getSuspicionScore()));
+                    verifiedStatuses.add(email.getVerifiedStatus());
+                }
+
+                final FilterOutputData filterOutputData = new FilterOutputData(
+                        titles, senders, datesReceived, suspicionScores, verifiedStatuses
+                );
+                filterPresenter.prepareSuccessView(filterOutputData);
+            }
         }
-
     }
-
 }

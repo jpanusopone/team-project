@@ -1,9 +1,10 @@
 // use_case/it_dashboard_status/ItUpdateStatusInteractor.java
+
 package use_case.it_dashboard_status;
 
-import data_access.ItVerificationGateway;
-
 import java.util.concurrent.ExecutionException;
+
+import data_access.ItVerificationGateway;
 
 public class ItUpdateStatusInteractor implements ItUpdateStatusInputBoundary {
 
@@ -21,12 +22,13 @@ public class ItUpdateStatusInteractor implements ItUpdateStatusInputBoundary {
         try {
             itDao.updateEmailVerificationStatus(inputData.getDocumentId(), inputData.getStatus());
 
-            ItUpdateStatusOutputData out =
+            final ItUpdateStatusOutputData out =
                     new ItUpdateStatusOutputData(inputData.getStatus());
             presenter.prepareSuccessView(out);
 
-        } catch (ExecutionException | InterruptedException e) {
-            presenter.prepareFailView("Failed to update email status: " + e.getMessage());
+        }
+        catch (ExecutionException | InterruptedException ex) {
+            presenter.prepareFailView("Failed to update email status: " + ex.getMessage());
         }
     }
 }
