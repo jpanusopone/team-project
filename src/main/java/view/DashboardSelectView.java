@@ -42,14 +42,16 @@ public class DashboardSelectView extends JPanel {
 
         // ----- Title -----
         final JLabel title = new JLabel("View Email Details", SwingConstants.CENTER);
-        title.setFont(title.getFont().deriveFont(Font.BOLD, 26f));
+        final float titleFontSize = 26f;
+        title.setFont(title.getFont().deriveFont(Font.BOLD, titleFontSize));
         add(title, BorderLayout.NORTH);
 
         // ----- Email Area -----
         emailArea.setEditable(false);
         emailArea.setLineWrap(true);
         emailArea.setWrapStyleWord(true);
-        emailArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
+        final int emailFontSize = 14;
+        emailArea.setFont(new Font("Monospaced", Font.PLAIN, emailFontSize));
 
         final JScrollPane emailScroll = new JScrollPane(emailArea);
         emailScroll.setBorder(BorderFactory.createTitledBorder("Email Content"));
@@ -58,26 +60,34 @@ public class DashboardSelectView extends JPanel {
         analysisArea.setEditable(false);
         analysisArea.setLineWrap(true);
         analysisArea.setWrapStyleWord(true);
-        final int fontSize = 13;
-        analysisArea.setFont(new Font("SansSerif", Font.PLAIN, fontSize));
+        final int analysisFontSize = 13;
+        analysisArea.setFont(new Font("SansSerif", Font.PLAIN, analysisFontSize));
         // Light yellow background
-        analysisArea.setBackground(new Color(255, 255, 240));
+        final int rValue = 255;
+        final int gValue = 255;
+        final int bValue = 240;
+        analysisArea.setBackground(new Color(rValue, gValue, bValue));
 
         final JScrollPane analysisScroll = new JScrollPane(analysisArea);
         analysisScroll.setBorder(BorderFactory.createTitledBorder("Security Analysis"));
         // Fixed height
-        analysisScroll.setPreferredSize(new Dimension(0, 250));
+        final int scrollHeight = 250;
+        analysisScroll.setPreferredSize(new Dimension(0, scrollHeight));
 
         // Split email content and analysis vertically using JSplitPane
         final JSplitPane splitPane =
                 new JSplitPane(JSplitPane.VERTICAL_SPLIT, emailScroll, analysisScroll);
         // Give 60% to email, 40% to analysis
-        splitPane.setResizeWeight(0.6);
-        splitPane.setDividerLocation(0.6);
+        final double resizeWidth = 0.6;
+        final double dividerLocation = 0.6;
+        splitPane.setResizeWeight(resizeWidth);
+        splitPane.setDividerLocation(dividerLocation);
 
         // Put split pane + back button in a vertical column
         final JPanel leftColumn = new JPanel();
-        leftColumn.setLayout(new BorderLayout(10, 10));
+        final int hGap = 10;
+        final int vGap = 10;
+        leftColumn.setLayout(new BorderLayout(hGap, vGap));
 
         leftColumn.add(splitPane, BorderLayout.CENTER);
 
@@ -91,12 +101,17 @@ public class DashboardSelectView extends JPanel {
         // Right side panel for metadata
         final JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+        final int borderTop = 10;
+        final int borderLeft = 20;
+        final int borderBottom = 10;
+        final int borderRight = 10;
         infoPanel.setBorder(BorderFactory.createCompoundBorder(
-                new EmptyBorder(10, 20, 10, 10),
+                new EmptyBorder(borderTop, borderLeft, borderBottom, borderRight),
                 BorderFactory.createTitledBorder("Email Information")
         ));
         // Set fixed width for info panel
-        infoPanel.setPreferredSize(new Dimension(300, 0));
+        final int infoPanelWidth = 300;
+        infoPanel.setPreferredSize(new Dimension(infoPanelWidth, 0));
 
         // Style labels
         final Font labelFont = new Font("SansSerif", Font.PLAIN, 14);
