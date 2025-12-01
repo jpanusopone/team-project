@@ -1,21 +1,33 @@
 package view;
 
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+
 import interface_adapter.filter.FilterController;
 import interface_adapter.filter.FilteredState;
 import interface_adapter.filter.FilteredViewModel;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
-public class DashboardView extends JPanel implements PropertyChangeListener{
-    private boolean userAppliedFilter = false;
+public class DashboardView extends JPanel implements PropertyChangeListener {
 
     private FilterController filterController;
+
+    private boolean userAppliedFilter;
 
     private final JTable emailTable;
     private final EmailTableModel emailTableModel;
@@ -29,17 +41,17 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
     private final JButton backToStartButton;
 
     public DashboardView() {
-        super();
         setLayout(new BorderLayout());
 
-        JLabel title = new JLabel("Phishing Detection Dashboard", SwingConstants.CENTER);
-        title.setFont(title.getFont().deriveFont(Font.BOLD, 24f));
+        final JLabel title = new JLabel("Phishing Detection Dashboard", SwingConstants.CENTER);
+        final java.awt.Font baseFont = title.getFont();
+        title.setFont(baseFont.deriveFont(java.awt.Font.BOLD, 24f));
         add(title, BorderLayout.NORTH);
 
         // ----- LEFT FILTER PANEL -----
-        JPanel filterPanel = new JPanel();
-        filterPanel.setLayout(new GridLayout(0,1,5,5));
-        filterPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        final JPanel filterPanel = new JPanel();
+        filterPanel.setLayout(new GridLayout(0, 1, 5, 5));
+        filterPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         keywordField = new JTextField();
         senderField = new JTextField();
@@ -48,27 +60,7 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
         sortBox = new JComboBox<>(new String[]{"Title", "Sender", "Date Received", "Suspicion Score"});
         filterButton = new JButton("Apply Filter");
 
-        filterButton.addActionListener(e -> {
-            try {
-                filterController.execute(
-                        keywordField.getText(),
-                        senderField.getText(),
-                        minScoreField.getText(),
-                        maxScoreField.getText(),
-                        (String) sortBox.getSelectedItem()
-                );
-                userAppliedFilter = true;
-
-            } catch (RuntimeException ex) {
-                JOptionPane.showMessageDialog(
-                        this,
-                        ex.getMessage(),
-                        "Input Error",
-                        JOptionPane.ERROR_MESSAGE
-                );
-            }
-        });
-
+        filterButton.addActionListener(event -> applyFilter());
 
         filterPanel.add(new JLabel("Keyword:"));
         filterPanel.add(keywordField);
@@ -95,13 +87,13 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
 
         emailTable = new JTable(emailTableModel);
 
-        JScrollPane scrollPane = new JScrollPane(emailTable);
+        final JScrollPane scrollPane = new JScrollPane(emailTable);
         add(scrollPane, BorderLayout.CENTER);
 
         // ----- DISCORD BUTTON AND BACK TO START BUTTON -----
         discordButton = new JButton("Join Discord Webhook");
         backToStartButton = new JButton("Back to Start");
-        JPanel bottomPanel = new JPanel();
+        final JPanel bottomPanel = new JPanel();
         bottomPanel.add(discordButton);
         bottomPanel.add(backToStartButton);
         add(bottomPanel, BorderLayout.SOUTH);
@@ -109,35 +101,139 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
         setVisible(true);
     }
 
+    private void applyFilter() {
+        if (filterController == null) {
+            return;
+        }
+
+        try {
+            filterController.execute(
+                    keywordField.getText(),
+                    senderField.getText(),
+                    minScoreField.getText(),
+                    maxScoreField.getText(),
+                    (String) sortBox.getSelectedItem()
+            );
+            userAppliedFilter = true;
+        }
+        catch (IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    ex.getMessage(),
+                    "Input Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
+    }
+
+    /**
+     * Called when this view is displayed to trigger an initial load.
+     */
     public void onViewDisplayed() {
         if (filterController != null) {
             filterController.execute("", "", "0.0", "100.0", "Title");
         }
     }
 
+    /**
+     * Returns the view name used in the view manager.
+     *
+     * @return the view name
+     */
     public String getViewName() {
         return "dashboard";
     }
 
     // Expose widgets to controller
-    public JButton getFilterButton() { return filterButton; }
-    public JButton getDiscordButton() { return discordButton; }
-    public JTable getEmailTable() { return emailTable; }
-    public String getKeyword() { return keywordField.getText(); }
-    public String getSender() { return senderField.getText(); }
-    public Double getMinScore() { return Double.parseDouble(minScoreField.getText()); }
-    public Double getMaxScore() { return Double.parseDouble(maxScoreField.getText()); }
-    public String getSort() { return (String) sortBox.getSelectedItem(); }
 
+    /**
+     * Returns the filter button.
+     *
+     * @return the filter button
+     */
+    public JButton getFilterButton() {
+        return filterButton;
+    }
+
+    /**
+     * Returns the Discord button.
+     *
+     * @return the Discord button
+     */
+    public JButton getDiscordButton() {
+        return discordButton;
+    }
+
+    /**
+     * Returns the emails table.
+     *
+     * @return the email table
+     */
+    public JTable getEmailTable() {
+        return emailTable;
+    }
+
+    /**
+     * Returns the keyword entered in the filter field.
+     *
+     * @return the keyword
+     */
+    public String getKeyword() {
+        return keywordField.getText();
+    }
+
+    /**
+     * Returns the sender filter.
+     *
+     * @return the sender text
+     */
+    public String getSender() {
+        return senderField.getText();
+    }
+
+    /**
+     * Returns the minimum score as a double.
+     *
+     * @return minimum score
+     */
+    public Double getMinScore() {
+        return Double.parseDouble(minScoreField.getText());
+    }
+
+    /**
+     * Returns the maximum score as a double.
+     *
+     * @return maximum score
+     */
+    public Double getMaxScore() {
+        return Double.parseDouble(maxScoreField.getText());
+    }
+
+    /**
+     * Returns the selected sort option.
+     *
+     * @return sort option
+     */
+    public String getSort() {
+        return (String) sortBox.getSelectedItem();
+    }
+
+    /**
+     * Sets the filter controller used by this view.
+     *
+     * @param controller the filter controller
+     */
     public void setFilterController(FilterController controller) {
         this.filterController = controller;
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
+        if (!"state".equals(evt.getPropertyName())) {
+            return;
+        }
 
-        if (!evt.getPropertyName().equals("state")) return;
-        FilteredState state = (FilteredState) evt.getNewValue();
+        final FilteredState state = (FilteredState) evt.getNewValue();
 
         // 1. SHOW POPUP IF THERE'S AN ERROR
         if (state.getError() != null) {
@@ -148,37 +244,48 @@ public class DashboardView extends JPanel implements PropertyChangeListener{
                     JOptionPane.ERROR_MESSAGE
             );
 
-            // clear the error so it doesn't trigger again
+            // clear the error so it does not trigger again
             state.setError(null);
-            return;
         }
+        else {
+            // 2. NORMAL FLOW: update table
+            final List<String> senders = state.getSenders();
+            final List<String> titles = state.getTitles();
+            final List<String> datesReceived = state.getDatesReceived();
+            final List<String> suspicionScores = state.getSuspicionScores();
+            final List<String> verifiedStatuses = state.getVerifiedStatuses();
 
-        // 2. NORMAL FLOW: update table
-        List<String> senders = state.getSenders();
-        List<String> titles = state.getTitles();
-        List<String> datesReceived = state.getDatesReceived();
-        List<String> suspicionScores = state.getSuspicionScores();
-        List<String> verifiedStatuses = state.getVerifiedStatuses();
-
-        emailTableModel.setEmails(senders, titles, datesReceived, suspicionScores, verifiedStatuses);
-
-        if (senders.isEmpty() && userAppliedFilter) {
-            JOptionPane.showMessageDialog(
-                    this,
-                    "No emails matched your filter criteria.",
-                    "No Results",
-                    JOptionPane.INFORMATION_MESSAGE
+            emailTableModel.setEmails(
+                    senders, titles, datesReceived, suspicionScores, verifiedStatuses
             );
+
+            if (senders.isEmpty() && userAppliedFilter) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "No emails matched your filter criteria.",
+                        "No Results",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+            }
+
+            userAppliedFilter = false;
         }
-
-        userAppliedFilter = false;
     }
 
-
-    public void setFilteredViewModel(FilteredViewModel vm) {
-        vm.addPropertyChangeListener(this);
+    /**
+     * Registers this view as a listener to the filtered view model.
+     *
+     * @param viewModel the filtered view model
+     */
+    public void setFilteredViewModel(FilteredViewModel viewModel) {
+        viewModel.addPropertyChangeListener(this);
     }
 
+    /**
+     * Adds a listener to the back-to-start button.
+     *
+     * @param listener the listener to add
+     */
     public void addBackToStartListener(ActionListener listener) {
         backToStartButton.addActionListener(listener);
     }
