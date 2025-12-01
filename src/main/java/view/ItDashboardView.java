@@ -3,6 +3,7 @@ package view;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.net.URI;
 
 public class ItDashboardView extends JPanel {
     private final String viewName = "itdashboard";
@@ -16,6 +17,8 @@ public class ItDashboardView extends JPanel {
     private JButton filterButton;
     private JButton discordButton;
     private JButton backButton;
+
+    private final String discordInviteLinkURL = "https://discord.gg/FmME2xh7";
 
     public ItDashboardView() {
         super();
@@ -103,6 +106,17 @@ public class ItDashboardView extends JPanel {
 
         // ----- DISCORD BUTTON -----
         discordButton = new JButton("Join Discord Webhook");
+        // Click button to open invite link to join Discord server in browser
+        discordButton.addActionListener(e -> {
+            try {
+                Desktop.getDesktop().browse(new URI(discordInviteLinkURL));
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Unable to open browser.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        });
         backButton = new JButton("Back to Start");
         JPanel bottomPanel = new JPanel();
         bottomPanel.add(discordButton);
