@@ -120,7 +120,8 @@ public class ItDashboardController {
 
             if (emailToUpdate == null || emailToUpdate.getDocumentId() == null) {
                 errorMessage = "Email document ID not found";
-            } else {
+            }
+            else {
                 ItUpdateStatusInputData inputData =
                         new ItUpdateStatusInputData(emailToUpdate.getDocumentId(), status);
 
