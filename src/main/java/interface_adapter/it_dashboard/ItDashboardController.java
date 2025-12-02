@@ -146,12 +146,12 @@ public class ItDashboardController {
 
 
     private void updateTableRowStatus(int emailId, String status) {
-        JTable table = itDashboardView.getItEmailTable();
-        javax.swing.table.DefaultTableModel model =
+        final JTable table = itDashboardView.getItEmailTable();
+        final javax.swing.table.DefaultTableModel model =
                 (javax.swing.table.DefaultTableModel) table.getModel();
 
         for (int row = 0; row < model.getRowCount(); row++) {
-            int idInRow = (Integer) model.getValueAt(row, COLUMN_ID);
+            final int idInRow = (Integer) model.getValueAt(row, COLUMN_ID);
             if (idInRow == emailId) {
                 model.setValueAt(status, row, COLUMN_STATUS);
                 break;
