@@ -146,28 +146,34 @@ public class AppBuilder {
      * @return this builder for chaining
      */
     public AppBuilder addItDashboardControllers() {
-        // Make sure addItDashboardView() and addEmailDecisionView() are called first
+        // 1) DAO for IT verification
         final FirebaseITVerificationDataAccessObject itDao =
                 new FirebaseITVerificationDataAccessObject();
 
+        // 2) Presenter
         final ItUpdateStatusOutputBoundary presenter =
                 new ItUpdateStatusPresenter(viewManagerModel, itDashboardView);
 
+        // 3) Interactor
         final ItUpdateStatusInputBoundary interactor =
                 new ItUpdateStatusInteractor(itDao, presenter);
 
-        final ItDashboardController itDashboardController = new ItDashboardController(
-                itDashboardView,
-                emailDecisionView,
-                viewManagerModel,
-                interactor
-        );
+        // 4) IT dashboard controller (handles table + decision view)
+        final ItDashboardController itDashboardController =
+                new ItDashboardController(
+                        itDashboardView,
+                        emailDecisionView,
+                        viewManagerModel,
+                        interactor
+                );
 
-        // --- Create filter controller for IT dashboard (loads table, sets currentEmails) ---
+        // 5) IT filter controller (loads table, sets currentEmails)
         new ItFilterController(itDashboardView, itDashboardController);
 
         return this;
     }
+
+
 
     /**
      * Wires the login view to its presenter and use case interactor.

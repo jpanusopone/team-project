@@ -60,6 +60,22 @@ public class ItDashboardView extends JPanel {
         return title;
     }
 
+    public void updateEmailStatusInTable(int emailId, String newStatus) {
+        DefaultTableModel model = (DefaultTableModel) emailTable.getModel();
+
+        for (int row = 0; row < model.getRowCount(); row++) {
+            // ID column
+            Object value = model.getValueAt(row, 0);
+
+            if (value instanceof Integer && ((Integer) value) == emailId) {
+                // ⚠ column index 4 = "Status"
+                model.setValueAt(newStatus, 4, row);
+                // or model.setValueAt(newStatus, COLUMN_STATUS, row);
+                break;
+            }
+        }
+    }
+
     private JPanel buildFilterPanel() {
         final JPanel filterPanel = new JPanel();
         filterPanel.setLayout(new GridLayout(0, 1, GAP_SMALL, GAP_SMALL));
@@ -196,5 +212,13 @@ public class ItDashboardView extends JPanel {
      */
     public String getSort() {
         return (String) sortBox.getSelectedItem();
+    }
+
+    public void updateStatusAtRow(int rowIndex, String newStatus) {
+        if (rowIndex < 0 || rowIndex >= emailTable.getRowCount()) {
+            return; // out of bounds, ignore
+        }
+        emailTable.setValueAt(newStatus, 4, rowIndex);
+        // 4 = "Status" column (ID, Sender, Title, Suspicion, Status, Date)
     }
 }

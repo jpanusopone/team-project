@@ -9,6 +9,7 @@ import javax.swing.JTable;
 
 import entity.Email;
 import interface_adapter.ViewManagerModel;
+import interface_adapter.filter.ItFilterController;
 import use_case.it_dashboard_status.ItUpdateStatusInputBoundary;
 import use_case.it_dashboard_status.ItUpdateStatusInputData;
 import view.EmailDecisionView;
@@ -33,8 +34,11 @@ public class ItDashboardController {
     private final EmailDecisionView emailDecisionView;
     private final ViewManagerModel viewManagerModel;
     private final ItUpdateStatusInputBoundary updateStatusInteractor;
+    private ItFilterController filterController;
 
     private List<Email> currentEmails;
+
+    private int lastSelectedRow = -1;
 
     /**
      * Constructs a controller for the IT dashboard.
@@ -102,8 +106,7 @@ public class ItDashboardController {
 
         if (emailId == -1) {
             errorMessage = "No email selected";
-        }
-        else {
+        } else {
             Email emailToUpdate = null;
             if (currentEmails != null) {
                 for (Email email : currentEmails) {
@@ -116,11 +119,18 @@ public class ItDashboardController {
 
             if (emailToUpdate == null || emailToUpdate.getDocumentId() == null) {
                 errorMessage = "Email document ID not found";
-            }
-            else {
-                final ItUpdateStatusInputData inputData =
+            } else {
+                ItUpdateStatusInputData inputData =
                         new ItUpdateStatusInputData(emailToUpdate.getDocumentId(), status);
+
+                // 1) Update in Firebase (interactor)
                 updateStatusInteractor.updateStatus(inputData);
+
+                // 2) Update in our in-memory list
+                emailToUpdate.setVerifiedStatus(status);
+
+                // 3) Update the table row directly (no filtering)
+                updateTableRowStatus(emailId, status);
             }
         }
 
@@ -132,12 +142,30 @@ public class ItDashboardController {
         }
     }
 
+
+    private void updateTableRowStatus(int emailId, String status) {
+        JTable table = itDashboardView.getItEmailTable();
+        javax.swing.table.DefaultTableModel model =
+                (javax.swing.table.DefaultTableModel) table.getModel();
+
+        for (int row = 0; row < model.getRowCount(); row++) {
+            int idInRow = (Integer) model.getValueAt(row, COLUMN_ID);
+            if (idInRow == emailId) {
+                model.setValueAt(status, row, COLUMN_STATUS);
+                break;
+            }
+        }
+    }
+
+
     /**
      * Open the decision screen for the email in the given row.
      *
      * @param row the selected row index
      */
     private void openDecisionScreen(int row) {
+        this.lastSelectedRow = row;
+
         final JTable table = itDashboardView.getItEmailTable();
 
         final int emailId = (Integer) table.getValueAt(row, COLUMN_ID);
@@ -186,6 +214,7 @@ public class ItDashboardController {
 
         emailDecisionView.setEmailText(emailText.toString());
         emailDecisionView.setCurrentEmailId(emailId);
+        emailDecisionView.setCurrentRowIndex(row);
 
         viewManagerModel.setState(emailDecisionView.getViewName());
         viewManagerModel.firePropertyChange();

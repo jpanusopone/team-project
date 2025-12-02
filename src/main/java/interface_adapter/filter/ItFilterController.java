@@ -62,7 +62,7 @@ public class ItFilterController {
     /**
      * Apply keyword, sender, and sorting filters, then update the table.
      */
-    private void applyFilter() {
+    public void applyFilter() {
         try {
             final String keyword = view.getKeyword();
             final String sender = view.getSender();
@@ -82,6 +82,13 @@ public class ItFilterController {
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    /**
+     * Reapply the current filters (same as clicking the Apply Filter button).
+     */
+    public void reapplyCurrentFilters() {
+        applyFilter();
     }
 
     /**

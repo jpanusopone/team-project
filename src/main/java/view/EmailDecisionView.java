@@ -126,6 +126,16 @@ public class EmailDecisionView extends JPanel {
         emailArea.setCaretPosition(0);
     }
 
+    private int currentRowIndex = -1;
+
+    public void setCurrentRowIndex(int rowIndex) {
+        this.currentRowIndex = rowIndex;
+    }
+
+    public int getCurrentRowIndex() {
+        return currentRowIndex;
+    }
+
     /**
      * Sets the identifier of the currently displayed email.
      *
