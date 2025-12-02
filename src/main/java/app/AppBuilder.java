@@ -24,6 +24,7 @@ import use_case.it_dashboard_status.ItUpdateStatusInputBoundary;
 import use_case.it_dashboard_status.ItUpdateStatusInteractor;
 import use_case.it_dashboard_status.ItUpdateStatusOutputBoundary;
 import use_case.login.LoginInteractor;
+import use_case.filter.FilterInputBoundary;
 import view.DashboardSelectView;
 import view.DashboardView;
 import view.EmailDecisionView;
@@ -46,6 +47,7 @@ public class AppBuilder {
     private StartView startView;
     private ItDashboardView itDashboardView;
     private EmailDecisionView emailDecisionView;
+    private FilterInputBoundary filterInteractor;
 
     /**
      * Constructs an AppBuilder and initializes the card layout.
@@ -103,19 +105,22 @@ public class AppBuilder {
     public AppBuilder addDashboardControllers() {
         // make sure addDashBoardView() and addDashboardSelectView() are called before this
 
-        final FilteredViewModel filteredViewModel = new FilteredViewModel();
-        final FilterPresenter filterPresenter = new FilterPresenter(viewManagerModel, filteredViewModel);
-        final FilterDataAccessObject filterDataAccessObject = new FilterDataAccessObject();
-        final FilterInteractor filterInteractor = new FilterInteractor(filterDataAccessObject, filterPresenter);
-        final FilterController filterController = new FilterController(filterInteractor);
+        FilteredViewModel filteredViewModel = new FilteredViewModel();
+        FilterPresenter filterPresenter = new FilterPresenter(viewManagerModel, filteredViewModel);
+        FilterDataAccessObject filterDataAccessObject = new FilterDataAccessObject();
 
-        // Connect the filtered view model to the dashboard view
+        // ✅ save it on the AppBuilder so we can reuse it later
+        filterInteractor = new FilterInteractor(filterDataAccessObject, filterPresenter);
+
+        FilterController filterController = new FilterController(filterInteractor);
+
         dashboardView.setFilteredViewModel(filteredViewModel);
         dashboardView.setFilterController(filterController);
         dashboardView.onViewDisplayed();
 
         return this;
     }
+
 
     /**
      * Adds the IT dashboard view to the card layout.
@@ -146,30 +151,30 @@ public class AppBuilder {
      * @return this builder for chaining
      */
     public AppBuilder addItDashboardControllers() {
-        // 1) DAO for IT verification
+        // Make sure addDashBoardView() + addDashboardControllers()
+        // and addItDashboardView() + addEmailDecisionView() are called first
+
         final FirebaseITVerificationDataAccessObject itDao =
                 new FirebaseITVerificationDataAccessObject();
 
-        // 2) Presenter
         final ItUpdateStatusOutputBoundary presenter =
-                new ItUpdateStatusPresenter(viewManagerModel, itDashboardView);
+                new ItUpdateStatusPresenter(viewManagerModel, itDashboardView, filterInteractor); // ✅ now injected
 
-        // 3) Interactor
         final ItUpdateStatusInputBoundary interactor =
                 new ItUpdateStatusInteractor(itDao, presenter);
 
-        // 4) IT dashboard controller (handles table + decision view)
-        final ItDashboardController itDashboardController =
-                new ItDashboardController(
-                        itDashboardView,
-                        emailDecisionView,
-                        viewManagerModel,
-                        interactor
-                );
-        // 5) IT filter controller (loads table, sets currentEmails)
+        final ItDashboardController itDashboardController = new ItDashboardController(
+                itDashboardView,
+                emailDecisionView,
+                viewManagerModel,
+                interactor
+        );
+
         new ItFilterController(itDashboardView, itDashboardController);
+
         return this;
     }
+
 
 
 

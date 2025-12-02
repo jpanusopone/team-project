@@ -98,4 +98,23 @@ public class EmailTableModel extends AbstractTableModel {
             default -> null;
         };
     }
+
+    /**
+     * Update the verified status for a single row and notify the table.
+     *
+     * @param rowIndex  row to update
+     * @param newStatus new verified status text
+     */
+    public void setVerifiedStatusAtRow(int rowIndex, String newStatus) {
+        if (verifiedStatuses == null) {
+            return;
+        }
+        if (rowIndex < 0 || rowIndex >= verifiedStatuses.size()) {
+            return;
+        }
+
+        verifiedStatuses.set(rowIndex, newStatus);
+        // Only one cell changed: rowIndex, COL_VERIFIED_STATUS
+        fireTableCellUpdated(rowIndex, COL_VERIFIED_STATUS);
+    }
 }

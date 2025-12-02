@@ -56,4 +56,13 @@ public class FilterPresenter implements FilterOutputBoundary {
         filteredViewModel.setState(state);
         filteredViewModel.firePropertyChange();
     }
+
+    public void updateStatusInDashboard(int row, String newStatus) {
+        FilteredState state = filteredViewModel.getState();
+
+        state.getVerifiedStatuses().set(row, newStatus);
+
+        filteredViewModel.setState(state);
+        filteredViewModel.firePropertyChange();
+    }
 }

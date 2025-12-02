@@ -148,6 +148,16 @@ public class DashboardView extends JPanel implements PropertyChangeListener {
         }
     }
 
+    // Convenience for controllers / presenters
+    public int getSelectedRow() {
+        return emailTable.getSelectedRow();
+    }
+
+    // Updates Status for row
+    public void updateStatusForRow(int rowIndex, String newStatus) {
+        emailTableModel.setVerifiedStatusAtRow(rowIndex, newStatus);
+    }
+
     /**
      * Called when this view is displayed to trigger an initial load.
      */
