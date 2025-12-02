@@ -166,10 +166,8 @@ public class AppBuilder {
                         viewManagerModel,
                         interactor
                 );
-
         // 5) IT filter controller (loads table, sets currentEmails)
         new ItFilterController(itDashboardView, itDashboardController);
-
         return this;
     }
 

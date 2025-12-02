@@ -106,7 +106,8 @@ public class ItDashboardController {
 
         if (emailId == -1) {
             errorMessage = "No email selected";
-        } else {
+        }
+        else {
             Email emailToUpdate = null;
             if (currentEmails != null) {
                 for (Email email : currentEmails) {
