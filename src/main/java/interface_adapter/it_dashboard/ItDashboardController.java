@@ -122,7 +122,7 @@ public class ItDashboardController {
                 errorMessage = "Email document ID not found";
             }
             else {
-                ItUpdateStatusInputData inputData =
+                final ItUpdateStatusInputData inputData =
                         new ItUpdateStatusInputData(emailToUpdate.getDocumentId(), status);
 
                 // 1) Update in Firebase (interactor)
